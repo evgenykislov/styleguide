@@ -1,19 +1,19 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Google C++ Style Guide</title>
+<title>Руководство Google по стилю в C++</title>
 <link rel="stylesheet" href="include/styleguide.css">
 <script src="include/styleguide.js"></script>
 <link rel="shortcut icon" href="https://www.google.com/favicon.ico">
 </head>
 <body onload="initStyleGuide();">
 <div id="content">
-<h1>Google C++ Style Guide</h1>
+<h1>Руководство Google по стилю в C++</h1>
 <div class="horizontal_toc" id="tocDiv"></div>
 <div class="main_body">
 
-<h2 id="Background" class="ignoreLink">Background</h2>
+<h2 id="Background" class="ignoreLink">Вступление</h2>
 
 <p>C++ is one of the main development languages  used by
 many of Google's open-source projects. As every C++
@@ -4037,39 +4037,25 @@ typedef unordered_set&lt;DataPoint, hash&lt;DataPoint&gt;, DataPointComparator&g
 using foo::Bar;
 </pre>
 
-<h2 id="Naming">Naming</h2>
+<h2 id="Naming">Naming Именование</h2>
 
-<p>The most important consistency rules are those that govern
-naming. The style of a name immediately informs us what sort of
-thing the named entity is: a type, a variable, a function, a
-constant, a macro, etc., without requiring us to search for the
-declaration of that entity. The pattern-matching engine in our
-brains relies a great deal on these naming rules.
-</p>
+<p>Основные правила стиля кодирования приходятся на именование. 
+Вид имени сразу же (без поиска объявления) говорит нам что это: тип, переменная, функция, константа, макрос и т.д.</p>
 
-<p>Naming rules are pretty arbitrary, but
- we feel that
-consistency is more important than individual preferences in this
-area, so regardless of whether you find them sensible or not,
-the rules are the rules.</p>
+<p>Правила именования могут быть произвольными, однако важна их согласованность, и правилам нужно следовать.</p>
 
-<h3 id="General_Naming_Rules">General Naming Rules</h3>
+<h3 id="General_Naming_Rules">Общие принципы именования</h3>
 
-<p>Optimize for readability using names that would be clear
-even to people on a different team.</p>
+<p>Используйте имена, который будут понятны даже людям из другой команды.</p>
 
-<p>Use names that describe the purpose or intent of the object.
-Do not worry about saving horizontal space as it is far
-more important to make your code immediately
-understandable by a new reader. Minimize the use of
-abbreviations that would likely be unknown to someone outside
-your project (especially acronyms and initialisms). Do not
-abbreviate by deleting letters within a word. As a rule of thumb,
-an abbreviation is probably OK if it's listed in
- Wikipedia. Generally speaking, descriptiveness should be
-proportional to the name's scope of visibility. For example,
-<code>n</code> may be a fine name within a 5-line function,
-but within the scope of a class, it's likely too vague.</p>
+<p>Имя должно говорить о цели или применимости объекта.
+Не экономьте на длине имени, лучше более длинное и более понятное (даже новичкам) имя.
+Поменьше аббревиатур, особенно если они незнакомы вне проекта.
+Используйте только известные аббревиатуры (Википедия о них знает?).
+Не сокращайте слова.
+В целом, длина имени должна соответствовать размеру области видимости.
+Например, <code>n</code> - подходящее имя внутри функции в 5 строк,
+однако при описании класса это может быть коротковато.</p>
 
 <pre>class MyClass {
  public:
@@ -4107,22 +4093,20 @@ but within the scope of a class, it's likely too vague.</p>
 };
 </pre>
 
-<p>Note that certain universally-known abbreviations are OK, such as
-<code>i</code> for an iteration variable and <code>T</code> for a
-template parameter.</p>
+<p>Отметим, что типовые имена также допустимы: 
+<code>i</code> для итератора или счётчика, <code>T</code> для параметра шаблона.</p>
 
-<p>For the purposes of the naming rules below, a "word" is anything that you
-would write in English without internal spaces. This includes abbreviations and
-acronyms; e.g., for "<a href="https://en.wikipedia.org/wiki/Camel_case">camel
-case</a>" or "Pascal case," in which the first letter of each word is
-capitalized, use a name like <code>StartRpc()</code>, not
+<p>В дальнейшем при описании правил "word" / "слово" это всё, что пишется 
+на английском без пробелов, в том числе и аббревиатуры.
+В слове первая буква может быть заглавной (зависит от стиля:
+ "<a href="https://en.wikipedia.org/wiki/Camel_case">camel
+case</a>" или "Pascal case"),
+ остальные буквы - строчные. Например, предпочтительно <code>StartRpc()</code>, нежелательно
 <code>StartRPC()</code>.</p>
 
-<p>Template parameters should follow the naming style for their
-category: type template parameters should follow the rules for
-<a href="#Type_Names">type names</a>, and non-type template
-parameters should follow the rules for <a href="#Variable_Names">
-variable names</a>.
+<p>Параметры шаблона также следуют правилам своих категорий:
+<a href="#Type_Names">type names / имена типов</a> для типов, 
+<a href="#Variable_Names">variable names / имена переменных</a> для переменных.
 
 </p><h3 id="File_Names">File Names</h3>
 
