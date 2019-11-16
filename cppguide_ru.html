@@ -15,32 +15,21 @@
 
 <h2 id="Background" class="ignoreLink">Вступление</h2>
 
-<p>C++ is one of the main development languages  used by
-many of Google's open-source projects. As every C++
-programmer knows, the language has many powerful features, but
-this power brings with it complexity, which in turn can make
-code more bug-prone and harder to read and maintain.</p>
+<p>C++ один из основных языков программирования, используемый в open-source проектах Google.
+Известно, что C++ очень мощный язык. Вместе с тем это сложный язык и, при неправильном использовании,
+может быть рассадником багов, затруднить чтение и поддержку кода.</p>
 
-<p>The goal of this guide is to manage this complexity by
-describing in detail the dos and don'ts of writing C++ code
-. These rules exist to
-keep  the code base manageable while still allowing
-coders to use C++ language features productively.</p>
+<p>Цель руководства - управлять сложностью кода,
+ описывая в деталях как стоит (или не стоит) писать код на C++.
+Правила этого руководства упростят управление кодом и увеличат продуктивность кодеров.</p>
 
-<p><em>Style</em>, also known as readability, is what we call
-the conventions that govern our C++ code. The term Style is a
-bit of a misnomer, since these conventions cover far more than
-just source file formatting.</p>
+<p><em>Style / Стиль</em> - соглашения, которым следует C++ код.
+Стиль - это больше, чем форматирование файла с кодом.</p>
 
-<p>
-Most open-source projects developed by
-Google conform to the requirements in this guide.
-</p>
+<p>Большинство open-source проектов, разрабатываемых Google, соответствуют этому руководству.</p>
 
-
-
-<p>Note that this guide is not a C++ tutorial: we assume that
-the reader is familiar with the language. </p>
+<p>Примечание: это руководство не является учебником по C++:
+предполагается, что вы знакомы с языком.</p>
 
 <h3 id="Goals">Goals of the Style Guide</h3>
 
@@ -4060,7 +4049,7 @@ using foo::Bar;
 <pre>class MyClass {
  public:
   int CountFooErrors(const std::vector&lt;Foo&gt;&amp; foos) {
-    int n = 0;  // Clear meaning given limited scope and context
+    int n = 0;  // Чёткий смысл для небольшой области видимости
     for (const auto&amp; foo : foos) {
       ...
       ++n;
@@ -4068,28 +4057,28 @@ using foo::Bar;
     return n;
   }
   void DoSomethingImportant() {
-    std::string fqdn = ...;  // Well-known abbreviation for Fully Qualified Domain Name
+    std::string fqdn = ...;  // Известная аббревиатура полного доменного имени. Пер.: ну что сказать - это Google ...
   }
  private:
-  const int kMaxAllowedConnections = ...;  // Clear meaning within context
+  const int kMaxAllowedConnections = ...;  // Чёткия смысл для контекста
 };
 </pre>
 
 <pre class="badcode">class MyClass {
  public:
   int CountFooErrors(const std::vector&lt;Foo&gt;&amp; foos) {
-    int total_number_of_foo_errors = 0;  // Overly verbose given limited scope and context
-    for (int foo_index = 0; foo_index &lt; foos.size(); ++foo_index) {  // Use idiomatic `i`
+    int total_number_of_foo_errors = 0;  // Слишком подробное имя для короткой функции
+    for (int foo_index = 0; foo_index &lt; foos.size(); ++foo_index) {  // Лучше использовать `i`
       ...
       ++total_number_of_foo_errors;
     }
     return total_number_of_foo_errors;
   }
   void DoSomethingImportant() {
-    int cstmr_id = ...;  // Deletes internal letters
+    int cstmr_id = ...;  // Сокращённое слово (удалены буквы)
   }
  private:
-  const int kNum = ...;  // Unclear meaning within broad scope
+  const int kNum = ...;  // Для целого класса очень нечёткое имя
 };
 </pre>
 
@@ -4108,16 +4097,13 @@ case</a>" или "Pascal case"),
 <a href="#Type_Names">type names / имена типов</a> для типов, 
 <a href="#Variable_Names">variable names / имена переменных</a> для переменных.
 
-</p><h3 id="File_Names">File Names</h3>
+</p><h3 id="File_Names">Имена файлов</h3>
 
-<p>Filenames should be all lowercase and can include
-underscores (<code>_</code>) or dashes (<code>-</code>).
-Follow the convention that your
+<p>Имена файлов должны быть записаны только строчными буквами,
+для разделения можно использовать подчёркивание (<code>_</code>) или дефис (<code>-</code>).
+Используйте тот разделитель, который используется в проекте. Если единого подхода нет - используйте "_".</p>
 
-project uses. If there is no consistent
-local pattern to follow, prefer "_".</p>
-
-<p>Examples of acceptable file names:</p>
+<p>Примеры подходящих имён:</p>
 
 <ul>
   <li><code>my_useful_class.cc</code></li>
@@ -4126,20 +4112,20 @@ local pattern to follow, prefer "_".</p>
   <li><code>myusefulclass_test.cc // _unittest and _regtest are deprecated.</code></li>
 </ul>
 
-<p>C++ files should end in <code>.cc</code> and header files should end in
-<code>.h</code>. Files that rely on being textually included at specific points
-should end in <code>.inc</code> (see also the section on
-<a href="#Self_contained_Headers">self-contained headers</a>).</p>
+<p>C++ файлы должны заканчиваться на <code>.cc</code>, заголовочные - на
+<code>.h</code>. Файлы, включаемые как текст должны заканчиваться
+на <code>.inc</code> (см. также секцию 
+<a href="#Self_contained_Headers">Независимые заголовочники</a>).</p>
 
-<p>Do not use filenames that already exist in
-<code>/usr/include</code>, such as <code>db.h</code>.</p>
+<p>Не используйте имена, уже существующие в 
+<code>/usr/include</code>, такие как <code>db.h</code>.</p>
 
-<p>In general, make your filenames very specific. For
-example, use <code>http_server_logs.h</code> rather than
-<code>logs.h</code>. A very common case is to have a pair
-of files called, e.g., <code>foo_bar.h</code> and
-<code>foo_bar.cc</code>, defining a class called
-<code>FooBar</code>.</p>
+<p>Старайтесь давать файлам специфичные имена.
+Например, <code>http_server_logs.h</code> лучше чем
+<code>logs.h</code>.
+Когда файлы используются парами, лучше давать им одинаковые имена.
+Например, <code>foo_bar.h</code> и
+<code>foo_bar.cc</code> (и содержат класс <code>FooBar</code>).</p>
 
 <h3 id="Type_Names">Type Names</h3>
 
@@ -5908,6 +5894,12 @@ to avoid this.</p>
 
 <p>OK, enough writing about writing code; the code itself is much
 more interesting. Have fun!</p>
+
+<h2 id="Translation">Перевод</h2>
+<p>Кислов Евгений, 2019<br>email: dev@evgenykislov.com</p>
+<p>Актуальная версия перевода:<br>
+<a href="https://evgenykislov.com/wp-content/custom/cpp_codestyle/cppguide_ru.html">Руководство Google по стилю в C++</a><br>
+<a href="https://github.com/evgenykislov/styleguide">Репозиторий на github</a></p>
 
 <hr>
 </div>
