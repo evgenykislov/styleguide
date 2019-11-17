@@ -31,59 +31,47 @@
 <p>Примечание: это руководство не является учебником по C++:
 предполагается, что вы знакомы с языком.</p>
 
-<h3 id="Goals">Goals of the Style Guide</h3>
+<h3 id="Goals">Цели Руководства по стилю</h3>
 
-<p>Why do we have this document?</p>
+<p>Зачем нужен этот документ?</p>
 
-<p>There are a few core goals that we believe this guide should
-serve. These are the fundamental <b>why</b>s that
-underlie all of the individual rules. By bringing these ideas to
-the fore, we hope to ground discussions and make it clearer to our
-broader community why the rules are in place and why particular
-decisions have been made. If you understand what goals each rule is
-serving, it should be clearer to everyone when a rule may be waived
-(some can be), and what sort of argument or alternative would be
-necessary to change a rule in the guide.</p>
+<p>Есть несколько основных целей этого документа, внутренних
+ <b>Зачем</b>, лежащих в основе отдельных правил.
+Используя эти цели можно избежать длинных дискуссий: почему правила такие и зачем им следовать.
+ Если вы понимаете цели каждого правила, то вам легче с ними согласиться или отвергнуть,
+ оценить альтернативы при изменении правил под себя.</p>
 
-<p>The goals of the style guide as we currently see them are as follows:</p>
+<p>Цели руководства следующие::</p>
 <dl>
-<dt>Style rules should pull their weight</dt>
-<dd>The benefit of a style rule
-must be large enough to justify asking all of our engineers to
-remember it. The benefit is measured relative to the codebase we would
-get without the rule, so a rule against a very harmful practice may
-still have a small benefit if people are unlikely to do it
-anyway. This principle mostly explains the rules we don&#8217;t have, rather
-than the rules we do: for example, <code>goto</code> contravenes many
-of the following principles, but is already vanishingly rare, so the Style
-Guide doesn&#8217;t discuss it.</dd>
+<dt>Правила должны стоить изменений</dt>
+<dd>Преимущества от использования единого стиля должны перевешивать 
+ недовольство инженеров по запоминанию и использованию правил.
+ Преимущество оценивается по сравнению с кодовой базой без применения правил,
+ поэтому если ваши люди всё равно не будут применять правила,
+ то выгода будет очень небольшой.
+ Этот принцип объясняет почему некоторые правила отсутствуют:
+ например, <code>goto</code> нарушает многие принципы, однако он практически не используется,
+ поэтому Руководство это не описывает.</dd>
 
-<dt>Optimize for the reader, not the writer</dt>
-<dd>Our codebase (and most individual components submitted to it) is
-expected to continue for quite some time. As a result, more time will
-be spent reading most of our code than writing it. We explicitly
-choose to optimize for the experience of our average software engineer
-reading, maintaining, and debugging code in our codebase rather than
-ease when writing said code.  "Leave a trace for the reader" is a
-particularly common sub-point of this principle: When something
-surprising or unusual is happening in a snippet of code (for example,
-transfer of pointer ownership), leaving textual hints for the reader
-at the point of use is valuable (<code>std::unique_ptr</code>
-demonstrates the ownership transfer unambiguously at the call
-site). </dd>
+<dt>Оптимизировано для чтения, не для написания</dt>
+<dd>Наша кодовая база (и большинство отдельных компонентов из неё)
+ будет использоваться продолжительное время. Поэтому, на чтение этого кода
+ будет тратиться существенно больше времени, чем на написание.
+ Мы явно заботимся чтобы нашим инженерам было лего читать, поддерживать,
+ отлаживать код. "Оставляй отладочный/логирующий код" - одно из следствий:
+ когда кусок кода работает "странно" (например, при передаче владения указателем),
+ наличие текстовых подсказок может быть очень полезным (<code>std::unique_ptr</code>
+ явно показывает передачу владения). </dd>
 
-<dt>Be consistent with existing code</dt>
-<dd>Using one style consistently through our codebase lets us focus on
-other (more important) issues. Consistency also allows for
-automation: tools that format your code or adjust
-your <code>#include</code>s only work properly when your code is
-consistent with the expectations of the tooling. In many cases, rules
-that are attributed to "Be Consistent" boil down to "Just pick one and
-stop worrying about it"; the potential value of allowing flexibility
-on these points is outweighed by the cost of having people argue over
-them. </dd>
+<dt>Пиши код, похожий на существующий</dt>
+<dd>Использование единого стиля на кодовой базе позволяет переключиться на другие, более важные, вопросы.
+ Также, единый стиль способствует автоматизации. И, конечно, автоформат кода
+ (или выравнивание <code>#include</code>-ов) работает правильно, если он
+ соответствует требованиям утилиты. В остальных случаях из набора правил
+ применяется только одно (наиболее подходящее), а некоторая гибкость в
+ использовании правил позволяет людям меньше спорить.</dd>
 
-<dt>Be consistent with the broader C++ community when appropriate</dt>
+<dt>Пиши код, похожий на используемый в C++ сообщества (по возможности)</dt>
 <dd>Consistency with the way other organizations use C++ has value for
 the same reasons as consistency within our code base. If a feature in
 the C++ standard solves a problem, or if some idiom is widely known
@@ -4057,10 +4045,10 @@ using foo::Bar;
     return n;
   }
   void DoSomethingImportant() {
-    std::string fqdn = ...;  // Известная аббревиатура полного доменного имени. Пер.: ну что сказать - это Google ...
+    std::string fqdn = ...;  // Известная аббревиатура полного доменного имени. Прим.: ну что сказать - это Google ...
   }
  private:
-  const int kMaxAllowedConnections = ...;  // Чёткия смысл для контекста
+  const int kMaxAllowedConnections = ...;  // Чёткий смысл для контекста
 };
 </pre>
 
@@ -4127,16 +4115,16 @@ case</a>" или "Pascal case"),
 Например, <code>foo_bar.h</code> и
 <code>foo_bar.cc</code> (и содержат класс <code>FooBar</code>).</p>
 
-<h3 id="Type_Names">Type Names</h3>
+<h3 id="Type_Names">Имена типов</h3>
 
-<p>Type names start with a capital letter and have a capital
-letter for each new word, with no underscores:
+<p>Имена типов начинаются с прописной буквы, каждое новое слово также начинается с прописной буквы.
+ Подчёркивания не используются:
 <code>MyExcitingClass</code>, <code>MyExcitingEnum</code>.</p>
 
-<p>The names of all types &#8212; classes, structs, type aliases,
-enums, and type template parameters &#8212; have the same naming convention.
-Type names should start with a capital letter and have a capital letter
-for each new word. No underscores. For example:</p>
+<p>Имена всех типов - classes, structs, type aliases,
+enums, and type template parameters - именуются в одинаковом стиле.
+ Имена типов начинаются с прописной буквы, каждое новое слово также начинается с прописной буквы.
+ Подчёркивания не используются. Например:</p>
 
 <pre>// classes and structs
 class UrlTable { ...
@@ -4153,11 +4141,12 @@ using PropertiesMap = hash_map&lt;UrlTableProperties *, std::string&gt;;
 enum UrlTableErrors { ...
 </pre>
 
-<h3 id="Variable_Names">Variable Names</h3>
+<h3 id="Variable_Names">Имена переменных</h3>
 
-<p>The names of variables (including function parameters) and data members are
-all lowercase, with underscores between words. Data members of classes (but not
-structs) additionally have trailing underscores. For instance:
+<p>Имена переменных (включая параметры функций) и
+ членов данных пишутся строчными буквами с подчёркиванием между словами.
+ Члены данных классов (не структур) дополняются подчёркиванием в конце имени.
+ Например:
 <code>a_local_variable</code>, <code>a_struct_data_member</code>,
 <code>a_class_data_member_</code>.</p>
 
