@@ -72,27 +72,22 @@
  использовании правил позволяет людям меньше спорить.</dd>
 
 <dt>Пиши код, похожий на используемый в C++ сообщества (по возможности)</dt>
-<dd>Consistency with the way other organizations use C++ has value for
-the same reasons as consistency within our code base. If a feature in
-the C++ standard solves a problem, or if some idiom is widely known
-and accepted, that's an argument for using it. However, sometimes
-standard features and idioms are flawed, or were just designed without
-our codebase's needs in mind. In those cases (as described below) it's
-appropriate to constrain or ban standard features.  In some cases we
-prefer a homegrown or third-party library over a library defined in
-the C++ Standard, either out of perceived superiority or insufficient
-value to transition the codebase to the standard interface.</dd>
+<dd>Согласованность нашего кода с C++ кодом других организаций и сообществ
+ весьма полезна. Если возможности стандартного C++ или принятые идиомы языка
+ облегчают написание программ, это повод использорвать их. Однако,
+ иногда стандарт и идиомы плохо подходят для задачи. В этих случаях
+ (как описано ниже) имеет смысл ограничить или запретить использование
+ некоторых стандартных возможностей. В некоторых случаях создаётся свой решение,
+ но иногда используются внешние библиотеки (вместо стандартной библиотеки C++)
+ и переписывание её под свой стандарт слишком затратно.</dd>
 
-<dt>Avoid surprising or dangerous constructs</dt>
-<dd>C++ has features that are more surprising or dangerous than one
-might think at a glance. Some style guide restrictions are in place to
-prevent falling into these pitfalls. There is a high bar for style
-guide waivers on such restrictions, because waiving such rules often
-directly risks compromising program correctness.
-</dd>
+<dt>Избегайте неожиданных или опасных конструкций</dt>
+<dd>В языке C++ есть неочевидные и даже опасные подходы. Некоторые
+ стили кодирования ограничивают их использование, т.к. их использование 
+несёт большие риски для правильности кода.</dd>
 
-<dt>Avoid constructs that our average C++ programmer would find tricky
-or hard to maintain</dt>
+<dt>Избегайте конструкций, которые средний C++ программист считает заумными
+ и сложно поддерживаемыми</dt>
 <dd>C++ has features that may not be generally appropriate because of
 the complexity they introduce to the code. In widely used
 code, it may be more acceptable to use
@@ -4121,8 +4116,7 @@ case</a>" или "Pascal case"),
  Подчёркивания не используются:
 <code>MyExcitingClass</code>, <code>MyExcitingEnum</code>.</p>
 
-<p>Имена всех типов - classes, structs, type aliases,
-enums, and type template parameters - именуются в одинаковом стиле.
+<p>Имена всех типов - классов, структур, псевдонимов, перечислений, параметров шаблонов - именуются в одинаковом стиле.
  Имена типов начинаются с прописной буквы, каждое новое слово также начинается с прописной буквы.
  Подчёркивания не используются. Например:</p>
 
@@ -4150,35 +4144,33 @@ enum UrlTableErrors { ...
 <code>a_local_variable</code>, <code>a_struct_data_member</code>,
 <code>a_class_data_member_</code>.</p>
 
-<h4>Common Variable names</h4>
+<h4>Имена обычных переменных</h4>
 
-<p>For example:</p>
+<p>Например:</p>
 
-<pre>std::string table_name;  // OK - lowercase with underscore.
+<pre>std::string table_name;  // OK - строчные буквы с подчёркиванием
 </pre>
 
-<pre class="badcode">std::string tableName;   // Bad - mixed case.
+<pre class="badcode">std::string tableName;   // Плохо - смешанный стиль
 </pre>
 
-<h4>Class Data Members</h4>
+<h4>Члены данных класса</h4>
 
-<p>Data members of classes, both static and non-static, are
-named like ordinary nonmember variables, but with a
-trailing underscore.</p>
+<p>Члены данных классов, статические и нестатические,
+ именуются как обычные переменные с добавлением подчёркивания в конце.</p>
 
 <pre>class TableInfo {
   ...
  private:
-  std::string table_name_;  // OK - underscore at end.
+  std::string table_name_;  // OK - подчёркивание в конце
   static Pool&lt;TableInfo&gt;* pool_;  // OK.
 };
 </pre>
 
-<h4>Struct Data Members</h4>
+<h4>Члены данных структуры</h4>
 
-<p>Data members of structs, both static and non-static,
-are named like ordinary nonmember variables. They do not have
-the trailing underscores that data members in classes have.</p>
+<p>Члены данных структуры, статические и нестатические,
+ именуются как обычные переменные. К ним не добавляется символ подчёркивания в конце.</p>
 
 <pre>struct UrlTableProperties {
   std::string name;
@@ -4188,34 +4180,33 @@ the trailing underscores that data members in classes have.</p>
 </pre>
 
 
-<p>See <a href="#Structs_vs._Classes">Structs vs.
-Classes</a> for a discussion of when to use a struct
-versus a class.</p>
+<p>См. также <a href="#Structs_vs._Classes">Структуры vs
+Классы</a>, где описано когда использовать структуры, когда классы.</p>
 
-<h3 id="Constant_Names">Constant Names</h3>
+<h3 id="Constant_Names">Имена констант</h3>
 
-<p>Variables declared constexpr or const, and whose value is fixed for
-the duration of the program, are named with a leading "k" followed
-by mixed case. Underscores can be used as separators in the rare cases
-where capitalization cannot be used for separation. For example:</p>
+<p>Объекты объявляются как constexpr или const, чтобы значение не менялось
+ в процессе выполнения. Имена констант начинаются с символа "k",
+ далее идёт имя в смешанном стиле (прописные и строчные буквы).
+ Подчёркивание может быть использовано в редких случаях когда прописные буквы
+ не могут использоваться для разделения. Например:</p>
 
 <pre>const int kDaysInAWeek = 7;
 const int kAndroid8_0_0 = 24;  // Android 8.0.0
 </pre>
 
-<p>All such variables with static storage duration (i.e. statics and globals,
-see <a href="http://en.cppreference.com/w/cpp/language/storage_duration#Storage_duration">
-Storage Duration</a> for details) should be named this way.  This
-convention is optional for variables of other storage classes, e.g. automatic
-variables, otherwise the usual variable naming rules apply.</p>
+<p>Все аналогичные константные объекты со статическим типом хранилища
+ (т.е. статические или глобальные, подробнее тут:
+ <a href="http://en.cppreference.com/w/cpp/language/storage_duration#Storage_duration">
+Storage Duration</a>) именуются также. Это соглашение является необязательным 
+для переменных в других типах хранилища (например, автоматические константные объекты).</p>
 
-<h3 id="Function_Names">Function Names</h3>
+<h3 id="Function_Names">Имена функций</h3>
 
-<p>Regular functions have mixed case; accessors and mutators may be named
-like variables.</p>
+<p>Обычные функции именуются в смешанном стиле (прописные и строчные буквы);
+ функции доступа к переменным (accessor и mutator) должны иметь похожий стиль (как у переменной).</p>
 
-<p>Ordinarily, functions should start with a capital letter and have a
-capital letter for each new word.</p>
+<p>Обычно имя функции начинается с прописной буквы и каждое слово в имени пишется с прописной буквы.</p>
 
 <pre>AddTableEntry()
 DeleteUrl()
