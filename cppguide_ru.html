@@ -88,61 +88,47 @@
 
 <dt>Избегайте конструкций, которые средний C++ программист считает заумными
  и сложно поддерживаемыми</dt>
-<dd>C++ has features that may not be generally appropriate because of
-the complexity they introduce to the code. In widely used
-code, it may be more acceptable to use
-trickier language constructs, because any benefits of more complex
-implementation are multiplied widely by usage, and the cost in understanding
-the complexity does not need to be paid again when working with new
-portions of the codebase. When in doubt, waivers to rules of this type
-can be sought by asking
-your project leads. This is specifically
-important for our codebase because code ownership and team membership
-changes over time: even if everyone that works with some piece of code
-currently understands it, such understanding is not guaranteed to hold a
-few years from now.</dd>
+<dd>В C++ есть возможности, которые в целом не приветствуются по причине
+ усложнения кода. Однако, в часто используемом коде применение хитрых
+ конструкций более оправданно благодаря многократному использованию,
+ также новые порции кода станут более понятны.
+ В случае сомнений - проконсультируйтесь с лидером проекта.
+ Это очень важно для нашей кодовой базы, т.к. владельцы кода и команда поддержки
+ меняются со временем: даже если сейчас все понимают код,
+ через несколько лет всё может исзмениться.</dd>
 
-<dt>Be mindful of our scale</dt>
-<dd>With a codebase of 100+ million lines and thousands of engineers,
-some mistakes and simplifications for one engineer can become costly
-for many. For instance it's particularly important to
-avoid polluting the global namespace: name collisions across a
-codebase of hundreds of millions of lines are difficult to work with
-and hard to avoid if everyone puts things into the global
-namespace.</dd>
+<dt>Учитывайте масштаб кода</dt>
+<dd>С кодовой базой более 100 миллионов строк и тысячами инженеров,
+ ошибки и упрощения могут дорого обойтись. Например, важно избегать
+ замусоривания глобального пространства имён: коллизии имён очень 
+ сложно избежать в большой базе кода если всё объявляется в глобальном
+ пространстве имён.</dd>
 
-<dt>Concede to optimization when necessary</dt>
-<dd>Performance optimizations can sometimes be necessary and
-appropriate, even when they conflict with the other principles of this
-document.</dd>
+<dt>Оптимизируйте по необходимости</dt>
+<dd>Оптимизация производительности иногда важнее, чем следование правилам в кодировании.</dd>
 </dl>
 
-<p>The intent of this document is to provide maximal guidance with
-reasonable restriction. As always, common sense and good taste should
-prevail. By this we specifically refer to the established conventions
-of the entire Google C++ community, not just your personal preferences
-or those of your team. Be skeptical about and reluctant to use
-clever or unusual constructs: the absence of a prohibition is not the
-same as a license to proceed.  Use your judgment, and if you are
-unsure, please don't hesitate to ask your project leads to get additional
-input.</p>
+<p>Намерение этого документа - обеспечить максимально понятное руководство
+ при разумных ограничениях. Как всегда, здравый смысл никто не отменял.
+ Этой спецификацией мы хотим установить соглашения для всего сообщества Google в C++,
+ не только для отдельных команд или людей. Относитесь со скепсисом к хитрым или
+ необычным конструкциям: отсутствие ограничения не всегда есть разрешение.
+ И, если не можешь решить сам, спроси начальника.</p>
 
 
 
-<h2 id="C++_Version">C++ Version</h2>
+<h2 id="C++_Version">Версия C++</h2>
 
-<p>Currently, code should target C++17, i.e., should not use C++2x
-  features. The C++ version targeted by this guide will advance
-  (aggressively) over time.</p>
-
+<p>Сейчас код должен соответствовать C++17, т.е. возможности C++2x нежелательны.
+ В дальнейшем, руководство будет корректироваться на более новые версии C++.</p>
 
 
-<p>Do not use
-  <a href="#Nonstandard_Extensions">non-standard extensions</a>.</p>
 
-  <div>Consider portability to other environments
-before using features from C++14 and C++17 in your project.
-</div>
+<p>Не используйте
+  <a href="#Nonstandard_Extensions">нестандартные расширения</a>.</p>
+
+  <div>Учитывайте совместимость с другим окружением, если собираетесь
+ использовать C++14 and C++17 в свойм проекте.</div>
 
 <h2 id="Header_Files">Header Files</h2>
 
@@ -4204,7 +4190,7 @@ Storage Duration</a>) именуются также. Это соглашение
 <h3 id="Function_Names">Имена функций</h3>
 
 <p>Обычные функции именуются в смешанном стиле (прописные и строчные буквы);
- функции доступа к переменным (accessor и mutator) должны иметь похожий стиль (как у переменной).</p>
+ функции доступа к переменным (accessor и mutator) должны иметь стиль, похожий на целевую переменную.</p>
 
 <p>Обычно имя функции начинается с прописной буквы и каждое слово в имени пишется с прописной буквы.</p>
 
@@ -4213,52 +4199,42 @@ DeleteUrl()
 OpenFileOrDie()
 </pre>
 
-<p>(The same naming rule applies to class- and namespace-scope
-constants that are exposed as part of an API and that are intended to look
-like functions, because the fact that they're objects rather than functions
-is an unimportant implementation detail.)</p>
+<p>(Аналогичные правила применяются для констант в области класса или пространства имён (namespace)
+ которые представляют собой часть API и должны выглядеть как функции (и то, что они не функции - некритично))</p>
 
-<p>Accessors and mutators (get and set functions) may be named like
-variables. These often correspond to actual member variables, but this is
-not required. For example, <code>int count()</code> and <code>void
+<p>Accessor-ы и mutator-ы (функции get и set) могут именоваться наподобие соответствующих переменных.
+ Они часто соответствуют реальным переменным-членам, однако это не обязательно.
+ Например, <code>int count()</code> и <code>void
 set_count(int count)</code>.</p>
 
-<h3 id="Namespace_Names">Namespace Names</h3>
+<h3 id="Namespace_Names">Именование пространства имён (namespace)</h3>
+<p>Пространство имён называется строчными буквами. Пространство имён 
+ верхнего уровня основывается на имени проекта.
+ Избегайте коллизий ваших имён и других, хорошо известных, пространств имён.</p>
 
-Namespace names are all lower-case. Top-level namespace names are
-based on the project name
-. Avoid collisions
-between nested namespaces and well-known top-level namespaces.
-
-<p>The name of a top-level namespace should usually be the
-name of the project or team whose code is contained in that
-namespace. The code in that namespace should usually be in
-a directory whose basename matches the namespace name (or in
-subdirectories thereof).</p>
+<p>Пространство имён верхнего уровня - это обычно название проекта
+ или команды (которая делала код). Код должен располагаться в директории
+ (или поддиректории) с именем, соответствующим пространству имён.</p>
 
 
+<p>Не забывайте правило <a href="#General_Naming_Rules">не использовать аббревиатуры</a>
+ - к пространствам имён это также применимо. Коду внутри врядли потребуется упоминание
+ пространства имён, поэтому аббревиатуры - это лишнее.</p>
 
-<p>Keep in mind that the <a href="#General_Naming_Rules">rule
-against abbreviated names</a> applies to namespaces just as much
-as variable names. Code inside the namespace seldom needs to
-mention the namespace name, so there's usually no particular need
-for abbreviation anyway.</p>
-
-<p>Avoid nested namespaces that match well-known top-level
-namespaces. Collisions between namespace names can lead to surprising
-build breaks because of name lookup rules. In particular, do not
-create any nested <code>std</code> namespaces. Prefer unique project
-identifiers
+<p>Избегайте использовать для вложенных пространств имён известные названия.
+ Коллизии между именами могут привести к сюрпризам при сборке. В частности,
+ не создавайте вложенных пространств имён с именем <code>std</code>.
+ Рекомендуются уникальные идентификаторы проекта
 (<code>websearch::index</code>, <code>websearch::index_util</code>)
-over collision-prone names like <code>websearch::util</code>.</p>
+ вместо небезопасных к коллизиям <code>websearch::util</code>.</p>
 
-<p>For <code>internal</code> namespaces, be wary of other code being
-added to the same <code>internal</code> namespace causing a collision
-(internal helpers within a team tend to be related and may lead to
-collisions). In such a situation, using the filename to make a unique
-internal name is helpful
-(<code>websearch::index::frobber_internal</code> for use
-in <code>frobber.h</code>)</p>
+<p>Для <code>internal / внутренних</code> пространств имён коллизии
+ могут возникать при добавлении другого кода
+ (внутренние хелперы имеют свойство повторяться у разных команд).
+ В этом случае хорошо помогает использование имени файла для
+ именования пространства имён.
+(<code>websearch::index::frobber_internal</code> для использования в 
+<code>frobber.h</code>)</p>
 
 <h3 id="Enumerator_Names">Enumerator Names</h3>
 
