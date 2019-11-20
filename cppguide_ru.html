@@ -130,26 +130,25 @@
   <div>Учитывайте совместимость с другим окружением, если собираетесь
  использовать C++14 and C++17 в свойм проекте.</div>
 
-<h2 id="Header_Files">Header Files</h2>
+<h2 id="Header_Files">Заголовочные файлы</h2>
 
-<p>In general, every <code>.cc</code> file should have an
-associated <code>.h</code> file. There are some common
-exceptions, such as  unittests and
-small <code>.cc</code> files containing just a
-<code>main()</code> function.</p>
+<p>Желательно, чтобы каждый <code>.cc</code> файл исходного кода
+ имел парный <code>.h</code> заголовочный файл. Также, есть известные
+ исключения из этого правила, такие как юниттесты или небольшие
+ <code>.cc</code> файлы, содержащие только функцию <code>main()</code>.</p>
 
-<p>Correct use of header files can make a huge difference to
-the readability, size and performance of your code.</p>
+<p>Правильное использование заголовочных файлов может оказать
+ огромное влияние на читабельность, размер и производительность вашего кода.</p>
 
-<p>The following rules will guide you through the various
-pitfalls of using header files.</p>
+<p>Следующие правила позволят избежать частых проблем с заголовочными файлами.</p>
 
 <a id="The_-inl.h_Files"></a>
-<h3 id="Self_contained_Headers">Self-contained Headers</h3>
+<h3 id="Self_contained_Headers">Независимые заголовочники</h3>
 
-<p>Header files should be self-contained (compile on their own) and
-end in <code>.h</code>.  Non-header files that are meant for inclusion
-should end in <code>.inc</code> and be used sparingly.</p>
+<p>Заголовочные файлы должны быть самодостаточными (в плане компиляции)
+ и иметь расширение <code>.h</code>. Другие файлы (не заголовочные), предназначенные
+ для включения в код, должны быть с расширением <code>.inc</code> и использоваться
+ в паре с включающим кодом.</p>
 
 <p>All header files should be self-contained. Users and refactoring
 tools should not have to adhere to special conditions to include the
@@ -3225,7 +3224,7 @@ if (!success) {
     are quite complex; the results tend to be unsurprising, except that
     the binding types typically won't be references even if the declaration
     declares a reference (but they will usually behave like references anyway).
-  </dd>
+  </dd></dl>
 
 <p>(These summaries omit many details and caveats; see the links for further
   information.)</p>
@@ -4236,20 +4235,19 @@ set_count(int count)</code>.</p>
 (<code>websearch::index::frobber_internal</code> для использования в 
 <code>frobber.h</code>)</p>
 
-<h3 id="Enumerator_Names">Enumerator Names</h3>
+<h3 id="Enumerator_Names">Имена перечислений</h3>
 
-<p>Enumerators (for both scoped and unscoped enums) should be named <i>either</i> like
-<a href="#Constant_Names">constants</a> or like
-<a href="#Macro_Names">macros</a>: either <code>kEnumName</code> or
+<p>Перечисления (как с ограничениями на область видимости (scoped),
+ так и без (unscoped)) должны
+ именоваться <i>либо</i> как <a href="#Constant_Names">константы</a>,
+ либо как <a href="#Macro_Names">macros</a>. Т.е.: либо <code>kEnumName</code>, либо
 <code>ENUM_NAME</code>.</p>
 
-<p>Preferably, the individual enumerators should be named
-like <a href="#Constant_Names">constants</a>. However, it
-is also acceptable to name them like
-<a href="#Macro_Names">macros</a>.  The enumeration name,
-<code>UrlTableErrors</code> (and
-<code>AlternateUrlTableErrors</code>), is a type, and
-therefore mixed case.</p>
+<p>Предпочтительно именовать отдельные значения в перечислителе как
+ <a href="#Constant_Names">константы</a>. Однако, допустимо
+ имновать как <a href="#Macro_Names">макросы</a>.  Имя самого перечисления
+<code>UrlTableErrors</code> (и
+<code>AlternateUrlTableErrors</code>), это тип. Следовательно используется смешанный стиль.</p>
 
 <pre>enum UrlTableErrors {
   kOk = 0,
@@ -4263,55 +4261,52 @@ enum AlternateUrlTableErrors {
 };
 </pre>
 
-<p>Until January 2009, the style was to name enum values
-like <a href="#Macro_Names">macros</a>. This caused
-problems with name collisions between enum values and
-macros. Hence, the change to prefer constant-style naming
-was put in place. New code should prefer constant-style
-naming if possible. However, there is no reason to change
-old code to use constant-style names, unless the old
-names are actually causing a compile-time problem.</p>
+<p>Вплоть до января 2009 года стиль именования значений
+ перечисления был как у <a href="#Macro_Names">макросов</a>. 
+ Это создавало проблемы дублирования имён макросов 
+ и значений перечислений. Применение стиля констант решает
+ проблему и в новом коде предпочтительно использовать стиль
+ констант. Однако, старый код нет необходимости переписывать
+ (пока нет проблем дублирования).</p>
 
 
 
-<h3 id="Macro_Names">Macro Names</h3>
+<h3 id="Macro_Names">Имена макросов</h3>
 
-<p>You're not really going to <a href="#Preprocessor_Macros">
-define a macro</a>, are you? If you do, they're like this:
+<p>Вы ведь не собираетесь <a href="#Preprocessor_Macros">определять
+ макросы</a>? На всякий случай (если собираетесь), они должны выглядеть так:
 <code>MY_MACRO_THAT_SCARES_SMALL_CHILDREN_AND_ADULTS_ALIKE</code>.
 </p>
 
-<p>Please see the <a href="#Preprocessor_Macros">description
-of macros</a>; in general macros should <em>not</em> be used.
-However, if they are absolutely needed, then they should be
-named with all capitals and underscores.</p>
+<p>Пожалуйста прочтите как <a href="#Preprocessor_Macros">
+определять макросы</a>; Обычно, макросы <em>не</em> должны использоваться.
+Однако, если они вам абсолютно необходимы, именуйте их
+прописными буквами с символами подчёркивания.</p>
 
 <pre>#define ROUND(x) ...
 #define PI_ROUNDED 3.0
 </pre>
 
-<h3 id="Exceptions_to_Naming_Rules">Exceptions to Naming Rules</h3>
+<h3 id="Exceptions_to_Naming_Rules">Исключения из правил именования</h3>
 
-<p>If you are naming something that is analogous to an
-existing C or C++ entity then you can follow the existing
-naming convention scheme.</p>
+<p>Если вам нужно именовать что-то, имеющее аналоги в существующем
+C или C++ коде, то следуйте используемому в коде стилю.</p>
 
 <dl>
   <dt><code>bigopen()</code></dt>
-  <dd>function name, follows form of <code>open()</code></dd>
+  <dd>имя функции, образованное от <code>open()</code></dd>
 
   <dt><code>uint</code></dt>
   <dd><code>typedef</code></dd>
 
   <dt><code>bigpos</code></dt>
-  <dd><code>struct</code> or <code>class</code>, follows
-  form of <code>pos</code></dd>
+  <dd><code>struct</code> или <code>class</code>, образованный от <code>pos</code></dd>
 
   <dt><code>sparse_hash_map</code></dt>
-  <dd>STL-like entity; follows STL naming conventions</dd>
+  <dd>STL-подобная сущность; следуйте стилю STL</dd>
 
   <dt><code>LONGLONG_MAX</code></dt>
-  <dd>a constant, as in <code>INT_MAX</code></dd>
+  <dd>константа, такая же как <code>INT_MAX</code></dd>
 </dl>
 
 <h2 id="Comments">Comments</h2>
@@ -5852,10 +5847,10 @@ to avoid this.</p>
 more interesting. Have fun!</p>
 
 <h2 id="Translation">Перевод</h2>
-<p>Кислов Евгений, 2019<br>email: dev@evgenykislov.com</p>
+<p>Кислов Евгений, 2019<br>email: dev@evgenykislov.com<br>
+<a href="https://evgenykislov.com">evgenykislov.com</a></p>
 <p>Актуальная версия перевода:<br>
 <a href="https://evgenykislov.com/wp-content/custom/cpp_codestyle/cppguide_ru.html">Руководство Google по стилю в C++</a><br>
-<a href="https://github.com/evgenykislov/styleguide">Репозиторий на github</a></p>
 
 <hr>
 </div>
