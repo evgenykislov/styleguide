@@ -122,8 +122,6 @@
 <p>Сейчас код должен соответствовать C++17, т.е. возможности C++2x нежелательны.
  В дальнейшем, руководство будет корректироваться на более новые версии C++.</p>
 
-
-
 <p>Не используйте
   <a href="#Nonstandard_Extensions">нестандартные расширения</a>.</p>
 
@@ -150,20 +148,19 @@
  для включения в код, должны быть с расширением <code>.inc</code> и использоваться
  в паре с включающим кодом.</p>
 
-<p>All header files should be self-contained. Users and refactoring
-tools should not have to adhere to special conditions to include the
-header. Specifically, a header should
-have <a href="#The__define_Guard">header guards</a> and include all
-other headers it needs.</p>
+<p>Все заголовочные файлы должны быть самодостаточыми. Пользователи и инструменты разработки не
+должны зависеть от специальных зависимостей при использовании заголовочника.
+Заголовочник должен иметь <a href="#The__define_Guard">блокировку от дубликатов</a> и
+ включать все необходимые файлы.</p>
 
-<p>Prefer placing the definitions for template and inline functions in
-the same file as their declarations.  The definitions of these
-constructs must be included into every <code>.cc</code> file that uses
-them, or the program may fail to link in some build configurations.  If
-declarations and definitions are in different files, including the
-former should transitively include the latter.  Do not move these
-definitions to separately included header files (<code>-inl.h</code>);
-this practice was common in the past, but is no longer allowed.</p>
+<p>Предпочтительно размещать определения для шаблонов и inline-функций
+ в одном файле с декларациями. Определения этих конструкций дожны быть 
+ включены в каждый <code>.cc</code> файл, использующий их (конструкции), иначе
+ могут быть ошибки линковки на некоторых конфигурациях сборки. Если же
+ декларации и определения находятся в разных файлах, включение одного должно
+ подключать другой. Не выделяйте определения в отдельные заголовочные файлы
+ (<code>-inl.h</code>); Раньше такая практика была очень популярна, сейчас
+ это нежелательно.</p>
 
 <p>As an exception, a template that is explicitly instantiated for
 all relevant sets of template arguments, or that is a private
@@ -3994,7 +3991,7 @@ typedef unordered_set&lt;DataPoint, hash&lt;DataPoint&gt;, DataPointComparator&g
 using foo::Bar;
 </pre>
 
-<h2 id="Naming">Naming Именование</h2>
+<h2 id="Naming">Именование</h2>
 
 <p>Основные правила стиля кодирования приходятся на именование. 
 Вид имени сразу же (без поиска объявления) говорит нам что это: тип, переменная, функция, константа, макрос и т.д.</p>
@@ -4025,7 +4022,7 @@ using foo::Bar;
     return n;
   }
   void DoSomethingImportant() {
-    std::string fqdn = ...;  // Известная аббревиатура полного доменного имени. Прим.: ну что сказать - это Google ...
+    std::string fqdn = ...;  // Известная аббревиатура полного доменного имени
   }
  private:
   const int kMaxAllowedConnections = ...;  // Чёткий смысл для контекста
@@ -4297,7 +4294,7 @@ C или C++ коде, то следуйте используемому в ко�
   <dd>имя функции, образованное от <code>open()</code></dd>
 
   <dt><code>uint</code></dt>
-  <dd><code>typedef</code></dd>
+  <dd>похож на стандартный тип</dd>
 
   <dt><code>bigpos</code></dt>
   <dd><code>struct</code> или <code>class</code>, образованный от <code>pos</code></dd>
@@ -4309,50 +4306,41 @@ C или C++ коде, то следуйте используемому в ко�
   <dd>константа, такая же как <code>INT_MAX</code></dd>
 </dl>
 
-<h2 id="Comments">Comments</h2>
+<h2 id="Comments">Комментарии</h2>
 
-<p>Comments are absolutely vital to keeping our code readable. The following rules describe what you
-should comment and where. But remember: while comments are very important, the best code is
-self-documenting. Giving sensible names to types and variables is much better than using obscure
-names that you must then explain through comments.</p>
+<p>Комментарии являются обязательными для кода (если вы планируете его читать). Следующие правила
+ описывают, что вы должны комментировать и как. Но помните: хотя комментарии очень важны, иедальный код
+ сам себя документирует. Использование "говорящих" имён для типов и переменных намного лучше, чем непонятные 
+ имена, которые потом требуется расписывать в комментариях.</p>
 
-<p>When writing your comments, write for your audience: the
-next
-contributor who will need to
-understand your code. Be generous &#8212; the next
-one may be you!</p>
+<p>Комментируйте код с учётом его следующих читателей: программистов, которым потребуется разбираться в вашем коде.
+ Учтите, что следующим читателем можете стать вы!</p>
 
-<h3 id="Comment_Style">Comment Style</h3>
+<h3 id="Comment_Style">Стиль комментариев</h3>
 
-<p>Use either the <code>//</code> or <code>/* */</code>
-syntax, as long as you are consistent.</p>
+<p>Используйте либо <code>//</code> либо <code>/* */</code>, пока не нарушается единообразие.</p>
 
-<p>You can use either the <code>//</code> or the <code>/*
-*/</code> syntax; however, <code>//</code> is
-<em>much</em> more common. Be consistent with how you
-comment and what style you use where.</p>
+<p>Вы можете использовать либо <code>//</code> либо <code>/*
+*/</code>, однако <code>//</code> <em>намного</em> предпочтительнее. Однако, всегда согласовывайте
+ ваш стиль коментариев с уже существующим кодом.</p>
 
-<h3 id="File_Comments">File Comments</h3>
+<h3 id="File_Comments">Комментарии в шапке файла</h3>
 
 <div>
-<p>Start each file with license boilerplate.</p>
+<p>В начало каждого файла вставляйте шапку с лицензией.</p>
 </div>
 
-<p>File comments describe the contents of a file. If a file declares,
-implements, or tests exactly one abstraction that is documented by a comment
-at the point of declaration, file comments are not required. All other files
-must have file comments.</p>
+<p>Комментарии в файле должны описывать его содержимое. Если файл объявляет,
+ описывает или тестирует одну абстракцию (на которую уже есть комментарий),
+ дополнительное описание в шапке файла не нужно. В ином случае, в начало файла
+ вставляйте описание содержимого.</p>
 
-<h4>Legal Notice and Author
-Line</h4>
-
-
+<h4>Правовая информация и авторы</h4>
 
 <div>
-<p>Every file should contain license
-boilerplate. Choose the appropriate boilerplate for the
-license used by the project (for example, Apache 2.0,
-BSD, LGPL, GPL).</p>
+<p>Каждый файл должен содержать информацию о лицензии. Формат описания зависит
+ от лицензии, используемой в проекте. У каждой лицензии (Apache 2.0,
+BSD, LGPL, GPL, др.) могут быть свои требования к оформлению.</p>
 </div>
 
 <p>If you make significant changes to a file with an
