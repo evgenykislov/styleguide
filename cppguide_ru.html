@@ -197,32 +197,30 @@
 
 
 
-<h3 id="Forward_Declarations">Forward Declarations</h3>
+<h3 id="Forward_Declarations">Предварительное объявление</h3>
 
-<p>Avoid using forward declarations where possible.
-Instead, <code>#include</code> the headers you need.</p>
+<p>По возможности, не используйте предварительное объявление.
+ Вместо этого <code>#include</code>/подключайте необходимые заголовочные файлы.</p>
 
 <p class="definition"></p>
-<p>A "forward declaration" is a declaration of a class,
-function, or template without an associated definition.</p>
+<p>"Предварительное объявление" - декларация класса, функции, шаблона без
+ соответствующего определения.</p>
 
 <p class="pros"></p>
 <ul>
-  <li>Forward declarations can save compile time, as
-  <code>#include</code>s force the compiler to open
-  more files and process more input.</li>
+  <li>Предварительной объявление может уменьшить время компиляции.
+ Использование <code>#include</code> требует от компилятора сразу
+ открывать (и обрабатывать) больше файлов.</li>
 
-  <li>Forward declarations can save on unnecessary
-  recompilation. <code>#include</code>s can force
-  your code to be recompiled more often, due to unrelated
-  changes in the header.</li>
+  <li>Предварительное объявление позволит избежать ненужной
+ перекомпиляции. Применение <code>#include</code> может привести к
+ частой перекомпиляции из-за различных изменений в заголовочниках.</li>
 </ul>
 
 <p class="cons"></p>
 <ul>
-  <li>Forward declarations can hide a dependency, allowing
-  user code to skip necessary recompilation when headers
-  change.</li>
+  <li>Предварительное объявление может скрывать от перекомпиляции
+ зависимости, которые изменились.</li>
 
   <li>A forward declaration may be broken by subsequent
   changes to the library. Forward declarations of functions
@@ -4351,13 +4349,13 @@ BSD, LGPL, GPL, др.) могут быть свои требования к оф
 <p>Не дублируйте комментарии в <code>.h</code> и <code>.cc</code> файлах - со временем
  комментарии становятся разными.</p>
 
-<h3 id="Class_Comments">Class Comments</h3>
+<h3 id="Class_Comments">Комментарии класса</h3>
 
-<p>Every non-obvious class declaration should have an accompanying
-comment that describes what it is for and how it should be used.</p>
+<p>Каждое объявление класса (кроме совсем очевидных) должно сопровождаться
+ комментарием, для чего класс и как им пользоваться.</p>
 
-<pre>// Iterates over the contents of a GargantuanTable.
-// Example:
+<pre>// Перебор содержимого GargantuanTable.
+// Пример:
 //    GargantuanTableIterator* iter = table-&gt;NewIterator();
 //    for (iter-&gt;Seek("foo"); !iter-&gt;done(); iter-&gt;Next()) {
 //      process(iter-&gt;key(), iter-&gt;value());
@@ -4368,22 +4366,20 @@ class GargantuanTableIterator {
 };
 </pre>
 
-<p>The class comment should provide the reader with enough information to know
-how and when to use the class, as well as any additional considerations
-necessary to correctly use the class. Document the synchronization assumptions
-the class makes, if any. If an instance of the class can be accessed by
-multiple threads, take extra care to document the rules and invariants
-surrounding multithreaded use.</p>
+<p>Комментарий к классу должен быть досточным для понимания: как и когда использовать
+ класс, дополнительные требования для правильного использования класса.
+ Описывайте, если требуется, ограничения (предположения) на синхронизацию в классе.
+ Если экземплар класса может использоваться из разных потоков, обязательно распишите
+ правила многопоточного использования.</p>
 
-<p>The class comment is often a good place for a small example code snippet
-demonstrating a simple and focused usage of the class.</p>
+<p>В комментарии к классу также можно привести короткие примеры кода, показывающие
+ как проще использовать класс.</p>
 
-<p>When sufficiently separated (e.g. <code>.h</code> and <code>.cc</code>
-files), comments describing the use of the class should go together with its
-interface definition; comments about the class operation and implementation
-should accompany the implementation of the class's methods.</p>
+<p>Обычно класс объявляется/определяется в разных файлах (<code>.h</code> и <code>.cc</code>).
+ Комментарии, описывающие использование класса должны быть рядом с определение интерфейса.
+ Комментарии о тонкостях реализации должны быть рядом с кодом самих методов.</p>
 
-<h3 id="Function_Comments">Function Comments</h3>
+<h3 id="Function_Comments">Комментарии функции</h3>
 
 <p>Declaration comments describe use of the function (when it is
 non-obvious); comments at the definition of a function describe
