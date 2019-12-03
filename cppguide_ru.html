@@ -200,7 +200,7 @@
 <h3 id="Forward_Declarations">Предварительное объявление</h3>
 
 <p>По возможности, не используйте предварительное объявление.
- Вместо этого <code>#include</code>/подключайте необходимые заголовочные файлы.</p>
+ Вместо этого делайте <code>#include</code> необходимых заголовочных файлов.</p>
 
 <p class="definition"></p>
 <p>"Предварительное объявление" - декларация класса, функции, шаблона без
@@ -222,21 +222,18 @@
   <li>Предварительное объявление может скрывать от перекомпиляции
  зависимости, которые изменились.</li>
 
-  <li>A forward declaration may be broken by subsequent
-  changes to the library. Forward declarations of functions
-  and templates can prevent the header owners from making
-  otherwise-compatible changes to their APIs, such as
-  widening a parameter type, adding a template parameter
-  with a default value, or migrating to a new namespace.</li>
+  <li>При изменении API, предварительное объявление может стать некорректным.
+ Как результат, предварительное объявление функция или шаблонов может блокировать
+ изменение API: замена типов параметров на похожий, добавление параметров
+ по умолчанию в шаблон, перенос в новое пространство имён.</li>
 
-  <li>Forward declaring symbols from namespace
-  <code>std::</code> yields undefined behavior.</li>
+  <li>Предварительное объявление символов из <code>std::</code> может вызвать
+ неопределённое поведение.</li>
 
-  <li>It can be difficult to determine whether a forward
-  declaration or a full <code>#include</code> is needed.
-  Replacing an <code>#include</code> with a forward
-  declaration can silently change the meaning of
-  code:
+  <li>Иногда тяжело понять, что лучше подходит: предварительное объявление или
+ обычный <code>#include</code>.
+Однако, замена <code>#include</code> на предварительное объявление может (без предупреждений) поменять
+ смысл кода:
       <pre>      // b.h:
       struct B {};
       struct D : B {};
@@ -247,9 +244,9 @@
       void f(void*);
       void test(D* x) { f(x); }  // calls f(B*)
       </pre>
-  If the <code>#include</code> was replaced with forward
-  decls for <code>B</code> and <code>D</code>,
-  <code>test()</code> would call <code>f(void*)</code>.
+  Если в коде заменить <code>#include</code> на предварительное объявление
+ для структур <code>B</code> и <code>D</code>, то 
+  <code>test()</code> будет вызывать <code>f(void*)</code>.
   </li>
 
   <li>Forward declaring multiple symbols from a header
@@ -4381,68 +4378,53 @@ class GargantuanTableIterator {
 
 <h3 id="Function_Comments">Комментарии функции</h3>
 
-<p>Declaration comments describe use of the function (when it is
-non-obvious); comments at the definition of a function describe
-operation.</p>
+<p>Комментарии к объявлению функции должны описывать использование фукнции (кроме
+ самых очевидных случаев); Комментарии к определению функции описывают реализацию.</p>
 
-<h4>Function Declarations</h4>
+<h4>Объявление функции</h4>
 
-<p>Almost every function declaration should have comments immediately
-preceding it that describe what the function does and how to use
-it. These comments may be omitted only if the function is simple and
-obvious (e.g. simple accessors for obvious properties of the
-class).  These comments should open with descriptive verbs in the
-indicative mood ("Opens the file") rather than verbs in the imperative
-("Open the file"). The comment describes the function; it does not
-tell the function what to do. In general, these comments do not
-describe how the function performs its task. Instead, that should be
-left to comments in the function definition.</p>
+<p>Объявление каждой функции должно иметь комментарий (прямо перед объявлением), что
+ функция делает и как ей пользоваться. Комментарий можно опустить, только если 
+ функция простая и использование очевидно (например, функции вычитывания значений 
+ переменных). Старайтесь начинать комментарии в изъявительном наклонении ("Открывает файл").
+ Использование повелительного наклонение ("Открыть файл") - не рекомендуется. Комментарий
+ описывает суть функции, а не то, как она это делает.</p>
 
-<p>Types of things to mention in comments at the function
-declaration:</p>
+<p>В комментарии к объявлению функции обратите внимание на следующее:</p>
 
 <ul>
-  <li>What the inputs and outputs are.</li>
+  <li>Что подаётся на вход функции, что возвращается в результате.</li>
 
-  <li>For class member functions: whether the object
-  remembers reference arguments beyond the duration of
-  the method call, and whether it will free them or
-  not.</li>
+  <li>Для функции-члена класса: сохраняет ли экземпляр ссылки на аргументы,
+ нужно ли освобождать память.</li>
 
-  <li>If the function allocates memory that the caller
-  must free.</li>
+  <li>Выделит ли функция память, которую должен удалить вызывающий код.</li>
 
-  <li>Whether any of the arguments can be a null
-  pointer.</li>
+  <li>Могут ли быть аргументы nullptr.</li>
 
-  <li>If there are any performance implications of how a
-  function is used.</li>
+  <li>Сложность (алгоритмическая) функции.</li>
 
-  <li>If the function is re-entrant. What are its
-  synchronization assumptions?</li>
+  <li>Допустим ли одновременный вызов из разных потоков. Что с синхронизацией?</li>
  </ul>
 
-<p>Here is an example:</p>
+<p>Пример:</p>
 
-<pre>// Returns an iterator for this table.  It is the client's
-// responsibility to delete the iterator when it is done with it,
-// and it must not use the iterator once the GargantuanTable object
-// on which the iterator was created has been deleted.
+<pre>// Возвращает итератор по таблице. Клиент должен удалить 
+// итератор после использования. Нельзя использовать итератор
+// если соответствующий объект GargantuanTable был удалён.
 //
-// The iterator is initially positioned at the beginning of the table.
+// Итератор изначально указывает на начало таблицы.
 //
-// This method is equivalent to:
+// Этот метод эквивалентен следующему:
 //    Iterator* iter = table-&gt;NewIterator();
 //    iter-&gt;Seek("");
 //    return iter;
-// If you are going to immediately seek to another place in the
-// returned iterator, it will be faster to use NewIterator()
-// and avoid the extra seek.
+// Если вы собираетесь сразу же делать новую операцию поиска,
+// быстрее будет вызвать NewIterator() и избежать лишней операции поиска.
 Iterator* GetIterator() const;
 </pre>
 
-<p>However, do not be unnecessarily verbose or state the
-completely obvious.</p>
+<p>Однако, не стоит разжёвывать очевидные вещи.</p>
 
 <p>When documenting function overrides, focus on the
 specifics of the override itself, rather than repeating
