@@ -4426,67 +4426,54 @@ Iterator* GetIterator() const;
 
 <p>Однако, не стоит разжёвывать очевидные вещи.</p>
 
-<p>When documenting function overrides, focus on the
-specifics of the override itself, rather than repeating
-the comment from the overridden function.  In many of these
-cases, the override needs no additional documentation and
-thus no comment is required.</p>
+<p>Когда документируйте перегружаемые функции, делайте основной упор
+на изменениях по сравнению с исходной функцией. А если изменений нет
+(что бывает часто), то дополнительные комментарии вообще не нужны.</p>
 
-<p>When commenting constructors and destructors, remember
-that the person reading your code knows what constructors
-and destructors are for, so comments that just say
-something like "destroys this object" are not useful.
-Document what constructors do with their arguments (for
-example, if they take ownership of pointers), and what
-cleanup the destructor does. If this is trivial, just
-skip the comment. It is quite common for destructors not
-to have a header comment.</p>
+<p>Комментируя конструкторы и деструкторы, учитывайте, что
+ читатель кода знает их назначение. Поэтому комментарий
+типа "разрушает этот объект" - бестолковый. Можете описывать,
+что конструктор делает с аргументами (например, изменение владения на указатели)
+или какие именно операции по очистке делает деструктор.
+Если всё и так понятно - ничего не комментируйте. Вообще,
+обычно деструкторы не имеют комментариев (при объявлении).</p>
 
-<h4>Function Definitions</h4>
+<h4>Определение функций</h4>
 
-<p>If there is anything tricky about how a function does
-its job, the function definition should have an
-explanatory comment. For example, in the definition
-comment you might describe any coding tricks you use,
-give an overview of the steps you go through, or explain
-why you chose to implement the function in the way you
-did rather than using a viable alternative. For instance,
-you might mention why it must acquire a lock for the
-first half of the function but why it is not needed for
-the second half.</p>
+<p>Если есть какие-то хитрости в реализации функции, то можно
+к определению добавить объяснительный комментарий. В нём можно
+описать трюки с кодом, дать обзор всех этапов вычислений,
+объяснить выбор той или иной реализации (особенно если есть
+более лучшие альтернативы). Можете описать принципы синхронизации
+кусков кода (здесь блокируем, а здесь рыбу заворачиваем).</p>
 
-<p>Note you should <em>not</em> just repeat the comments
-given with the function declaration, in the
-<code>.h</code> file or wherever. It's okay to
-recapitulate briefly what the function does, but the
-focus of the comments should be on how it does it.</p>
+<p>Отметим что вы <em>не должны</em> повторять комментарий из
+объявления функции (из <code>.h</code> файла или т.п.).
+Можно кратко описать, что функция делает, однако основной упор
+должен быть <em>как</em> она это делает.</p>
 
-<h3 id="Variable_Comments">Variable Comments</h3>
+<h3 id="Variable_Comments">Комментарии к переменным</h3>
 
-<p>In general the actual name of the variable should be
-descriptive enough to give a good idea of what the variable
-is used for. In certain cases, more comments are required.</p>
+<p>По хорошему, имя переменной должно сразу говорить что это и зачем.
+В некоторых случаях требуются дополнительные комментарии.</p>
 
-<h4>Class Data Members</h4>
+<h4>Член данных класса</h4>
 
-<p>The purpose of each class data member (also called an instance
-variable or member variable) must be clear. If there are any
-invariants (special values, relationships between members, lifetime
-requirements) not clearly expressed by the type and name, they must be
-commented. However, if the type and name suffice (<code>int
-num_events_;</code>), no comment is needed.</p>
+<p>Назначение каждого члена класса должно быть очевидно. Если есть
+неочевидные тонкости (специальные значения, завязки с другими членами, ограничения
+по времени жизни) - всё это нужно комментировать. Однако, если типа и имени
+достаточно - комментарии добавлять не нужно.</p>
 
-<p>In particular, add comments to describe the existence and meaning
-of sentinel values, such as nullptr or -1, when they are not
-obvious. For example:</p>
+<p>С другой стороны, полезными будут описания особых (и неочевидных)
+значений (nullptr или -1). Например:</p>
 
 <pre>private:
- // Used to bounds-check table accesses. -1 means
- // that we don't yet know how many entries the table has.
+ // Используется для проверки выхода за границы
+ // -1 - показывает, что мы не значем сколько записей в таблице
  int num_total_entries_;
 </pre>
 
-<h4>Global Variables</h4>
+<h4>Глобальные переменные</h4>
 
 <p>All global variables should have a comment describing what they
 are, what they are used for, and (if unclear) why it needs to be
