@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Руководство Google по стилю в C++</title>
-<link rel="stylesheet" href="include/styleguide.css">
+<link rel="stylesheet" href="include/styleguide_ru.css">
 <script src="include/styleguide_ru.js"></script>
 <link rel="shortcut icon" href="https://www.google.com/favicon.ico">
 </head>
@@ -4627,60 +4627,43 @@ if (iter != v.end()) {
 
 <h2 id="Formatting">Форматирование</h2>
 
-<p>Coding style and formatting are pretty arbitrary, but a
-
-project is much easier to follow
-if everyone uses the same style. Individuals may not agree with every
-aspect of the formatting rules, and some of the rules may take
-some getting used to, but it is important that all
-
-project contributors follow the
-style rules so that
-they can all read and understand
-everyone's code easily.</p>
-
-
+<p>Стиль кодирования и форматирования являются вещью произвольной, однако проект
+ намного легче управляется, если все следуют одному стилю. Хотя кто-то может 
+ не соглашаться со всеми правилами (или пользоваться тем, чем привыкли), очень
+ важно чтобы все следовали единым правилам, чтобы легко читать и понимать чужой код.</p>
 
 <div>
-<p>To help you format code correctly, we've created a
+<p>Для корректного форматирования мы создали 
 <a href="https://raw.githubusercontent.com/google/styleguide/gh-pages/google-c-style.el">
-settings file for emacs</a>.</p>
+файл настроек для emacs</a>.</p>
 </div>
 
-<h3 id="Line_Length">Line Length</h3>
+<h3 id="Line_Length">Длина строк</h3>
 
-<p>Each line of text in your code should be at most 80
-characters long.</p>
-
-
+<p>Желательно ограничивать длину строк кода 80-ю символами.</p>
 
 <div>
-<p>We recognize that this rule is
-controversial, but so much existing code already adheres
-to it, and we feel that consistency is important.</p>
+<p>Это правило немного спорное, однако масса уже существющего кода 
+придерживается этого принципа, и мы также поддерживаем его.</p>
 </div>
 
 <p class="pros"></p>
-<p>Those who favor  this rule
-argue that it is rude to force them to resize
-their windows and there is no need for anything longer.
-Some folks are used to having several code windows
-side-by-side, and thus don't have room to widen their
-windows in any case. People set up their work environment
-assuming a particular maximum window width, and 80
-columns has been the traditional standard. Why change
-it?</p>
+<p>Приверженцы правила утверждают, что строки длиннее не нужны, 
+а постоянно подгонять размеры окон утомительно. Кроме того, некоторые 
+размещают окна с кодом рядом друг с другом и не могут 
+произвольно увеличивать ширину окон. При этом ширина в 80 символов 
+- исторический стандарт, зачем его менять?.
+</p>
 
 <p class="cons"></p>
-<p>Proponents of change argue that a wider line can make
-code more readable. The 80-column limit is an hidebound
-throwback to 1960s mainframes;  modern equipment has wide screens that
-can easily show longer lines.</p>
+<p>Другая сторона утверждает, что длинные строки могут улучшить читабельность кода.
+80 символов - пережиток мейнфреймов 1960-х. Современные экраны вполне могут показывать 
+более длинные строки.</p>
 
 <p class="decision"></p>
-<p> 80 characters is the maximum.</p>
+<p>80 символов - максимум.</p>
 
-<p>A line may exceed 80 characters if it is</p>
+<p>Строка можут превышать предел в 80 символов если:</p>
 
 <ul>
   <li>a comment line which is not feasible to split without harming
