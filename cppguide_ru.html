@@ -4666,76 +4666,60 @@ if (iter != v.end()) {
 <p>Строка можут превышать предел в 80 символов если:</p>
 
 <ul>
-  <li>a comment line which is not feasible to split without harming
-  readability, ease of cut and paste or auto-linking -- e.g. if a line
-  contains an example command or a literal URL longer than 80 characters.</li>
+  <li>комментарий при разделении потеряет в понятности, легкости копирования. Например,
+  комментарий с примером команды или URL-ссылкой, длиннее 80 символов.</li>
 
-  <li>a raw-string literal with content that exceeds 80 characters.  Except for
-  test code, such literals should appear near the top of a file.</li>
+  <li>строковый литерал/имя, длиной более 80 символов. Исключением является тестовый код, который желдательно размещать в начале файла.</li>
 
-  <li>an include statement.</li>
+  <li>выражения с include.</li>
 
-  <li>a <a href="#The__define_Guard">header guard</a></li>
+  <li><a href="#The__define_Guard">Блокировка от повторного включения</a></li>
 
-  <li>a using-declaration</li>
+  <li>using дакларации</li>
 </ul>
 
-<h3 id="Non-ASCII_Characters">Non-ASCII Characters</h3>
+<h3 id="Non-ASCII_Characters">Не-ASCII символы</h3>
 
-<p>Non-ASCII characters should be rare, and must use UTF-8
-formatting.</p>
+<p>Не-ASCII символы следует использоваться как можно реже, кодировка должна быть UTF-8.</p>
 
-<p>You shouldn't hard-code user-facing text in source,
-even English, so use of non-ASCII characters should be
-rare. However, in certain cases it is appropriate to
-include such words in your code. For example, if your
-code parses data files from foreign sources, it may be
-appropriate to hard-code the non-ASCII string(s) used in
-those data files as delimiters. More commonly, unittest
-code (which does not  need to be localized) might
-contain non-ASCII strings. In such cases, you should use
-UTF-8, since that is  an encoding
-understood by most tools able to handle more than just
-ASCII.</p>
+<p>Вы не должны хардкодить строки для показа пользователю (даже английские),
+поэтому Не-ASCII символы должны быть редкостью. Однако, в ряде случаев 
+допустимо включать такие слова в код. Например, если код парсит файлы данных (с неанглийской  кодировкой),
+возможно включать в код национальные слова-разделители.
+В более общем случае, код юнит-тестов может содержать национальные строки.
+В этих случаях следует использовать кодировку UTF-8, т.к. она понятна 
+большинству утилит (которые понимают не только ASCII).</p>
 
-<p>Hex encoding is also OK, and encouraged where it
-enhances readability &#8212; for example,
-<code>"\xEF\xBB\xBF"</code>, or, even more simply,
-<code>u8"\uFEFF"</code>, is the Unicode zero-width
-no-break space character, which would be invisible if
-included in the source as straight UTF-8.</p>
+<p>Кодировка hex также допустима, особенно если она улучшает читабельность. Например,
+<code>"\xEF\xBB\xBF"</code> или 
+<code>u8"\uFEFF"</code> - неразрывный пробел нулевой длины в Юникоде,
+ и который не должен отображаться в правильном UTF-8 тексте.</p>
 
-<p>Use the <code>u8</code> prefix
-to guarantee that a string literal containing
-<code>\uXXXX</code> escape sequences is encoded as UTF-8.
-Do not use it for strings containing non-ASCII characters
-encoded as UTF-8, because that will produce incorrect
-output if the compiler does not interpret the source file
-as UTF-8. </p>
+<p>Используйте префикс <code>u8</code> чтобы литералы вида
+<code>\uXXXX</code> кодировались в UTF-8.
+Не используйте его для строк, содержащих не-ASCII символы 
+ уже закодированные в UTF-8 - можете получить корявый 
+ текст если компилятор не распознает исходный код как UTF-8. </p>
 
-<p>You shouldn't use the C++11 <code>char16_t</code> and
-<code>char32_t</code> character types, since they're for
-non-UTF-8 text. For similar reasons you also shouldn't
-use <code>wchar_t</code> (unless you're writing code that
-interacts with the Windows API, which uses
-<code>wchar_t</code> extensively).</p>
+<p>Избегайте использования символов C++11 <code>char16_t</code> и
+<code>char32_t</code> т.к. они для не-UTF-8 строк. По тем же причинам
+ не используйте <code>wchar_t</code> (кроме случаев работы с Windows API,
+ использующий <code>wchar_t</code>).</p>
 
-<h3 id="Spaces_vs._Tabs">Spaces vs. Tabs</h3>
+<h3 id="Spaces_vs._Tabs">Пробелы против Табуляции</h3>
 
-<p>Use only spaces, and indent 2 spaces at a time.</p>
+<p>Используйте только пробелы для отступов. 2 пробела на один отступ.</p>
 
-<p>We use spaces for indentation. Do not use tabs in your
-code. You should set your editor to emit spaces when you
-hit the tab key.</p>
+<p>Мы используем пробелы для отступов. Не используйте табуляцию в своём
+ коде - настройте свой редактор на вставку пробелов при нажатии клавиши Tab.</p>
 
-<h3 id="Function_Declarations_and_Definitions">Function Declarations and Definitions</h3>
+<h3 id="Function_Declarations_and_Definitions">Объявления и определения функций</h3>
 
-<p>Return type on the same line as function name, parameters
-on the same line if they fit. Wrap parameter lists which do
-not fit on a single line as you would wrap arguments in a
-<a href="#Function_Calls">function call</a>.</p>
+<p>Старайтесь размещать тип возвращаемого значения, имя функции и её параметры 
+на одной строке (если всё умещается). Разбейте слишком длинный список параметров 
+на строки также как аргументы в <a href="#Function_Calls">вызове функции</a>.</p>
 
-<p>Functions look like this:</p>
+<p>Пример правильного оформления функции:</p>
 
 
 <pre>ReturnType ClassName::FunctionName(Type par_name1, Type par_name2) {
@@ -4744,7 +4728,7 @@ not fit on a single line as you would wrap arguments in a
 }
 </pre>
 
-<p>If you have too much text to fit on one line:</p>
+<p>В случае если одной строки мало:</p>
 
 <pre>ReturnType ClassName::ReallyLongFunctionName(Type par_name1, Type par_name2,
                                              Type par_name3) {
@@ -4753,57 +4737,50 @@ not fit on a single line as you would wrap arguments in a
 }
 </pre>
 
-<p>or if you cannot fit even the first parameter:</p>
+<p>или если первый параметр также не помещается:</p>
 
 <pre>ReturnType LongClassName::ReallyReallyReallyLongFunctionName(
-    Type par_name1,  // 4 space indent
+    Type par_name1,  // Отступ 4 пробела
     Type par_name2,
     Type par_name3) {
-  DoSomething();  // 2 space indent
+  DoSomething();  // Отступ 2 пробела
   ...
 }
 </pre>
 
-<p>Some points to note:</p>
+<p>Несколько замечаний:</p>
 
 <ul>
-  <li>Choose good parameter names.</li>
+  <li>Выбирайте хорошие имена для параметров.</li>
 
-  <li>A parameter name may be omitted only if the parameter is not used in the
-  function's definition.</li>
+  <li>Имя параметра можно опустить, если он не используется в определении функции.</li>
 
-  <li>If you cannot fit the return type and the function
-  name on a single line, break between them.</li>
+  <li>Если тип возвращаемого значения и имя функции не помещаются в одной строке, 
+    тип оставьте на одной строке, имя функции перенесите на следующую. В этом случае
+    не делайте дополнительный отступ перед именем функции.</li>
 
-  <li>If you break after the return type of a function
-  declaration or definition, do not indent.</li>
+  <li>Открывающая круглая скобка всегда находится на одной строке с именем функции.</li>
 
-  <li>The open parenthesis is always on the same line as
-  the function name.</li>
+  <li>Не вставляйте пробелы между именем функции и открывающей круглой скобкой.</li>
 
-  <li>There is never a space between the function name
-  and the open parenthesis.</li>
+  <li>Не вставляйте пробелы между круглыми скобками и параметрами.</li>
 
-  <li>There is never a space between the parentheses and
-  the parameters.</li>
+  <li>Открывающая фигурная скобка всегда в конце последней строки определения.
+     Не переносите её на новую строку.</li>
 
-  <li>The open curly brace is always on the end of the last line of the function
-  declaration, not the start of the next line.</li>
+  <li>Закрывающая фигурная скобка располагается либо на отдельной строке,
+     либо на той же строке, где и открывающая скобка.</li>
 
-  <li>The close curly brace is either on the last line by
-  itself or on the same line as the open curly brace.</li>
+  <li>Между закрывающей круглой скобкой и открывающей фигурной скобкой должен быть пробел.</li>
 
-  <li>There should be a space between the close
-  parenthesis and the open curly brace.</li>
+  <li>Старайтесь выравнивать все параметры.</li>
 
-  <li>All parameters should be aligned if possible.</li>
+  <li>Стандартный отступ - 2 пробела.</li>
 
-  <li>Default indentation is 2 spaces.</li>
-
-  <li>Wrapped parameters have a 4 space indent.</li>
+  <li>При переносе параметров на другую строу используйте отступ 4 пробела.</li>
 </ul>
 
-<p>Unused parameters that are obvious from context may be omitted:</p>
+<p>Можно опустить имя неиспользуемых параметров, если это очевидно из контекста:</p>
 
 <pre>class Foo {
  public:
@@ -4812,8 +4789,8 @@ not fit on a single line as you would wrap arguments in a
 };
 </pre>
 
-<p>Unused parameters that might not be obvious should comment out the variable
-name in the function definition:</p>
+<p>Неиспользуемый параметры с неочевидным контекстом следует закомментировать
+ в определении функции:</p>
 
 <pre>class Shape {
  public:
@@ -4828,28 +4805,26 @@ class Circle : public Shape {
 void Circle::Rotate(double /*radians*/) {}
 </pre>
 
-<pre class="badcode">// Bad - if someone wants to implement later, it's not clear what the
-// variable means.
+<pre class="badcode">// Плохой стиль - если кто-то потом захочет изменить реализацию функции,
+// назначение параметра не ясно.
 void Circle::Rotate(double) {}
 </pre>
 
-<p>Attributes, and macros that expand to attributes, appear at the very
-beginning of the function declaration or definition, before the
-return type:</p>
+<p>Атрибуты и макросы старайтесь использовать в начале обьявления или определения функции,
+ до типа возвращаемого значения:</p>
 <pre>ABSL_MUST_USE_RESULT bool IsOk();
 </pre>
 
-<h3 id="Formatting_Lambda_Expressions">Lambda Expressions</h3>
+<h3 id="Formatting_Lambda_Expressions">Лямбды</h3>
 
-<p>Format parameters and bodies as for any other function, and capture
-lists like other comma-separated lists.</p>
+<p>Форматируйте параметры и тело выражения аналогично обычной функции,
+ список захватываемых переменных - как обычный список.</p>
 
-<p>For by-reference captures, do not leave a space between the
-ampersand (&amp;) and the variable name.</p>
+<p>Для захвата переменных по ссылке не ставьте пробел между амперсандом (&amp;) и именем переменной.</p>
 <pre>int x = 0;
 auto x_plus_n = [&amp;x](int n) -&gt; int { return x + n; }
 </pre>
-<p>Short lambdas may be written inline as function arguments.</p>
+<p>Короткие лямбды можно использовать напрямую как аргумент функции.</p>
 <pre>std::set&lt;int&gt; blacklist = {7, 8, 9};
 std::vector&lt;int&gt; digits = {3, 9, 1, 8, 4, 7, 1};
 digits.erase(std::remove_if(digits.begin(), digits.end(), [&amp;blacklist](int i) {
@@ -4858,17 +4833,14 @@ digits.erase(std::remove_if(digits.begin(), digits.end(), [&amp;blacklist](int i
              digits.end());
 </pre>
 
-<h3 id="Floating_Literals">Floating-point Literals</h3>
+<h3 id="Floating_Literals">Числа с плавающей запятой</h3>
 
-<p>Floating-point literals should always have a radix point, with digits on both
-sides, even if they use exponential notation. Readability is improved if all
-floating-point literals take this familiar form, as this helps ensure that they
-are not mistaken for integer literals, and that the
-<code>E</code>/<code>e</code> of the exponential notation is not mistaken for a
-hexadecimal digit. It is fine to initialize a floating-point variable with an
-integer literal (assuming the variable type can exactly represent that integer),
-but note that a number in exponential notation is never an integer literal.
-</p>
+<p>Числа с плавающей запятой всегда должны быть с десятичной точкой и 
+ числами по обе стороны от неё (даже в случае экспоненциальной нотации). Такой подход 
+ улучшить читабельность: все числа с плавающей запятой будут в одинаковом формате,
+ не спутаешь с целым числом, и символы <code>E</code>/<code>e</code> экспоненциальной
+ нотации не примешь за шестнадцатеричные цифры. Помните, что число в экспоненциальной
+ нотации не является целым числом.</p>
 
 <pre class="badcode">float f = 1.f;
 long double ld = -.5L;
@@ -4882,30 +4854,26 @@ double d = 1248.0e6;
 </pre>
 
 
-<h3 id="Function_Calls">Function Calls</h3>
+<h3 id="Function_Calls">Вызорв функции</h3>
 
-<p>Either write the call all on a single line, wrap the
-arguments at the parenthesis, or start the arguments on a new
-line indented by four spaces and continue at that 4 space
-indent. In the absence of other considerations, use the
-minimum number of lines, including placing multiple arguments
-on each line where appropriate.</p>
+<p>Следует либо писать весь вызов функции одной строкой,
+ либо размещать аргументы на новой строке с отступом в 4 пробела.
+ Старайтесь минимизировать количество строк, размещайте по несколько
+ аргументов на каждой строке.</p>
 
-<p>Function calls have the following format:</p>
+<p>Формат вызова функции:</p>
 <pre>bool result = DoSomething(argument1, argument2, argument3);
 </pre>
 
-<p>If the arguments do not all fit on one line, they
-should be broken up onto multiple lines, with each
-subsequent line aligned with the first argument. Do not
-add spaces after the open paren or before the close
-paren:</p>
+<p>Если аргументы не помещаются в одной строке, то разделяем 
+ их на несколько строк и каждая следующая строка выравнивается 
+ на первый аргумент. Не добавляйте пробелы между круглыми скобками и аргументами:</p>
 <pre>bool result = DoSomething(averyveryveryverylongargument1,
                           argument2, argument3);
 </pre>
 
-<p>Arguments may optionally all be placed on subsequent
-lines with a four space indent:</p>
+<p>Допускается размещать аргументы на нескольких строках 
+ с отступом в 4 пробела:</p>
 <pre>if (...) {
   ...
   ...
@@ -4917,14 +4885,13 @@ lines with a four space indent:</p>
   }
 </pre>
 
-<p>Put multiple arguments on a single line to reduce the
-number of lines necessary for calling a function unless
-there is a specific readability problem. Some find that
-formatting with strictly one argument on each line is
-more readable and simplifies editing of the arguments.
-However, we prioritize for the reader over the ease of
-editing arguments, and most readability problems are
-better addressed with the following techniques.</p>
+<p>Старайтесь размещать по несколько аргументов в строке,
+ уменьшая количество строк на вызов функции 
+ (если это не ухудшает читабельность).
+ Некоторые считают, что форматирование строго по одному аргументу
+ в строке более читабельно и облегчает редактирование аргументов.
+ Однако, мы ориентируемся прежде всего на читателей кода (не редактирование), поэтому 
+ предлагаем ряд подходов для улучшения читабельность.</p>
 
 <p>If having multiple arguments in a single line decreases
 readability due to the complexity or confusing nature of the
