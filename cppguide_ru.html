@@ -4854,7 +4854,7 @@ double d = 1248.0e6;
 </pre>
 
 
-<h3 id="Function_Calls">Вызорв функции</h3>
+<h3 id="Function_Calls">Вызов функции</h3>
 
 <p>Следует либо писать весь вызов функции одной строкой,
  либо размещать аргументы на новой строке с отступом в 4 пробела.
@@ -4893,50 +4893,45 @@ double d = 1248.0e6;
  Однако, мы ориентируемся прежде всего на читателей кода (не редактирование), поэтому 
  предлагаем ряд подходов для улучшения читабельность.</p>
 
-<p>If having multiple arguments in a single line decreases
-readability due to the complexity or confusing nature of the
-expressions that make up some arguments, try creating
-variables that capture those arguments in a descriptive name:</p>
+<p>Если несколько аргементов в одной строке ухудшают читабельность
+ (из-за сложности или запутанности выражений), попробуйте создать 
+ для аргументов "говорящие" перемынные:</p>
 <pre>int my_heuristic = scores[x] * y + bases[x];
 bool result = DoSomething(my_heuristic, x, y, z);
 </pre>
 
-<p>Or put the confusing argument on its own line with
-an explanatory comment:</p>
-<pre>bool result = DoSomething(scores[x] * y + bases[x],  // Score heuristic.
+<p>Или разместите сложный аргумент на отдельной строке и добавьте поясняющий комментарий:</p>
+<pre>bool result = DoSomething(scores[x] * y + bases[x],  // Небольшая эвристика
                           x, y, z);
 </pre>
 
-<p>If there is still a case where one argument is
-significantly more readable on its own line, then put it on
-its own line. The decision should be specific to the argument
-which is made more readable rather than a general policy.</p>
+<p>Если в вызове функции ещё есть аргументы, которые желательно
+ разместить на отдельной строке - размещайте. Решение должно
+ основываться улучшении читабельность кода.</p>
 
-<p>Sometimes arguments form a structure that is important
-for readability. In those cases, feel free to format the
-arguments according to that structure:</p>
-<pre>// Transform the widget by a 3x3 matrix.
+<p>Иногда аргументы формируют структуру. В этом случае форматируйте
+ аргументы согласно требуемой структуре:</p>
+<pre>// Преобразование с помощью матрицы 3x3
 my_widget.Transform(x1, x2, x3,
                     y1, y2, y3,
                     z1, z2, z3);
 </pre>
 
-<h3 id="Braced_Initializer_List_Format">Braced Initializer List Format</h3>
+<h3 id="Braced_Initializer_List_Format">Форматирование списка инициализации</h3>
 
-<p>Format a <a href="#Braced_Initializer_List">braced initializer list</a>
-exactly like you would format a function call in its place.</p>
+<p>Форматируйте <a href="#Braced_Initializer_List">список инициализации</a>
+аналогично вызову функции.</p>
 
-<p>If the braced list follows a name (e.g. a type or
-variable name), format as if the <code>{}</code> were the
-parentheses of a function call with that name. If there
-is no name, assume a zero-length name.</p>
+<p>Если список в скобках следует за именем (например, имя типа или переменной), 
+ форматируйте <code>{}</code> как будто это вызов функции с этим именем. Даже если имени нет,
+ считайте что оно есть, только пустое.</p>
 
-<pre>// Examples of braced init list on a single line.
+<pre>// Пример списка инициализации на одной строке.
 return {foo, bar};
 functioncall({foo, bar});
 std::pair&lt;int, int&gt; p{foo, bar};
 
-// When you have to wrap.
+// Когда хочется разделить на строки.
 SomeFunction(
     {"assume a zero-length name before {"},
     some_other_function_parameter);
@@ -4958,99 +4953,89 @@ MyType m = {  // Here, you could also break before {.
      interiorwrappinglist2}};
 </pre>
 
-<h3 id="Conditionals">Conditionals</h3>
+<h3 id="Conditionals">Условия</h3>
 
-<p>Prefer no spaces inside parentheses. The <code>if</code>
-and <code>else</code> keywords belong on separate lines.</p>
+<p>Старайтесь на вставлять пробелы с внутренней стороны скобок.
+ Размещайте <code>if</code> и <code>else</code> на разных строках.</p>
 
-<p>There are two acceptable formats for a basic
-conditional statement. One includes spaces between the
-parentheses and the condition, and one does not.</p>
+<p>Есть два подхода к форматированию условий.
+ Один допускает пробелы между скобками и условием,
+ другой - нет.</p>
 
-<p>The most common form is without spaces. Either is
-fine, but <em>be consistent</em>. If you are modifying a
-file, use the format that is already present. If you are
-writing new code, use the format that the other files in
-that directory or project use. If in doubt and you have
-no personal preference, do not add the spaces.</p>
+<p>Предпочтительный вариант без пробелов. Другой вариант
+также допустим, но будьте <em>последовательны</em>.
+ Если вы модифицируйте существующий код - используйте формат,
+ который уже есть в коде. Если вы пишете новый код - используйте
+ формат как у файлов, находящихся в той же директории или 
+ используйте формат проекта. Если не уверены - не добавляйте пробелы.</p>
 
-<pre>if (condition) {  // no spaces inside parentheses
-  ...  // 2 space indent.
-} else if (...) {  // The else goes on the same line as the closing brace.
+<pre>if (condition) {  // без пробелов внутри скобок
+  ...  // отступ 2 пробела
+} else if (...) {  // 'else' находится на строке с закрывающей скобкой
   ...
 } else {
   ...
 }
 </pre>
 
-<p>If you prefer you may add spaces inside the
-parentheses:</p>
+<p>Если используется формат с пробелами:</p>
 
-<pre>if ( condition ) {  // spaces inside parentheses - rare
-  ...  // 2 space indent.
-} else {  // The else goes on the same line as the closing brace.
+<pre>if ( condition ) {  // пробелы внутри скобок
+  ...  // отступ 2 пробела
+} else {  // 'else' находится на строке с закрывающей скобкой
   ...
 }
 </pre>
 
-<p>Note that in all cases you must have a space between
-the <code>if</code> and the open parenthesis. You must
-also have a space between the close parenthesis and the
-curly brace, if you're using one.</p>
+<p>Заметьте, что в любом случае должен быть пробел между
+ <code>if</code> и открывающей скобкой. Также нужен пробел
+ между закрывающей скобкой и фигурной скобкой (если она есть).</p>
 
-<pre class="badcode">if(condition) {   // Bad - space missing after IF.
-if (condition){   // Bad - space missing before {.
-if(condition){    // Doubly bad.
+<pre class="badcode">if(condition) {   // Плохо - нет пробела после 'if'
+if (condition){   // Плохо - нет пробела перед {
+if(condition){    // Дважды плохо
 </pre>
 
-<pre>if (condition) {  // Good - proper space after IF and before {.
+<pre>if (condition) {  // Хороший код - правильное количество пробелов после 'if' и перед {
 </pre>
 
-<p>Short conditional statements may be written on one
-line if this enhances readability. You may use this only
-when the line is brief and the statement does not use the
-<code>else</code> clause.</p>
+<p>Короткие условия можно записать в одну строку, если это улучшит читабельность.
+ Используйте этот вариант только если строка короткая и условие не содержит секцию <code>else</code>.</p>
 
 <pre>if (x == kFoo) return new Foo();
 if (x == kBar) return new Bar();
 </pre>
 
-<p>This is not allowed when the if statement has an
-<code>else</code>:</p>
+<p>Не используйте сокращённый вариант, если есть сецция <code>else</code>:</p>
 
-<pre class="badcode">// Not allowed - IF statement on one line when there is an ELSE clause
+<pre class="badcode">// Плохо - условие в одну строку, хотя есть 'else'
 if (x) DoThis();
 else DoThat();
 </pre>
 
-<p>In general, curly braces are not required for
-single-line statements, but they are allowed if you like
-them; conditional or loop statements with complex
-conditions or statements may be more readable with curly
-braces. Some
-projects require that an
-<code>if</code> must always have an accompanying
-brace.</p>
+<p>Обычно фигурные скобки не требуются для короткого условия,
+ однако они допустимы. Также сложные условия или код лучше
+ читаются при наличии фигурных скобок. Часто требуют, чтобы 
+ любой <code>if</code> был со скобками.</p>
 
 <pre>if (condition)
-  DoSomething();  // 2 space indent.
+  DoSomething();  // отступ 2 пробела
 
 if (condition) {
-  DoSomething();  // 2 space indent.
+  DoSomething();  // отступ 2 пробела
 }
 </pre>
 
-<p>However, if one part of an
-<code>if</code>-<code>else</code> statement uses curly
-braces, the other part must too:</p>
+<p>И если одна часть условия использует фигурные скобки,
+ вторую также оформляйте с ними:</p>
 
-<pre class="badcode">// Not allowed - curly on IF but not ELSE
+<pre class="badcode">// Плохо - фигурные скобки у 'if', у 'else' - нет
 if (condition) {
   foo;
 } else
   bar;
 
-// Not allowed - curly on ELSE but not IF
+// Плохо - фигурные скобки у 'else', у 'if' - нет
 if (condition)
   foo;
 else {
@@ -5058,8 +5043,7 @@ else {
 }
 </pre>
 
-<pre>// Curly braces around both IF and ELSE required because
-// one of the clauses used braces.
+<pre>// Хорошо - фигурные скобки и у 'if' и у 'else'
 if (condition) {
   foo;
 } else {
@@ -5067,17 +5051,16 @@ if (condition) {
 }
 </pre>
 
-<h3 id="Loops_and_Switch_Statements">Loops and Switch Statements</h3>
+<h3 id="Loops_and_Switch_Statements">Циклы и switch-и</h3>
 
-<p>Switch statements may use braces for blocks. Annotate
-non-trivial fall-through between cases.
-Braces are optional for single-statement loops.
-Empty loop bodies should use either empty braces or <code>continue</code>.</p>
+<p>Конструкция switch может использовать скобки для блоков.
+ Описывайте нетривиальные переходы между вариантами.
+ Скобки необязательны для циклов с одним выражением.
+ Пустой цикл должен использовать либо пустое тело в скобках или <code>continue</code>.</p>
 
-<p><code>case</code> blocks in <code>switch</code>
-statements can have curly braces or not, depending on
-your preference. If you do include curly braces they
-should be placed as shown below.</p>
+<p>Блоки <code>case</code> в <code>switch</code> могут как быть с
+ фигурными скобками, так быть и без них (на ваш выбор). Если же 
+ скобки используются, используйте формат, описанный ниже.</p>
 
 <p>If not conditional on an enumerated value, switch
 statements should always have a <code>default</code> case
