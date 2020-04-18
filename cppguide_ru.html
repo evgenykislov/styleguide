@@ -5062,18 +5062,14 @@ if (condition) {
  фигурными скобками, так быть и без них (на ваш выбор). Если же 
  скобки используются, используйте формат, описанный ниже.</p>
 
-<p>If not conditional on an enumerated value, switch
-statements should always have a <code>default</code> case
-(in the case of an enumerated value, the compiler will
-warn you if any values are not handled). If the default
-case should never execute, treat this as an error. For example:
+<p>Рекомендуется в switch делать секцию <code>default</code>. Это необязательно
+ в случае использования перечисления, да и компилятор может выдать 
+ предупреждение если обработаны не все значения. Если секция default 
+ не должна выполняться, тогда формируйте это как ошибку. Например:</p>
 
-</p>
-
-<div>
 <pre>switch (var) {
-  case 0: {  // 2 space indent
-    ...      // 4 space indent
+  case 0: {  // Отступ 2 пробела
+    ...      // Отступ 4 пробела
     break;
   }
   case 1: {
@@ -5085,24 +5081,18 @@ case should never execute, treat this as an error. For example:
   }
 }
 </pre>
-</div>
 
-<p>Fall-through from one case label to
-another must be annotated using the
-<code>ABSL_FALLTHROUGH_INTENDED;</code> macro (defined in
-
-<code>absl/base/macros.h</code>).
-<code>ABSL_FALLTHROUGH_INTENDED;</code> should be placed at a
-point of execution where a fall-through to the next case
-label occurs. A common exception is consecutive case
-labels without intervening code, in which case no
-annotation is needed.</p>
+<p>Переход с одной метки на следующую должен быть помечен макросом
+<code>ABSL_FALLTHROUGH_INTENDED;</code> (определён в <code>absl/base/macros.h</code>).
+Размещайте <code>ABSL_FALLTHROUGH_INTENDED;</code> в точке, где будет переход. 
+ Исключение из этого правила - последовательные метки без кода, 
+ в этом случае помечать ничего не нужно.</p>
 
 <pre>switch (x) {
-  case 41:  // No annotation needed here.
+  case 41:  // Без пометок
   case 43:
     if (dont_be_picky) {
-      // Use this instead of or along with annotations in comments.
+      // Используйте макрос вместо (или совместно) с комментарием о переходе
       ABSL_FALLTHROUGH_INTENDED;
     } else {
       CloseButNoCigar();
@@ -5117,7 +5107,7 @@ annotation is needed.</p>
 }
 </pre>
 
-<p> Braces are optional for single-statement loops.</p>
+<p>Скобки являются опциональными для циклов с одной операцией.</p>
 
 <pre>for (int i = 0; i &lt; kSomeNumber; ++i)
   printf("I love you\n");
@@ -5128,26 +5118,24 @@ for (int i = 0; i &lt; kSomeNumber; ++i) {
 </pre>
 
 
-<p>Empty loop bodies should use either an empty pair of braces or
-<code>continue</code> with no braces, rather than a single semicolon.</p>
+<p>Пустой цикл должен быть оформлен либо как пара скобок, 
+ либо как <code>continue</code> без скобок. Не используйте одиночную точку с запятой.</p>
 
 <pre>while (condition) {
-  // Repeat test until it returns false.
+  // Повторять до получения false
 }
-for (int i = 0; i &lt; kSomeNumber; ++i) {}  // Good - one newline is also OK.
-while (condition) continue;  // Good - continue indicates no logic.
+for (int i = 0; i &lt; kSomeNumber; ++i) {}  // Хорошо. Если разбить на две строки - тоже будет хорошо
+while (condition) continue;  // Хорошо - continue указывает на отсутствие дополнительной логики
 </pre>
 
-<pre class="badcode">while (condition);  // Bad - looks like part of do/while loop.
+<pre class="badcode">while (condition);  // Плохо - выглядит как часть цикла do/while
 </pre>
 
-<h3 id="Pointer_and_Reference_Expressions">Pointer and Reference Expressions</h3>
+<h3 id="Pointer_and_Reference_Expressions">Указатели и ссылки</h3>
 
-<p>No spaces around period or arrow. Pointer operators do not
-have trailing spaces.</p>
+<p>Вокруг '.' и '->' не ставьте пробелы. Оператор разыменования или взятия адреса должен быть без пробелов.</p>
 
-<p>The following are examples of correctly-formatted
-pointer and reference expressions:</p>
+<p>Ниже приведены примеры правильного форматирования выражений с указателями и ссылками:</p>
 
 <pre>x = *p;
 p = &amp;x;
@@ -5155,46 +5143,40 @@ x = r.y;
 x = r-&gt;y;
 </pre>
 
-<p>Note that:</p>
+<p>Отметим:</p>
 
 <ul>
-  <li>There are no spaces around the period or arrow when
-  accessing a member.</li>
+  <li>'.' и '->' используются без пробелов.</li>
 
-   <li>Pointer operators have no space after the
-   <code>*</code> or <code>&amp;</code>.</li>
+   <li>Операторы <code>*</code> или <code>&amp;</code> не отделяются пробелами.</li>
 </ul>
 
-<p>When declaring a pointer variable or argument, you may
-place the asterisk adjacent to either the type or to the
-variable name:</p>
+<p>При объявлении переменной или аргумента можно размещать '*' как к типу,
+ так и к имени:</p>
 
-<pre>// These are fine, space preceding.
+<pre>// Отлично, пробел до *, &amp;
 char *c;
 const std::string &amp;str;
 
-// These are fine, space following.
+// Отлично, пробел после *, &amp;
 char* c;
 const std::string&amp; str;
 </pre>
 
-<p>You should do this consistently within a single
-file,
-so, when modifying an existing file, use the style in
-that file.</p>
+<p>Старайтесь использовать единый стиль в файле кода, при модификации 
+ существующего файла применяйте используемое форматирование.</p>
 
-It is allowed (if unusual) to declare multiple variables in the same
-declaration, but it is disallowed if any of those have pointer or
-reference decorations. Such declarations are easily misread.
-<pre>// Fine if helpful for readability.
+Допускается объявлять несколько переменных одним выражением. Однако не используйте
+ множественное объявление с указателями или ссылками - это может быть неправильно понято.
+<pre>// Хорошо - читабельно
 int x, y;
 </pre>
-<pre class="badcode">int x, *y;  // Disallowed - no &amp; or * in multiple declaration
-char * c;  // Bad - spaces on both sides of *
-const std::string &amp; str;  // Bad - spaces on both sides of &amp;
+<pre class="badcode">int x, *y;  // Плохо - не используйте множественное объявление с &amp; или *
+char * c;  // Плохо - пробелы с обеих сторон *
+const std::string &amp; str;  // Плохо - пробелы с обеих сторон &amp;
 </pre>
 
-<h3 id="Boolean_Expressions">Boolean Expressions</h3>
+<h3 id="Boolean_Expressions">Логические выражения</h3>
 
 <p>When you have a boolean expression that is longer than the
 <a href="#Line_Length">standard line length</a>, be
