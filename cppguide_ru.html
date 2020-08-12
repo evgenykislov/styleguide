@@ -126,7 +126,7 @@
   <a href="#Nonstandard_Extensions">нестандартные расширения</a>.</p>
 
   <div>Учитывайте совместимость с другим окружением, если собираетесь
- использовать C++14 and C++17 в свойм проекте.</div>
+ использовать C++14 and C++17 в своём проекте.</div>
 
 <h2 id="Header_Files">Заголовочные файлы</h2>
 
@@ -249,167 +249,147 @@
   <code>test()</code> будет вызывать <code>f(void*)</code>.
   </li>
 
-  <li>Forward declaring multiple symbols from a header
-  can be more verbose than simply
-  <code>#include</code>ing the header.</li>
+  <li>Предварительное объявление множества сущностей может быть
+    чересчур объёмным, и может быть проще подключить заголовочный файл.</li>
 
-  <li>Structuring code to enable forward declarations
-  (e.g. using pointer members instead of object members)
-  can make the code slower and more complex.</li>
-
+  <li>Структура кода, допускающая предварительное объявление
+    (и, далее, использование указателей в качестве членов класса)
+    может сделать код запутанным и медленным.</li>
 
 </ul>
 
 <p class="decision"></p>
 <ul>
-  <li>Try to avoid forward declarations of entities
-  defined in another project.</li>
+  <li>Старайтесь избегать предварительного объявления сущностей,
+    объявленных в другом проекте.</li>
 
-  <li>When using a function declared in a header file,
-  always <code>#include</code> that header.</li>
+  <li>Когда используйте функцию, объявленную в заголовочном файле,
+    всегда <code>#include</code> этот заголовочник.</li>
 
-  <li>When using a class template, prefer to
-  <code>#include</code> its header file.</li>
+  <li>Когда используйте шаблон класса, предпочтительно
+    <code>#include</code> его заголовочный файл.</li>
 </ul>
 
-<p>Please see <a href="#Names_and_Order_of_Includes">Names and Order
-of Includes</a> for rules about when to #include a header.</p>
+<p>Также смотри правила включения в <a href="#Names_and_Order_of_Includes">Имена и Порядок включения (include)</a>.</p>
 
-<h3 id="Inline_Functions">Inline Functions</h3>
+<h3 id="Inline_Functions">Встраиваемые (inline) функции</h3>
 
-<p>Define functions inline only when they are small, say, 10
-lines or fewer.</p>
+<p>Определяйте функции как встраиваемые только когда они маленькие,
+ например не более 10 строк.</p>
 
 <p class="definition"></p>
-<p>You can declare functions in a way that allows the compiler to expand
-them inline rather than calling them through the usual
-function call mechanism.</p>
+<p>Вы можете объявлять функции встраиваемыми и указать компилятору на возможность
+ включать её напрямую в вызывающий код, помимо стандартного способа с вызовом функции.</p>
 
 <p class="pros"></p>
-<p>Inlining a function can generate more efficient object
-code, as long as the inlined function is small. Feel free
-to inline accessors and mutators, and other short,
-performance-critical functions.</p>
+<p>Использование встраиваемых функций может генерировать более эффективный код,
+ особенно когда функции маленькие. Используйте эту возможность для get/set функций,
+ других коротких и критичных для производительности функций.</p>
 
 <p class="cons"></p>
-<p>Overuse of inlining can actually make programs slower.
-Depending on a function's size, inlining it can cause the
-code size to increase or decrease. Inlining a very small
-accessor function will usually decrease code size while
-inlining a very large function can dramatically increase
-code size. On modern processors smaller code usually runs
-faster due to better use of the instruction cache.</p>
+<p>Чрезмерное использование встраиваемых функций может сделать программу медленнее.
+ Также встраиваемые функции, в зависимости от размера её, могут как увеличить, так и уменьшить
+ размер кода. Если это маленькие функции, то код может быть уменьшен.
+ Если же функция большая, то размер кода может очень сильно вырасти.
+ Учтите, что на современных процессорах более компактный код выполняется быстрее
+ благодаря лучшему использованию кэша инструкций.</p>
 
 <p class="decision"></p>
-<p>A decent rule of thumb is to not inline a function if
-it is more than 10 lines long. Beware of destructors,
-which are often longer than they appear because of
-implicit member- and base-destructor calls!</p>
+<p>Хорошим правилом будет не делать функции встраиваемыми, если они превышают
+ 10 строк кода. Избегайте делать встраиваемыми деструкторы, т.к. они неявно
+ могут содержать много дополнительного кода: вызовы деструкторов переменных и
+ базовых классов!</p>
 
-<p>Another useful rule of thumb: it's typically not cost
-effective to inline functions with loops or switch
-statements (unless, in the common case, the loop or
-switch statement is never executed).</p>
+<p>Ещё одно хорошее правило: обычно нет смысла делать встраиваемыми функции,
+ в которых есть циклы или операции switch (кроме, вырожденных случаев, когда цикл
+ или другие операторы никогда не выполняются).</p>
 
-<p>It is important to know that functions are not always
-inlined even if they are declared as such; for example,
-virtual and recursive functions are not normally inlined.
-Usually recursive functions should not be inline. The
-main reason for making a virtual function inline is to
-place its definition in the class, either for convenience
-or to document its behavior, e.g., for accessors and
-mutators.</p>
+<p>Важно понимать, что встраиваемая функция не обязательно будет скомпилирована
+ в код именно так. Например, обычно виртуальные и рекурсивные функции компилируются
+ со стандартным вызовом. Вообще, рекурсивные функции не должны объявляться встраиваемыми.
+ Основная же причина делать встраиваемые виртуальные функции - разместить определение (код)
+ в самом определении класса (для документирования поведения или удобства чтения) - часто
+ используется для get/set функций.</p>
 
-<h3 id="Names_and_Order_of_Includes">Names and Order of Includes</h3>
+<h3 id="Names_and_Order_of_Includes">Имена и Порядок включения (include)</h3>
 
-<p>Include headers in the following order: Related header, C system headers,
-C++ standard library headers,
-other libraries' headers, your project's
-headers.</p>
+<p>Вставляйте заголовочные файлы в следующем порядке:
+ парный файл (например, foo.h - foo.cc), системные C, стандартная библиотека C++,
+ другие библиотеки, файлы вашего проекта.</p>
 
 <p>
-All of a project's header files should be
-listed as descendants of the project's source
-directory without use of UNIX directory aliases
-<code>.</code> (the current directory) or <code>..</code>
-(the parent directory). For example,
-
-<code>google-awesome-project/src/base/logging.h</code>
-should be included as:</p>
+Все заголовочные файлы проекта должны указываться относительно
+ директории исходных файлов проекта без использования таких UNIX псевдонимов
+ как <code>.</code> (текущая директория) или <code>..</code>
+ (родительская директория). Например,
+ <code>google-awesome-project/src/base/logging.h</code>
+ должны включаться как:</p>
 
 <pre>#include "base/logging.h"
 </pre>
 
-<p>In <code><var>dir/foo</var>.cc</code> or
-<code><var>dir/foo_test</var>.cc</code>, whose main
-purpose is to implement or test the stuff in
-<code><var>dir2/foo2</var>.h</code>, order your includes
-as follows:</p>
+<p>В файлах <code><var>dir/foo</var>.cc</code> или
+<code><var>dir/foo_test</var>.cc</code>, основная функция которых
+ это реализация или тестирование кода, объявленного в 
+ <code><var>dir2/foo2</var>.h</code>, записывайте заголовочные файлы
+ в следующем порядке:</p>
 
 <ol>
   <li><code><var>dir2/foo2</var>.h</code>.</li>
 
-  <li>A blank line</li>
+  <li>Пустая строка</li>
 
-  <li>C system headers (more precisely: headers in angle brackets with the
-    <code>.h</code> extension), e.g. <code>&lt;unistd.h&gt;</code>,
+  <li>Системные заголовочники C (точнее: заголовочники в угловых скобках
+    с расширением <code>.h</code>), например <code>&lt;unistd.h&gt;</code>,
     <code>&lt;stdlib.h&gt;</code>.</li>
 
-  <li>A blank line</li>
+  <li>Пустая строка</li>
 
-  <li>C++ standard library headers (without file extension), e.g.
+  <li>Заголовочники стандартной библиотеки C++ (которые без расширения в файлах), например
     <code>&lt;algorithm&gt;</code>, <code>&lt;cstddef&gt;</code>.</li>
 
-  <li>A blank line</li>
+  <li>Пустая строка</li>
 
-  <div>
-  <li>Other libraries' <code>.h</code> files.</li>
-  </div>
+  <li>Заголовочные <code>.h</code> файлы других библиотек.</li>
 
-  <li>
-  Your project's <code>.h</code>
-  files.</li>
+  <li>Файлы <code>.h</code> вашего проекта.</li>
 </ol>
 
-<p>Separate each non-empty group with one blank line.</p>
+<p>Отделяйте каждую (непустую) группу файлов пустой строкой.</p>
 
-<p>With the preferred ordering, if the related header
-<code><var>dir2/foo2</var>.h</code> omits any necessary
-includes, the build of <code><var>dir/foo</var>.cc</code>
-or <code><var>dir/foo</var>_test.cc</code> will break.
-Thus, this rule ensures that build breaks show up first
-for the people working on these files, not for innocent
-people in other packages.</p>
+<p>Такой порядок файлов позволяет выявить ошибки, когда 
+ в парном заголовочнике (<code><var>dir2/foo2</var>.h</code>)
+ пропущены необходимые заголовочные файлы (системные и др.) и
+ сборка соответствующих файлов <code><var>dir/foo</var>.cc</code>
+ или <code><var>dir/foo</var>_test.cc</code> завершится ошибкой.
+ Как результат, ошибка сразу же появится у разработчика,
+ работающего с этими файлами (а не у другой команды,
+ которая только использует внешнюю библиотеку).</p>
 
-<p><code><var>dir/foo</var>.cc</code> and
-<code><var>dir2/foo2</var>.h</code> are usually in the same
-directory (e.g. <code>base/basictypes_test.cc</code> and
-<code>base/basictypes.h</code>), but may sometimes be in different
-directories too.</p>
+<p>Обычно файлы <code><var>dir/foo</var>.cc</code> и
+ <code><var>dir2/foo2</var>.h</code> находятся в одной директории
+ (например, <code>base/basictypes_test.cc</code> и
+<code>base/basictypes.h</code>), хотя это не обязательно.</p>
 
+<p>Учтите, что заголовочники C, такие как <code>stddef.h</code>
+ обычно взаимозаменяемы с заголовочником C++ (<code>cstddef</code>).
+ Можно использовать любой вариант, но лучше всё таки следовать стилю
+ существующего кода.</p>
 
+<p>Внутри каждой секции заголовочники лучше всего перечислять в алфавитном порядке.
+ Учтите, что ранее написанный код может не следовать этому правилу. По возможности
+ (например, при исправлениях в файле), исправляйте порядок заголовочников на правильный.</p>
 
-<p>Note that the C headers such as <code>stddef.h</code>
-are essentially interchangeable with their C++ counterparts
-(<code>cstddef</code>).
-Either style is acceptable, but prefer consistency with existing code.</p>
+<p>Следует включать все заголовочники, которые объявляют требуемые вам типы,
+ за исключением случаев <a href="#Forward_Declarations">предварительного объявления</a>.
+ Если ваш код использует типы из <code>bar.h</code>, не полагайтесь на то, что
+ <code>foo.h</code> включает <code>bar.h</code> и вы можете ограничиться только <code>foo.h</code>:
+ включайте явно <code>bar.h</code> (кроме случаев, когда явно указано (возможно, в документации),
+ что <code>foo.h</code> также выдаст вам типы из <code>bar.h</code>).</p>
 
-<p>Within each section the includes should be ordered
-alphabetically. Note that older code might not conform to
-this rule and should be fixed when convenient.</p>
-
-<p>You should include all the headers that define the symbols you rely
-upon, except in the unusual case of <a href="#Forward_Declarations">forward
-declaration</a>. If you rely on symbols from <code>bar.h</code>,
-don't count on the fact that you included <code>foo.h</code> which
-(currently) includes <code>bar.h</code>: include <code>bar.h</code>
-yourself, unless <code>foo.h</code> explicitly demonstrates its intent
-to provide you the symbols of <code>bar.h</code>.</p>
-
-<p>For example, the includes in
-
-<code>google-awesome-project/src/foo/internal/fooserver.cc</code>
-might look like this:</p>
+<p>Например, список заголовочников в
+ <code>google-awesome-project/src/foo/internal/fooserver.cc</code>
+ может выглядеть так:</p>
 
 <pre>#include "foo/server/fooserver.h"
 
@@ -424,12 +404,12 @@ might look like this:</p>
 #include "foo/server/bar.h"
 </pre>
 
-<p><b>Exception:</b></p>
+<p><b>Исключения:</b></p>
 
-<p>Sometimes, system-specific code needs
-conditional includes. Such code can put conditional
-includes after other includes. Of course, keep your
-system-specific code small and localized. Example:</p>
+<p>Бывают случаи, когда требуется включение заголовочников в зависимости
+ от условий препроцессора (например, в зависимости от используемой ОС).
+ Такое включение старайтесь делать как можно короче (локализованно) и размещать после
+ других заголовочников. Например:</p>
 
 <pre>#include "foo/public/fooserver.h"
 
