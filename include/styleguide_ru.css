@@ -219,7 +219,7 @@ address {
 }
 
 .definition:before {
-  content: "Definition: ";
+  content: "Определение: ";
   font-weight: bold;
   display: block;
   margin-bottom: 1em;
