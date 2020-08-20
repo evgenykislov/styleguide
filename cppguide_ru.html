@@ -125,8 +125,8 @@
 <p>Не используйте
   <a href="#Nonstandard_Extensions">нестандартные расширения</a>.</p>
 
-  <div>Учитывайте совместимость с другим окружением, если собираетесь
- использовать C++14 and C++17 в своём проекте.</div>
+<p>Учитывайте совместимость с другим окружением, если собираетесь
+ использовать C++14 and C++17 в своём проекте.</p>
 
 <h2 id="Header_Files">Заголовочные файлы</h2>
 
@@ -140,7 +140,6 @@
 
 <p>Следующие правила позволят избежать частых проблем с заголовочными файлами.</p>
 
-<a id="The_-inl.h_Files"></a>
 <h3 id="Self_contained_Headers">Независимые заголовочные файлы</h3>
 
 <p>Заголовочные файлы должны быть самодостаточными (в плане компиляции)
@@ -1051,7 +1050,6 @@ no other states that affect which public methods may be called
 (semi-constructed objects of this form are particularly hard to work
 with correctly).</p>
 
-<a id="Explicit_Constructors"></a>
 <h3 id="Implicit_Conversions">Implicit Conversions</h3>
 
 <p>Do not define implicit conversions. Use the <code>explicit</code>
@@ -1089,8 +1087,9 @@ void Func(Foo f);
 </pre>
 <pre class="badcode">Func({42, 3.14});  // Error
 </pre>
+<p>
 This kind of code isn't technically an implicit conversion, but the
-language treats it as one as far as <code>explicit</code> is concerned.
+language treats it as one as far as <code>explicit</code> is concerned.</p>
 
 <p class="pros"></p>
 <ul>
@@ -1152,7 +1151,6 @@ also omit <code>explicit</code>, in order to support copy-initialization
 (e.g. <code>MyType m = {1, 2};</code>).</p>
 
 <h3 id="Copyable_Movable_Types">Copyable and Movable Types</h3>
-<a id="Copy_Constructors"></a>
 
 <p>A class's public API must make clear whether the class is copyable,
 move-only, or neither copyable nor movable. Support copying and/or
@@ -1364,7 +1362,6 @@ tuple whenever the elements can have meaningful names.</p>
   also be required in order to interoperate with existing code or APIs.
 </p>
 
-<a id="Multiple_Inheritance"></a>
 <h3 id="Inheritance">Inheritance</h3>
 
 <p>Composition is often more appropriate than inheritance.
@@ -1616,7 +1613,6 @@ Functions</a> for more details.</p>
 
 <h2 id="Functions">Functions</h2>
 
-<a id="Function_Parameter_Ordering"></a>
 <h3 id="Output_Parameters">Output Parameters</h3>
 
 <p>The output of a C++ function is naturally provided via
@@ -1861,7 +1857,7 @@ doubt, use overloads.</p>
   <pre>    template &lt;typename T, typename U&gt;
     auto add(T t, U u) -&gt; decltype(t + u);
   </pre>
-  versus
+    <p>versus</p>
   <pre>    template &lt;typename T, typename U&gt;
     decltype(declval&lt;T&amp;&gt;() + declval&lt;U&amp;&gt;()) add(T t, U u);
   </pre>
@@ -3101,7 +3097,6 @@ memset(&amp;data, 0, sizeof(data));
 }
 </pre>
 
-<a name="auto"></a>
 <h3 id="Type_deduction">Type deduction</h3>
 
 <p>Use type deduction only if it makes the code clearer to readers who aren't
@@ -3279,12 +3274,14 @@ if (it != my_map_.end()) {
   WidgetWithBellsAndWhistles&amp; widget = *it-&gt;second;
   // Do stuff with `widget`
 }</pre>
-  If the type is a template instance, and the parameters are
-  boilerplate but the template itself is informative, you can use
-  class template argument deduction to suppress the boilerplate. However,
-  cases where this actually provides a meaningful benefit are quite rare.
-  Note that class template argument deduction is also subject to a
-  <a href="#CTAD">separate style rule</a>.
+    <p>
+        If the type is a template instance, and the parameters are
+        boilerplate but the template itself is informative, you can use
+        class template argument deduction to suppress the boilerplate. However,
+        cases where this actually provides a meaningful benefit are quite rare.
+        Note that class template argument deduction is also subject to a
+        <a href="#CTAD">separate style rule</a>.
+    </p>
 
 <p>Do not use <code>decltype(auto)</code> if a simpler option will work,
   because it's a fairly obscure feature, so it has a high cost in code
@@ -3338,8 +3335,8 @@ if (it != my_map_.end()) {
   underlying field, if it doesn't match the name of the binding, using the
   same syntax as for function parameter comments:
   </p><pre>auto [/*field_name1=*/ bound_name1, /*field_name2=*/ bound_name2] = ...</pre>
-  As with function parameter comments, this can enable tools to detect if
-  you get the order of the fields wrong.
+<p>As with function parameter comments, this can enable tools to detect if
+  you get the order of the fields wrong.</p>
 
 <h3 id="CTAD">Class template argument deduction</h3>
 
@@ -3352,9 +3349,10 @@ if (it != my_map_.end()) {
   a variable is declared with a type that names a template, and the template
   argument list is not provided (not even empty angle brackets):
   </p><pre class="neutralcode">std::array a = {1, 2, 3};  // `a` is a std::array&lt;int, 3&gt;</pre>
-  The compiler deduces the arguments from the initializer using the
-  template's "deduction guides", which can be explicit or implicit.
-
+    <p>
+        The compiler deduces the arguments from the initializer using the
+        template's "deduction guides", which can be explicit or implicit.
+    </p>
 <p>Explicit deduction guides look like function declarations with trailing
   return types, except that there's no leading <code>auto</code>, and the
   function name is the name of the template. For example, the above example
@@ -3363,8 +3361,10 @@ if (it != my_map_.end()) {
 template &lt;class T, class... U&gt;
 array(T, U...) -&gt; std::array&lt;T, 1 + sizeof...(U)&gt;;
 }</pre>
-  Constructors in a primary template (as opposed to a template specialization)
-  also implicitly define deduction guides.
+    <p>
+        Constructors in a primary template (as opposed to a template specialization)
+        also implicitly define deduction guides.
+    </p>
 
 <p>When you declare a variable that relies on CTAD, the compiler selects
   a deduction guide using the rules of constructor overload resolution,
@@ -3447,15 +3447,19 @@ std::sort(indices.begin(), indices.end(), [&amp;](int a, int b) {
 [foo = std::move(foo)] () {
   ...
 }</pre>
-  Such captures (often called "init captures" or "generalized lambda captures")
-  need not actually "capture" anything from the enclosing scope, or even have
-  a name from the enclosing scope; this syntax is a fully general way to define
-  members of a lambda object:
+    <p>
+        Such captures (often called "init captures" or "generalized lambda captures")
+        need not actually "capture" anything from the enclosing scope, or even have
+        a name from the enclosing scope; this syntax is a fully general way to define
+        members of a lambda object:
+    </p>
   <pre class="neutralcode">[foo = std::vector&lt;int&gt;({1, 2, 3})] () {
   ...
 }</pre>
-  The type of a capture with an initializer is deduced using the same rules
-  as <code>auto</code>.
+    <p>
+        The type of a capture with an initializer is deduced using the same rules
+        as <code>auto</code>.
+    </p>
 
 <p class="pros"></p>
 <ul>
@@ -4520,7 +4524,7 @@ if (mmap_budget &gt;= data_size_ &amp;&amp; !MmapData(mmap_chunk_bytes, mlock))
   <li>В крайнем случае пишите комментарии в месте вызова для прояснения назначения аргументов.</li>
 </ul>
 
-Рассмотрим примеры:
+    <p>Рассмотрим примеры:</p>
 
 <pre class="badcode">// И какое назначение аргументов?
 const DecimalNumber product = CalculateProduct(values, 7, false, nullptr);
@@ -4541,7 +4545,7 @@ const DecimalNumber product =
 человека, знающего C++. Вместо этого, можно описать <i>зачем</i>
 этот код делает так (или вообще сделайте код само-описываемым).</p>
 
-Сравним:
+    <p>Сравним:</p>
 
 <pre class="badcode">// Ищём элемент в векторе.  &lt;-- Плохо: очевидно же!
 auto iter = std::find(v.begin(), v.end(), element);
@@ -4550,7 +4554,7 @@ if (iter != v.end()) {
 }
 </pre>
 
-С этим:
+    <p>С этим:</p>
 
 <pre>// Обрабатывает (Process) "element" пока есть хоть один
 auto iter = std::find(v.begin(), v.end(), element);
@@ -4559,8 +4563,8 @@ if (iter != v.end()) {
 }
 </pre>
 
-Само-описывающий код вообще не нуждается в комментариях.
-Комментарий на код выше может быть вообще очевидным (и не нужным):
+    <p>Само-описывающий код вообще не нуждается в комментариях.
+Комментарий на код выше может быть вообще очевидным (и не нужным):</p>
 
 <pre>if (!IsAlreadyProcessed(element)) {
   Process(element);
@@ -5146,8 +5150,8 @@ const std::string&amp; str;
 <p>Старайтесь использовать единый стиль в файле кода, при модификации 
  существующего файла применяйте используемое форматирование.</p>
 
-Допускается объявлять несколько переменных одним выражением. Однако не используйте
- множественное объявление с указателями или ссылками - это может быть неправильно понято.
+    <p>Допускается объявлять несколько переменных одним выражением. Однако не используйте
+ множественное объявление с указателями или ссылками - это может быть неправильно понято.</p>
 <pre>// Хорошо - читабельно
 int x, y;
 </pre>
