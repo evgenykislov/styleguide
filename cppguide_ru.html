@@ -990,55 +990,58 @@ at class or namespace scope must be annotated with
 <p><code>thread_local</code> should be preferred over other mechanisms for
 defining thread-local data.</p>
 
-<h2 id="Classes">Classes</h2>
+<h2 id="Classes">Классы</h2>
 
-<p>Classes are the fundamental unit of code in C++. Naturally,
-we use them extensively. This section lists the main dos and
-don'ts you should follow when writing a class.</p>
+<p>Классы являются основным строительным блоком в C++. И, конечно же, используются
+ они очень часто. В этой секции описаны основные правила и запреты, которым нужно
+ следовать при использовании классов.</p>
 
-<h3 id="Doing_Work_in_Constructors">Doing Work in Constructors</h3>
+<h3 id="Doing_Work_in_Constructors">Код в конструкторе</h3>
 
-<p>Avoid virtual method calls in constructors, and avoid
-initialization that can fail if you can't signal an error.</p>
+<p>Не вызывайте виртуальных методов в конструкторе.
+ Избегайте инициализации, которая может завершиться ошибкой
+ (и не предусмотрено способа сигнализировать об ошибке. Прим.:
+ учтите, что Гугл не любит исключения).</p>
 
 <p class="definition"></p>
-<p>It is possible to perform arbitrary initialization in the body
-of the constructor.</p>
+<p>Вообще в конструкторе можно выполнять любые инициализации (т.е. всю
+ инициализацию сделать в конструкторе).</p>
 
 <p class="pros"></p>
 <ul>
-  <li>No need to worry about whether the class has been initialized or
-  not.</li>
+  <li>Не нужно беспокоиться об неинициализированном классе.</li>
 
-  <li>Objects that are fully initialized by constructor call can
-  be <code>const</code> and may also be easier to use with standard containers
-  or algorithms.</li>
+  <li>Объекты, которые полностью инициализируются в конструкторе,
+  могут быть константными/<code>const</code> и также их легче 
+  использовать в стандартных контейнерах и в алгоритмах.</li>
 </ul>
 
 <p class="cons"></p>
 <ul>
-  <li>If the work calls virtual functions, these calls
-  will not get dispatched to the subclass
-  implementations. Future modification to your class can
-  quietly introduce this problem even if your class is
-  not currently subclassed, causing much confusion.</li>
+  <li>Если в конструкторе вызываются виртуальные функции,
+  то не вызываются реализации из производного класса. Даже если
+  сейчас класс не имеет потомков, в будущем это может обернуться
+  проблемой.</li>
 
-  <li>There is no easy way for constructors to signal errors, short of
-  crashing the program (not always appropriate) or using exceptions
-  (which are <a href="#Exceptions">forbidden</a>).</li>
+  <li>Нет простого способа проинформировать об ошибке без 
+  крэша программы (что не всегда допустимо) или выбрасывания
+  исключений (которые <a href="#Exceptions">запрещены</a>).</li>
 
-  <li>If the work fails, we now have an object whose initialization
-  code failed, so it may be an unusual state requiring a <code>bool
-  IsValid()</code> state checking mechanism (or similar) which is easy
-  to forget to call.</li>
+  <li>Если возникла ошибка, то у нас есть частично (обычно - неправильно)
+  инициализированный объект. Очевидное действие: добавить механизм проверки
+  состояния <code>bool IsValid()</code>. Однако про эту проверку легко забыть.</li>
 
-  <li>You cannot take the address of a constructor, so whatever work
-  is done in the constructor cannot easily be handed off to, for
-  example, another thread.</li>
+  <li>Вы не можете пользоваться адресом конструктора. Поэтому нет, например,
+  простого способа передать выполнение конструктора в другой поток.</li>
 </ul>
 
 <p class="decision"></p>
-<p>Constructors should never call virtual functions. If appropriate
+<p>Конструкторы не должны вызывать виртуальные функции. В ряде случаев
+ (если это позволительно) обработка ошибок конструирования возможна
+ через завершение программы. В иных случаях рассмотрите вариант ???
+
+    
+    Constructors should never call virtual functions. If appropriate
 for your code ,
 terminating the program may be an appropriate error handling
 response. Otherwise, consider a factory function
