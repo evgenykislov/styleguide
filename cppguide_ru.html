@@ -1371,62 +1371,55 @@ class NotCopyableOrMovable {
 <p>Перегружайте операторы в рамках разумного. Не используйте пользовательские литералы.</p>
 
 <p class="definition"></p>
-<p>C++ permits user code to
-<a href="http://en.cppreference.com/w/cpp/language/operators">declare
-overloaded versions of the built-in operators</a> using the
-<code>operator</code> keyword, so long as one of the parameters
-is a user-defined type. The <code>operator</code> keyword also
-permits user code to define new kinds of literals using
-<code>operator""</code>, and to define type-conversion functions
-such as <code>operator bool()</code>.</p>
+<p>C++ позволяет пользовательскому коду 
+<a href="http://en.cppreference.com/w/cpp/language/operators">переопределять 
+ встроенные операторы</a> используя ключевое слово 
+ <code>operator</code> и пользовательский типа как один из параметров.
+ Также <code>operator</code> позволяет определять новые литералы, используя 
+ <code>operator""</code>, и создавать функции приведения типов, наподобие
+ <code>operator bool()</code>.</p>
 
 <p class="pros"></p>
-<p>Operator overloading can make code more concise and
-intuitive by enabling user-defined types to behave the same
-as built-in types. Overloaded operators are the idiomatic names
-for certain operations (e.g. <code>==</code>, <code>&lt;</code>,
-<code>=</code>, and <code>&lt;&lt;</code>), and adhering to
-those conventions can make user-defined types more readable
-and enable them to interoperate with libraries that expect
-those names.</p>
+<p>Использование перегрузки операторов для пользовательских типов
+ (по аналогии со встроенными типами) может сделать код более сжатым и интуитивным.
+ Перегружаемые операторы соответствуют определённым операциям
+ (например, <code>==</code>, <code>&lt;</code>,
+ <code>=</code> и <code>&lt;&lt;</code>) и если код следует логике применения
+ этих операций, то пользовательские типы можно сделать понятнее и использовать
+ при работе с внешними библиотеки, которые опираются на это операции.</p>
 
-<p>User-defined literals are a very concise notation for
-creating objects of user-defined types.</p>
+<p>Пользовательские литералы - очень эффективный способ для создания пользовательских
+ объектов.</p>
 
 <p class="cons"></p>
 <ul>
-  <li>Providing a correct, consistent, and unsurprising
-  set of operator overloads requires some care, and failure
-  to do so can lead to confusion and bugs.</li>
+  <li>Написать комплект операторов для класса - корректных, согласованных,
+  логичных - это может потребовать известных усилий и, при недоработанном коде, 
+  это может обернуться труднопонимаемыми багами.</li>
 
-  <li>Overuse of operators can lead to obfuscated code,
-  particularly if the overloaded operator's semantics
-  don't follow convention.</li>
+  <li>Излишняя перегрузка операторов может усложнить понимание кода, особенно если
+  код не соответствует логике операции.</li>
 
-  <li>The hazards of function overloading apply just as
-  much to operator overloading, if not more so.</li>
+  <li>Все недостатки, связанные с перегрузкой функций, присущи и перегрузке 
+  операторов.</li>
 
-  <li>Operator overloads can fool our intuition into
-  thinking that expensive operations are cheap, built-in
-  operations.</li>
+  <li>Перегрузка операторов обмануть других программистов, ожидающих 
+  простую, быструю встроенную операцию, а получающие нечто ресурсоёмкое.</li>
 
-  <li>Finding the call sites for overloaded operators may
-  require a search tool that's aware of C++ syntax, rather
-  than e.g. grep.</li>
+  <li>Поиск мест вызова перегруженных операторов может быть нетривиальной
+  задачей, и явно сложнее обычного тестового поиска.</li>
 
-  <li>If you get the argument type of an overloaded operator
-  wrong, you may get a different overload rather than a
-  compiler error. For example, <code>foo &lt; bar</code>
-  may do one thing, while <code>&amp;foo &lt; &amp;bar</code>
-  does something totally different.</li>
+  <li>При ошибках в типах аргументов вы можете вместо сообщений об ошибке/предупреждении 
+  от компилятора (по которым легко найти проблему и исправить её), 
+  получить "корректный" вызов другого оператора. Например, 
+  код для <code>foo &lt; bar</code> может сильно отличаться от кода
+  для <code>&amp;foo &lt; &amp;bar</code>; немного напутав в типах получим ошибочный вызов.</li>
 
-  <li>Certain operator overloads are inherently hazardous.
-  Overloading unary <code>&amp;</code> can cause the same
-  code to have different meanings depending on whether
-  the overload declaration is visible. Overloads of
-  <code>&amp;&amp;</code>, <code>||</code>, and <code>,</code>
-  (comma) cannot match the evaluation-order semantics of the
-  built-in operators.</li>
+  <li>Перегрузка некоторых операторов является в принципе рискованным занятием.
+  Перегрузка унарного <code>&amp;</code> может привести к тому, что один и тот же код
+  будет трактоваться по разному в зависимости от видимости декларации перегрузки.
+  Перегрузка операторов <code>&amp;&amp;</code>, <code>||</code>, and <code>,</code>
+  (запятая), может поменять порядок (и правила) вычисления выражений.</li>
 
   <li>Operators are often defined outside the class,
   so there's a risk of different files introducing
