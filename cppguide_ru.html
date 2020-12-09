@@ -1421,117 +1421,101 @@ class NotCopyableOrMovable {
   Перегрузка операторов <code>&amp;&amp;</code>, <code>||</code>, and <code>,</code>
   (запятая), может поменять порядок (и правила) вычисления выражений.</li>
 
-  <li>Operators are often defined outside the class,
-  so there's a risk of different files introducing
-  different definitions of the same operator. If both
-  definitions are linked into the same binary, this results
-  in undefined behavior, which can manifest as subtle
-  run-time bugs.</li>
+  <li>Часто операторы определяются вне класса, и есть риск использования 
+  разных реализаций одного и того же оператора. Если оба определения будут 
+  слинкованы в один бинарный файл, можно получить неопределённое поведение и 
+  хитрые баги.</li>
 
-  <li>User-defined literals (UDLs) allow the creation of new
-  syntactic forms that are unfamiliar even to experienced C++
-  programmers, such as <code>"Hello World"sv</code> as a
-  shorthand for <code>std::string_view("Hello World")</code>.
-  Existing notations are clearer, though less terse.</li>
+  <li>Пользовательские литералы (UDL) позволяют создавать новые синтаксические формы,
+  незнакомые даже продвинутым C++ программистам. Например: 
+  <code>"Hello World"sv</code> как сокращение для <code>std::string_view("Hello World")</code>.
+  Исходная нотация более понятна, однако не такая компактная.</li>
 
-  <li>Because they can't be namespace-qualified, uses of UDLs also require
-  use of either using-directives (which <a href="#Namespaces">we ban</a>) or
-  using-declarations (which <a href="#Aliases">we ban in header files</a> except
-  when the imported names are part of the interface exposed by the header
-  file in question).  Given that header files would have to avoid UDL
-  suffixes, we prefer to avoid having conventions for literals differ
-  between header files and source files.
-  </li>
+  <li>Т.к. UDL не ограничиваются пространствоми имён, потребуется либо использовать
+  using-директиву (которая <a href="#Namespaces">запрещена</a>) или using-декларацию
+   (которая также <a href="#Aliases">запрещена (в заголовочных файлах)</a> кроме случая,
+  когда импортируемые имена являются частью интерфейса, показываемого в заголовочном файле).
+  Для таких заголовочных файлов лучше бы избегать суффикусов UDL, и желательно избегать
+  зависимости между литералами, которые различны в заголовочном и исходном файле.</li>
 </ul>
 
 <p class="decision"></p>
-<p>Define overloaded operators only if their meaning is
-obvious, unsurprising, and consistent with the corresponding
-built-in operators. For example, use <code>|</code> as a
-bitwise- or logical-or, not as a shell-style pipe.</p>
+<p>Определяйте перегруженные операторы только если их смысл очевиден, понятен,
+ и соответствует общей логике. Например, используйте <code>|</code> в смысле
+ операции ИЛИ; реализовывать же вместо этого логику канала (pipe) - не
+ очень хорошая идея.</p>
 
-<p>Define operators only on your own types. More precisely,
-define them in the same headers, .cc files, and namespaces
-as the types they operate on. That way, the operators are available
-wherever the type is, minimizing the risk of multiple
-definitions. If possible, avoid defining operators as templates,
-because they must satisfy this rule for any possible template
-arguments. If you define an operator, also define
-any related operators that make sense, and make sure they
-are defined consistently. For example, if you overload
-<code>&lt;</code>, overload all the comparison operators,
-and make sure <code>&lt;</code> and <code>&gt;</code> never
-return true for the same arguments.</p>
+<p>Определяйте операторы только для ваших собственных типов, делайте это 
+ в том же самом заголовочном и исходном файле, и в том же пространстве имён.
+ В результате операторы будут доступны там же, где и сами типы. И без проблем с
+ множественным определением. По возможности избегайте определения операторов 
+ как шаблонов, т.к. придётся соответствовать любому набору шаблонных аргументов.
+ Если вы определяете оператор, также определяйте "родственные" к нему. И позаботьтесь о
+ согласованности выдаваемых ими результатов. Например, если определяется оператор
+ <code>&lt;</code>, то определяйте все операторы сравнения и проследите, чтобы
+ операторы <code>&lt;</code> и <code>&gt;</code> никогда не возвращали true для
+ один и тех же аргументов.</p>
 
-<p>Prefer to define non-modifying binary operators as
-non-member functions. If a binary operator is defined as a
-class member, implicit conversions will apply to the
-right-hand argument, but not the left-hand one. It will
-confuse your users if <code>a &lt; b</code> compiles but
-<code>b &lt; a</code> doesn't.</p>
+<p>Желательно определять неизменяющие значения бинарные операторы как
+ внешние функции (не-члены). Если же бинарный оператор объявлен членом
+ класса, неявное преобразование будет применяться к правому аргументу, но
+ не к левому. И можно слегка расстроить программистов, если код 
+ <code>a &lt; b</code> - компилируется, а
+ <code>b &lt; a</code> - нет.</p>
 
-<p>Don't go out of your way to avoid defining operator
-overloads. For example, prefer to define <code>==</code>,
-<code>=</code>, and <code>&lt;&lt;</code>, rather than
-<code>Equals()</code>, <code>CopyFrom()</code>, and
-<code>PrintTo()</code>. Conversely, don't define
-operator overloads just because other libraries expect
-them. For example, if your type doesn't have a natural
-ordering, but you want to store it in a <code>std::set</code>,
-use a custom comparator rather than overloading
-<code>&lt;</code>.</p>
+<p>Не нужно пытаться обойти переопределение операторов. Если требуется сравнение 
+ (или присваивание и функция вывода), то лучше определить <code>==</code> 
+ (или <code>=</code> и <code>&lt;&lt;</code>) вместо своих функций
+ <code>Equals()</code>, <code>CopyFrom()</code> и <code>PrintTo()</code>.
+ И наоборот: не нужно переопределять оператор только
+ потому, что внешние библиотеки ожидают этого. Например, если тип данных
+ нельзя упорядочить и хочется хранить его в <code>std::set</code> то лучше 
+ сделайте пользовательскую функцию сравнения и не трогать оператор <code>&lt;</code>.</p>
 
-<p>Do not overload <code>&amp;&amp;</code>, <code>||</code>,
-<code>,</code> (comma), or unary <code>&amp;</code>. Do not overload
-<code>operator""</code>, i.e. do not introduce user-defined
-literals.  Do not use any such literals provided by others
-(including the standard library).</p>
+<p>Не переопределяйте <code>&amp;&amp;</code>, <code>||</code>,
+ <code>,</code> (запятая) или унарный <code>&amp;</code>. Не переопределяйте 
+ <code>operator""</code>, т.е. не стоит вводить собственные литералы. Не используйте
+ ранее определённые литералы (включая стандартную библиотеку и не только).</p>
 
-<p>Type conversion operators are covered in the section on
-<a href="#Implicit_Conversions">implicit conversions</a>.
-The <code>=</code> operator is covered in the section on
-<a href="#Copy_Constructors">copy constructors</a>. Overloading
-<code>&lt;&lt;</code> for use with streams is covered in the
-section on <a href="#Streams">streams</a>. See also the rules on
-<a href="#Function_Overloading">function overloading</a>, which
-apply to operator overloading as well.</p>
+<p>Преобразование типов описано в секции 
+ <a href="#Implicit_Conversions">неявные преобразования</a>.
+ Оператор <code>=</code> расписан в 
+ <a href="#Copy_Constructors">конструкторе копий</a>. Тема перегрузки 
+ <code>&lt;&lt;</code> для работы со стримами освещена в 
+ <a href="#Streams">потоках/streams</a>. Также можно ознакомиться правилами из раздела 
+ <a href="#Function_Overloading">перегрузка функций</a>, которые также 
+ подходят и для операторов.</p>
 
-<h3 id="Access_Control">Access Control</h3>
+<h3 id="Access_Control">Доступ членам класса</h3>
 
-<p>Make classes' data members <code>private</code>, unless they are
-<a href="#Constant_Names">constants</a>. This simplifies reasoning about invariants, at the cost
-of some easy boilerplate in the form of accessors (usually <code>const</code>) if necessary.</p>
+<p>Данные класса делайте всегда закрытыми <code>private</code>, кроме 
+ <a href="#Constant_Names">констант</a>. Это упрощает использование инвариантов
+ (например, вычисляемых полей) ценой добавления (если необходимо) простейших функций доступа
+ (часто ещё и константных <code>const</code>).</p>
 
-<p>For technical
-reasons, we allow data members of a test fixture class in a .cc file to
-be <code>protected</code> when using
+<p>Допустимо объявлять данные класса как <code>protected</code> для использования
+ в тестовых классах (например, при использовании
+ <a href="https://github.com/google/googletest">Google Test</a>) или
+ других подобных случаях.</p>
 
+<h3 id="Declaration_Order">Порядок объявления</h3>
 
-<a href="https://github.com/google/googletest">Google
-Test</a>).</p>
+<p>Располагайте похожие объявления в одном месте, выносите общие части наверх.</p>
 
-<h3 id="Declaration_Order">Declaration Order</h3>
+<p>Определение класса обычно начинается с секции <code>public:</code>,
+ далее идёт <code>protected:</code> и затем <code>private:</code>. Если секция
+ пустая - пропускайте её.</p>
 
-<p>Group similar declarations together, placing public parts
-earlier.</p>
+<p>Внутри каждой секции группируйте вместе подобные декларации.
+ Предпочтителен следующий порядок: типы (включая <code>typedef</code>,
+ <code>using</code>, вложенные классы и структуры),
+ константы, фабричные методы, конструкторы, операторы присваивания, 
+ деструкторы, остальные методы, члены данных.</p>
 
-<p>A class definition should usually start with a
-<code>public:</code> section, followed by
-<code>protected:</code>, then <code>private:</code>.  Omit
-sections that would be empty.</p>
-
-<p>Within each section, generally prefer grouping similar
-kinds of declarations together, and generally prefer the
-following order: types (including <code>typedef</code>,
-<code>using</code>, and nested structs and classes),
-constants, factory functions, constructors, assignment
-operators, destructor, all other methods, data members.</p>
-
-<p>Do not put large method definitions inline in the
-class definition. Usually, only trivial or
-performance-critical, and very short, methods may be
-defined inline. See <a href="#Inline_Functions">Inline
-Functions</a> for more details.</p>
+<p>Не размещайте в определении класса громоздкие определения методов.
+ Обычно только тривиальные, очень короткие или критичные по производительности
+ методы "встраиваются" в определение класса. См. также 
+ <a href="#Inline_Functions">Встраиваемые функции</a>.</p>
 
 <h2 id="Functions">Functions</h2>
 
