@@ -419,38 +419,33 @@
 #endif  // LANG_CXX11
 </pre>
 
-<h2 id="Scoping">Scoping</h2>
+<h2 id="Scoping">Область видимости</h2>
 
-<h3 id="Namespaces">Namespaces</h3>
+<h3 id="Namespaces">Простаранство имён</h3>
 
-<p>With few exceptions, place code in a namespace. Namespaces
-should have unique names based on the project name, and possibly
-its path. Do not use <i>using-directives</i> (e.g.
-<code>using namespace foo</code>). Do not use
-inline namespaces. For unnamed namespaces, see
-<a href="#Unnamed_Namespaces_and_Static_Variables">Unnamed Namespaces and
+<p>Размещаёте свой код в пространстве имён (за некоторыми исключениями). Пространство имён должно
+ иметь уникальное имя, формируемое на основе названия проекта, и, возможно, пути.
+ Не используйте директиву <i>using</i> (например, <code>using namespace foo</code>). Не используйте
+ встроенные (inline) пространства имён. Для безымянных пространств смотрите 
+ <a href="#Unnamed_Namespaces_and_Static_Variables">Unnamed Namespaces and
 Static Variables</a>.
 
 </p><p class="definition"></p>
-<p>Namespaces subdivide the global scope
-into distinct, named scopes, and so are useful for preventing
-name collisions in the global scope.</p>
+<p>Простанства имён делят глобальную область видимости на отдельные именованные области позволяя
+ избежать совпадения (коллизий) имён.</p>
 
 <p class="pros"></p>
 
-<p>Namespaces provide a method for preventing name conflicts
-in large programs while allowing most code to use reasonably
-short names.</p>
+<p>Простанства имён позволяют избежать конфликта имён в больших программах, при этом сами имена
+ остаются достаточно короткими.</p>
 
-<p>For example, if two different projects have a class
-<code>Foo</code> in the global scope, these symbols may
-collide at compile time or at runtime. If each project
-places their code in a namespace, <code>project1::Foo</code>
-and <code>project2::Foo</code> are now distinct symbols that
-do not collide, and code within each project's namespace
-can continue to refer to <code>Foo</code> without the prefix.</p>
+<p>Например, если два разных проекта содержат класс <code>Foo</code> в глобальной области видимости,
+ имена могут конфликтовать. Если каждый проект размещает код в своё пространство имён, то
+ <code>project1::Foo</code> и <code>project2::Foo</code> будут разными именами, конфликтов не будет,
+ в то же время код каждого проекта будет использовать <code>Foo</code> без префикса.</p>
 
-<p>Inline namespaces automatically place their names in
+<p>Встроенные (inline) пространства имён автоматически делают видимыми свои имена для включающего
+ пространства имён. Inline namespaces automatically place their names in
 the enclosing scope. Consider the following snippet, for
 example:</p>
 
@@ -1951,74 +1946,57 @@ you can download
 
 
 
-<h2 id="Other_C++_Features">Other C++ Features</h2>
+<h2 id="Other_C++_Features">Ещё возможности C++</h2>
 
-<h3 id="Rvalue_references">Rvalue References</h3>
+<h3 id="Rvalue_references">Rvalue-ссылки</h3>
 
-<p>Use rvalue references to:</p>
+<p>Используйте rvalue-ссылки:</p>
 <ul>
-  <li>Define move constructors and move assignment operators.</li>
+  <li>Для объявления конструкторов перемещения и операторов перемещения.</li>
 
-  <li>Define <a href="#Function_Overloading">overload sets</a> with
-  const&amp; and &amp;&amp; variants if you have evidence that this
-  provides meaningfully better performance than passing by value,
-  or if you're writing low-overhead generic code that needs to support
-  arbitrary types. Beware combinatorial overload sets, that is, seldom
-  overload more than one parameter.</li>
+  <li>Для объявления <a href="#Function_Overloading">перегружаемых функций</a> с 
+  const&amp; и &amp;&amp; аргументами если это обеспечит значительное улучшение
+  производительности против передачи по значению или если пишется код с
+  небольшими накладными расходами или поддержкой произвольных типов. Избегайте 
+  увеличения количества перегружаемых функций (обычно бывает, когда комбинируются
+  типы для несколько параметров).</li>
 
-  <li>Support 'perfect forwarding' in generic code.</li>
+  <li>Для поддержки 'perfect forwarding' в 'универсальном' коде.</li>
 </ul>
 
 <p class="definition"></p>
-<p> Rvalue references
-are a type of reference that can only bind to temporary
-objects. The syntax is similar to traditional reference
-syntax. For example, <code>void f(std::string&amp;&amp;
-s);</code> declares a function whose argument is an
-rvalue reference to a std::string.</p>
+<p> Rvalue-ссылка является ссылочным типом, привязанным к временному объекту.
+ По синтаксису похожа на обычную ссылку. Например, <code>void f(std::string&amp;&amp; s);</code>
+ объявляет функцию с аргументом rvalue-ссылка на std::string.</p>
 
-<p id="Forwarding_references"> When the token '&amp;&amp;' is applied to
-an unqualified template argument in a function
-parameter, special template argument deduction
-rules apply. Such a reference is called forwarding reference.</p>
+<p id="Forwarding_references">Когда суффикс '&amp;&amp;' (без дополнительных квалификаторов) используется с шаблонным аргументом
+ функции, то применяются специальные правила определения типа аргумента. И такая ссылка имеет название forwarding reference.</p>
 
 <p class="pros"></p>
 <ul>
-  <li>Defining a move constructor (a constructor taking
-  an rvalue reference to the class type) makes it
-  possible to move a value instead of copying it. If
-  <code>v1</code> is a <code>std::vector&lt;std::string&gt;</code>,
-  for example, then <code>auto v2(std::move(v1))</code>
-  will probably just result in some simple pointer
-  manipulation instead of copying a large amount of data.
-  In many cases this can result in a major performance
-  improvement.</li>
+  <li>Определение конструктора перемещения (принимающего rvalue-ссылку на тип класса) даёт
+  возможность переместить (move) класс вместо его копирования. Например, если <code>v1</code> это <code>std::vector&lt;std::string&gt;</code>,
+  то код <code>auto v2(std::move(v1))</code> скорее всего выполнит несколько операций с указателями вместо копирования большого объёма данных.
+  И в большинстве случаев это приведёт к существенному увеличению производительности кода.</li>
 
-  <li>Rvalue references make it possible to implement
-  types that are movable but not copyable, which can be
-  useful for types that have no sensible definition of
-  copying but where you might still want to pass them as
-  function arguments, put them in containers, etc.</li>
+  <li>Rvalue-ссылки позволяют реализовать типы, которые можно перемещать, а не копировать. Это полезно для типов,
+  которые нельзя копировать, но которые хочется передавать в функцию как аргумент, хранить в контейнере и т.д.</li>
 
-  <li><code>std::move</code> is necessary to make
-  effective use of some standard-library types, such as
-  <code>std::unique_ptr</code>.</li>
+  <li>Функция <code>std::move</code> необходима для эффективного использования 
+  некоторых типов стандартной библиотеки, таких как <code>std::unique_ptr</code>.</li>
 
-  <li><a href="#Forwarding_references">Forwarding references</a> which
-  use the rvalue reference token, make it possible to write a
-  generic function wrapper that forwards its arguments to
-  another function, and works whether or not its
-  arguments are temporary objects and/or const.
-  This is called 'perfect forwarding'.</li>
+  <li><a href="#Forwarding_references">Forwarding references</a>, использующие объявление
+  rvalue-ссылки, позволяют написать единую обёртку, перемещающую аргумент в другую функцию.
+  И это одинаково работает вне зависимости от того, временный объект или нет,
+  константный он или не очень. Это и называется 'perfect forwarding'.</li>
 </ul>
 
 <p class="cons"></p>
 <ul>
-  <li>Rvalue references are not yet widely understood. Rules like reference
-  collapsing and the special deduction rule for forwarding references
-  are somewhat obscure.</li>
+  <li>Rvalue-ссылки не все хорошо понимают. Особенности, наподобие схлопывания ссылок или
+  специальных правил определения типа, всё сильно усложняют.</li>
 
-  <li>Rvalue references are often misused. Using rvalue
+  <li>Rvalue-ссылки  references are often misused. Using rvalue
   references is counter-intuitive in signatures where the argument is expected
   to have a valid specified state after the function call, or where no move
   operation is performed.</li>
