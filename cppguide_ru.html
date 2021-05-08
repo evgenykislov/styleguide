@@ -567,26 +567,24 @@ inline void my_inline_function() {
 
 <h3 id="Unnamed_Namespaces_and_Static_Variables">Безымянные пространства имён и статические переменные</h3>
 
-<p>When definitions in a <code>.cc</code> file do not need to be
-referenced outside that file, place them in an unnamed
-namespace or declare them <code>static</code>. Do not use either
-of these constructs in <code>.h</code> files.
+<p>Когда определения внутри <code>.cc</code> файла не используются в других исходных файлах, размещайте
+ такие определения в безымянном пространстве имён или объявляйте их как <code>static</code>. Не используйте такой тип
+ определения в заголовочных файлах (<code>.h</code>).
 
 </p><p class="definition"></p>
-<p>All declarations can be given internal linkage by placing them in unnamed
-namespaces. Functions and variables can also be given internal linkage by
-declaring them <code>static</code>. This means that anything you're declaring
-can't be accessed from another file. If a different file declares something with
-the same name, then the two entities are completely independent.</p>
+<p>Размещённые в безымянном пространстве имён объявления могут быть слинкованы как internal (только для внутреннего использования).
+ Фнукции и переменные также могут быть с internal линковкой, если они заявлены как <code>static</code>.
+ Такие типы объявления подразумевают, что они будут недоступны из другого файла. Если другой файл объявляет
+ сущность с таким же именем, то оба объявления будут полностью независимы.</p>
 
 <p class="decision"></p>
 
-<p>Use of internal linkage in <code>.cc</code> files is encouraged
-for all code that does not need to be referenced elsewhere.
-Do not use internal linkage in <code>.h</code> files.</p>
+<p>Использование internal линковки в <code>.cc</code> файлах предпочтительно для любого кода,
+ к которому не обращаются снаружи (из других файлов). Не используйте подходы  internal линковки в
+ <code>.h</code> файлах.</p>
 
-<p>Format unnamed namespaces like named namespaces. In the
-  terminating comment, leave the namespace name empty:</p>
+<p>Формат описания безымянного пространства имён полностью аналогичен именованному варианту. Не забывайте к закрывающей скобке написать комментарий, в котором
+ имя оставьте пустым:</p>
 
 <pre>namespace {
 ...
@@ -1995,27 +1993,21 @@ you can download
  <a href="http://en.cppreference.com/w/cpp/utility/forward">std::forward</a></code>,
  чтобы реализовать 'perfect forwarding'.</p>
 
-<h3 id="Friends">Friends</h3>
+<h3 id="Friends">Дружественные сущности</h3>
 
-<p>We allow use of <code>friend</code> classes and functions,
-within reason.</p>
+<p>В ряде случаев допустимо использовать классы и функции как <code>friend</code>.</p>
 
-<p>Friends should usually be defined in the same file so
-that the reader does not have to look in another file to
-find uses of the private members of a class. A common use
-of <code>friend</code> is to have a
-<code>FooBuilder</code> class be a friend of
-<code>Foo</code> so that it can construct the inner state
-of <code>Foo</code> correctly, without exposing this
-state to the world. In some cases it may be useful to
-make a unittest class a friend of the class it tests.</p>
+<p>Дружественные типы обычно определяются в том же файле, поэтому нет необходимости открывать другой файл,
+ чтобы разобраться с использованием закрытых членов класса. Обычное использование 
+ <code>friend</code>: когда класс <code>FooBuilder</code> объявляется дружественным (friend)
+ классу <code>Foo</code>, так что <code>FooBuilder</code> может корректно настроить внутреннее
+ состояние <code>Foo</code> без необходимости открывать это состояние всем остальным.
+ В ряде случаев удобно сделать класс unit-тестов дружественным исходному классу.</p>
 
-<p>Friends extend, but do not break, the encapsulation
-boundary of a class. In some cases this is better than
-making a member public when you want to give only one
-other class access to it. However, most classes should
-interact with other classes solely through their public
-members.</p>
+<p>Дружественность расширяет (но не ломает) инкапсуляцию класса. В ряде случаев, когда требуется
+ дать доступ к внутреннему состоянию только одному классу, лучше объявить его как friend, чем делать
+ дополнительные открытые члены класса. Однако, в остальном классы должны взаимодействовать
+ только через открытые функции.</p>
 
 <h3 id="Exceptions">Exceptions</h3>
 
