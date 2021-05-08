@@ -421,22 +421,21 @@
 
 <h2 id="Scoping">Область видимости</h2>
 
-<h3 id="Namespaces">Простаранство имён</h3>
+<h3 id="Namespaces">Пространство имён</h3>
 
-<p>Размещаёте свой код в пространстве имён (за некоторыми исключениями). Пространство имён должно
+<p>Размещайте свой код в пространстве имён (за некоторыми исключениями). Пространство имён должно
  иметь уникальное имя, формируемое на основе названия проекта, и, возможно, пути.
  Не используйте директиву <i>using</i> (например, <code>using namespace foo</code>). Не используйте
- встроенные (inline) пространства имён. Для безымянных пространств смотрите 
- <a href="#Unnamed_Namespaces_and_Static_Variables">Unnamed Namespaces and
-Static Variables</a>.
+ встроенные (inline) пространства имён. Для безымянных пространств имён смотрите 
+ <a href="#Unnamed_Namespaces_and_Static_Variables">Безымянные пространства имён и статические переменные</a>.
 
 </p><p class="definition"></p>
-<p>Простанства имён делят глобальную область видимости на отдельные именованные области позволяя
+<p>Пространства имён делят глобальную область видимости на отдельные именованные области позволяя
  избежать совпадения (коллизий) имён.</p>
 
 <p class="pros"></p>
 
-<p>Простанства имён позволяют избежать конфликта имён в больших программах, при этом сами имена
+<p>Пространства имён позволяют избежать конфликта имён в больших программах, при этом сами имена
  остаются достаточно короткими.</p>
 
 <p>Например, если два разных проекта содержат класс <code>Foo</code> в глобальной области видимости,
@@ -444,58 +443,48 @@ Static Variables</a>.
  <code>project1::Foo</code> и <code>project2::Foo</code> будут разными именами, конфликтов не будет,
  в то же время код каждого проекта будет использовать <code>Foo</code> без префикса.</p>
 
-<p>Встроенные (inline) пространства имён автоматически делают видимыми свои имена для включающего
- пространства имён. Inline namespaces automatically place their names in
-the enclosing scope. Consider the following snippet, for
-example:</p>
+<p>Пространства имён inline автоматически делают видимыми свои имена для включающего
+ пространства имён. Рассмотрим пример кода:</p>
 
 <pre class="neutralcode">namespace outer {
-inline namespace inner {
-  void foo();
-}  // namespace inner
+  inline namespace inner {
+    void foo();
+  }  // namespace inner
 }  // namespace outer
 </pre>
 
-<p>The expressions <code>outer::inner::foo()</code> and
-<code>outer::foo()</code> are interchangeable. Inline
-namespaces are primarily intended for ABI compatibility
-across versions.</p>
+<p>Здесь выражения <code>outer::inner::foo()</code> и
+<code>outer::foo()</code> взаимозаменяемы. Inline пространства имён
+ в основном используются для ABI-совместимости разных версий.</p>
 
 <p class="cons"></p>
 
-<p>Namespaces can be confusing, because they complicate
-the mechanics of figuring out what definition a name refers
-to.</p>
+<p>Пространства имён могут запутать программиста, усложнить понимание, что к чему относится.</p>
 
-<p>Inline namespaces, in particular, can be confusing
-because names aren't actually restricted to the namespace
-where they are declared. They are only useful as part of
-some larger versioning policy.</p>
+<p>Пространства имён inline, в частности, могут сбивать с толку
+т.к. область видимости не ограничена местом определения. Поэтому такой вид
+пространств имён может быть полезен только при обновлении интерфейсов с сохранением совместимости.</p>
 
-<p>In some contexts, it's necessary to repeatedly refer to
-symbols by their fully-qualified names. For deeply-nested
-namespaces, this can add a lot of clutter.</p>
+<p>В ряде случаев требуется использование полных имён и это может сделать код сильно перегруженным.</p>
 
 <p class="decision"></p>
 
-<p>Namespaces should be used as follows:</p>
+<p>Используйте пространства имён следующим образом:</p>
 
 <ul>
-  <li>Follow the rules on <a href="#Namespace_Names">Namespace Names</a>.
-  </li><li>Terminate namespaces with comments as shown in the given examples.
-  </li><li>
+  <li>Следуйте правилам <a href="#Namespace_Names">Именования Пространств Имён</a>.
+  </li><li>В конце объявления пространства имён добавляйте комментарий, аналогично
+  показанным в примерах.</li><li>
 
-  <p>Namespaces wrap the entire source file after
-  includes,
-  <a href="https://gflags.github.io/gflags/">
-  gflags</a> definitions/declarations
-  and forward declarations of classes from other namespaces.</p>
+  <p>Заключайте в пространство имён целиком файл с исходным кодом после #include-ов, 
+  объявлений/определений <a href="https://gflags.github.io/gflags/">
+  gflag-ов</a> и предварительных объявлений классов из других пространств имён.</p>
 
-<pre>// In the .h file
+<pre>// В .h файле
 namespace mynamespace {
 
-// All declarations are within the namespace scope.
-// Notice the lack of indentation.
+// Все объявления внутри блока пространства имён.
+// Обратите внимание на отсутствие отступа.
 class MyClass {
  public:
   ...
@@ -505,10 +494,10 @@ class MyClass {
 }  // namespace mynamespace
 </pre>
 
-<pre>// In the .cc file
+<pre>// В .cc файле
 namespace mynamespace {
 
-// Definition of functions is within scope of the namespace.
+// Определение функций внутри блока пространства имён.
 void MyClass::Foo() {
   ...
 }
@@ -516,8 +505,7 @@ void MyClass::Foo() {
 }  // namespace mynamespace
 </pre>
 
-  <p>More complex <code>.cc</code> files might have additional details,
-  like flags or using-declarations.</p>
+  <p>В <code>.cc</code> файлах могут быть дополнительные объявления, такие как флаги или using-декларации.</p>
 
 <pre>#include "a.h"
 
@@ -527,66 +515,57 @@ namespace mynamespace {
 
 using ::foo::Bar;
 
-...code for mynamespace...    // Code goes against the left margin.
+...code for mynamespace...    // Код начинается с самой левой границы.
 
 }  // namespace mynamespace
 </pre>
   </li>
 
-  <li>To place generated protocol
-  message code in a namespace, use the
-  <code>package</code> specifier in the
-  <code>.proto</code> file. See
-
-
+  <li>Чтобы генерируемый из protobuf-а код был размещён в требуемом пространстве имён,
+  применяйте спецификатор <code>package</code> в <code>.proto</code> файле. Подробнее здесь: 
   <a href="https://developers.google.com/protocol-buffers/docs/reference/cpp-generated#package">
-  Protocol Buffer Packages</a>
-  for details.</li>
+  Protocol Buffer Packages</a>.</li>
 
-  <li>Do not declare anything in namespace
-  <code>std</code>, including forward declarations of
-  standard library classes. Declaring entities in
-  namespace <code>std</code> is undefined behavior, i.e.,
-  not portable. To declare entities from the standard
-  library, include the appropriate header file.</li>
+  <li>Ничего не объявляйте в пространстве <code>std</code>, в том числе и 
+  предварительные объявления классов стандартной библиотеки. Объявление в 
+  пространстве имён <code>std</code> приведёт к неопределённому поведению (UB)
+  и это будет непереносимый код. Для объявления сущностей используйте соответствующий
+  заголовочный файл.</li>
 
-  <li><p>You may not use a <i>using-directive</i>
-  to make all names from a namespace available.</p>
+  <li><p>Не используйте <i>using-директиву</i> чтобы сделать доступными все
+  имена из пространства имён.</p>
 
-<pre class="badcode">// Forbidden -- This pollutes the namespace.
+<pre class="badcode">// Недопустимо -- Это загрязняет пространство имён.
 using namespace foo;
 </pre>
   </li>
 
-  <li><p>Do not use <i>Namespace aliases</i> at namespace scope
-  in header files except in explicitly marked
-  internal-only namespaces, because anything imported into a namespace
-  in a header file becomes part of the public
-  API exported by that file.</p>
+  <li><p>Не используйте <i>псевдонимы пространств имён</i> в блоке namespace в заголовочном файле, 
+  за исключением явно обозначенных "внутренних" пространств имён. Связано это с тем, что любая
+  декларация в заголовочном файле становится частью публичного API, экспортируемого этим файлом.</p>
 
-<pre>// Shorten access to some commonly used names in .cc files.
+<pre>// Укороченная запись для доступа к часто используемым именам в .cc файлах.
 namespace baz = ::foo::bar::baz;
 </pre>
 
-<pre>// Shorten access to some commonly used names (in a .h file).
+<pre>// Укороченная запись для доступа к часто используемым именам (в .h файле).
 namespace librarian {
-namespace impl {  // Internal, not part of the API.
+namespace impl {  // Внутреннее содержимое, не являющееся частью API.
 namespace sidetable = ::pipeline_diagnostics::sidetable;
 }  // namespace impl
 
 inline void my_inline_function() {
-  // namespace alias local to a function (or method).
+  // Пространство имён, локальное для функции (или метода).
   namespace baz = ::foo::bar::baz;
   ...
 }
 }  // namespace librarian
 </pre>
 
-  </li><li>Do not use inline namespaces.</li>
+  </li><li>Не используйте inline-пространства имён.</li>
 </ul>
 
-<h3 id="Unnamed_Namespaces_and_Static_Variables">Unnamed Namespaces and Static
-Variables</h3>
+<h3 id="Unnamed_Namespaces_and_Static_Variables">Безымянные пространства имён и статические переменные</h3>
 
 <p>When definitions in a <code>.cc</code> file do not need to be
 referenced outside that file, place them in an unnamed
@@ -1996,30 +1975,25 @@ you can download
   <li>Rvalue-ссылки не все хорошо понимают. Особенности, наподобие схлопывания ссылок или
   специальных правил определения типа, всё сильно усложняют.</li>
 
-  <li>Rvalue-ссылки  references are often misused. Using rvalue
-  references is counter-intuitive in signatures where the argument is expected
-  to have a valid specified state after the function call, or where no move
-  operation is performed.</li>
+  <li>Rvalue-ссылки часто используют неправильно, т.к. они интуитивно нелогичны: обычно ожидается, что аргумент
+  будет иметь валидное состояние после вызова функции (и операции перемещения выполняться не будут).</li>
 </ul>
 
 <p class="decision"></p>
-<p>You may use rvalue references to define move constructors and move
-assignment operators (as described in
-<a href="#Copyable_Movable_Types">Copyable and Movable Types</a>). See the
-<a href="primer#copying_moving">C++ Primer</a> for more information about
-move semantics and <code>std::move</code>.</p>
+<p>Вы можете использовать rvalue-ссылки чтобы объявить конструктор перемещения и перемещающий оператор присваивания
+ (как описано в <a href="#Copyable_Movable_Types">Копируемые и перемещаемые типы</a>). См. также 
+ <a href="primer#copying_moving">C++ Primer</a> для более подробной информации о семантике перемещения и, также, <code>std::move</code>.</p>
 
-<p>You may use rvalue references to define pairs of overloads, one taking
-<code>Foo&amp;&amp;</code> and the other taking <code>const Foo&amp;</code>.
-Usually the preferred solution is just to pass by value, but an overloaded pair
-of functions sometimes yields better performance and is sometimes necessary in
-generic code that needs to support a wide variety of types. As always: if
-you're writing more complicated code for the sake of performance, make sure you
-have evidence that it actually helps.</p>
+<p>Вы можете использовать rvalue-ссылки чтобы объявить пары перегружаемых функций, одна с
+ <code>Foo&amp;&amp;</code>, другая с <code>const Foo&amp;</code>.
+ Обычно программисты предпочитают передавать аргументы по значению. Однако использование пары
+ функций может дать лучшую производительность, или позволит в обобщённом коде поддержать
+ большое количество типов. И не забывайте: если ради производительности пишется более сложный
+ код, проверьте и убедитесь, что это действительно помогает.</p>
 
-<p>You may use forwarding references in conjunction with <code>
-<a href="http://en.cppreference.com/w/cpp/utility/forward">std::forward</a></code>,
-to support perfect forwarding.</p>
+<p>Вы можете использовать 'forwarding references' вместе с <code>
+ <a href="http://en.cppreference.com/w/cpp/utility/forward">std::forward</a></code>,
+ чтобы реализовать 'perfect forwarding'.</p>
 
 <h3 id="Friends">Friends</h3>
 
