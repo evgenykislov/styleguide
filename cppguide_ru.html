@@ -573,7 +573,7 @@ inline void my_inline_function() {
 
 </p><p class="definition"></p>
 <p>Размещённые в безымянном пространстве имён объявления могут быть слинкованы как internal (только для внутреннего использования).
- Фнукции и переменные также могут быть с internal линковкой, если они заявлены как <code>static</code>.
+ Функции и переменные также могут быть с internal линковкой, если они заявлены как <code>static</code>.
  Такие типы объявления подразумевают, что они будут недоступны из другого файла. Если другой файл объявляет
  сущность с таким же именем, то оба объявления будут полностью независимы.</p>
 
@@ -591,38 +591,30 @@ inline void my_inline_function() {
 }  // namespace
 </pre>
 
-<h3 id="Nonmember,_Static_Member,_and_Global_Functions">Nonmember, Static Member, and Global Functions</h3>
+<h3 id="Nonmember,_Static_Member,_and_Global_Functions">Функции: глобальные, статические внутри класса, вне класса</h3>
 
-<p>Prefer placing nonmember functions in a namespace; use completely global
-functions rarely. Do not use a class simply to group static functions. Static
-methods of a class should generally be closely related to instances of the
-class or the class's static data.</p>
-
+<p>Предпочтительно размещать функции либо внутри класса, либо в некотором пространстве имён. Использование
+ глобальных функций должно быть минимальным. Также не используйте класс для группировки различных функций, объявляя
+ их статическими в одном классе: статические функции (по-правильному) должны использоваться для работы с экземплярами
+ класса или его статическими данными.</p>
 
 <p class="pros"></p>
-<p>Nonmember and static member functions can be useful in
-some situations. Putting nonmember functions in a
-namespace avoids polluting the global namespace.</p>
+<p>Вообще функции (как статические, так и вне класса) довольно полезная штука, Кэп. И размещение функций либо в классе,
+ либо в пространстве имён позволяет всё остальное содержать в чистоте (я про глобальное пространство имён).</p>
 
 <p class="cons"></p>
-<p>Nonmember and static member functions may make more sense
-as members of a new class, especially if they access
-external resources or have significant dependencies.</p>
+<p>Иногда разумнее статические функции класса и функции вне класса сгруппировать в одном месте, в новом классе.
+ Например, когда у них сложные зависимости от всего или им нужен доступ к внешним ресурсам.</p>
 
 <p class="decision"></p>
-<p>Sometimes it is useful to define a
-function not bound to a class instance. Such a function
-can be either a static member or a nonmember function.
-Nonmember functions should not depend on external
-variables, and should nearly always exist in a namespace.
-Do not create classes only to group static member functions;
-this is no different than just giving the function names a
-common prefix, and such grouping is usually unnecessary anyway.</p>
+<p>Иногда полезно объявить функцию, не привязанную к экземпляру класса. И можно сделать либо 
+ статическую функцию в классе, либо внешнюю (вне класса) функцию. Желательно, чтобы функция-вне-класса
+ не использовала внешних переменных и находилась в пространстве имён. Не создавайте классы только для
+ группировки статических функций: это всё равно, что дать функциям некий префикс и группировка становится
+ лишней.</p>
 
-<p>If you define a nonmember function and it is only
-needed in its <code>.cc</code> file, use
-<a href="#Unnamed_Namespaces_and_Static_Variables">internal linkage</a> to limit
-its scope.</p>
+<p>Если требуется определить функцию: в <code>.cc</code>-файле; вне класса; используемой только в локальном файле - используйте
+ <a href="#Unnamed_Namespaces_and_Static_Variables">internal линковку</a> для ограничения области видимости.</p>
 
 <h3 id="Local_Variables">Local Variables</h3>
 
@@ -2009,120 +2001,87 @@ you can download
  дополнительные открытые члены класса. Однако, в остальном классы должны взаимодействовать
  только через открытые функции.</p>
 
-<h3 id="Exceptions">Exceptions</h3>
+<h3 id="Exceptions">Исключения (программные)</h3>
 
-<p>We do not use C++ exceptions.</p>
+<p>Мы НЕ используем исключения C++.</p>
 
 <p class="pros"></p>
 <ul>
-  <li>Exceptions allow higher levels of an application to
-  decide how to handle "can't happen" failures in deeply
-  nested functions, without the obscuring and error-prone
-  bookkeeping of error codes.</li>
+  <li>Исключения позволяют обрабатывать ситуации типа "это невозможно" не в месте возникновения ошибки,
+  а на более верхнем уровне, позже. И всё это без копания в исходниках и составления таблиц с кодами ошибок.</li>
 
+  <li>Исключения используются в большинстве современных языков
+  программирования и их использование в C++ позволяет
+  писать код, концептуально схожий с Python, Java и др.</li>
 
+  <li>Некоторые библиотеки C++ используют исключения в своей работе и отказ от них может
+  существенно усложнить интеграцию с этими библиотеками.</li>
 
-  <div>
-  <li>Exceptions are used by most other
-  modern languages. Using them in C++ would make it more
-  consistent with Python, Java, and the C++ that others
-  are familiar with.</li>
-  </div>
+  <li>Исключения являются единственным способом проинформировать о проблемах
+  в конструкторе класса. Конечно, это можно обойти, используя фабричные методы или 
+  метод <code>Init()</code>, однако это потребует либо дополнительного выделения памяти или,
+  соответственно, обработку специального "невалидного" состояния.</li>
 
-  <li>Some third-party C++ libraries use exceptions, and
-  turning them off internally makes it harder to
-  integrate with those libraries.</li>
-
-  <li>Exceptions are the only way for a constructor to
-  fail. We can simulate this with a factory function or
-  an <code>Init()</code> method, but these require heap
-  allocation or a new "invalid" state, respectively.</li>
-
-  <li>Exceptions are really handy in testing
-  frameworks.</li>
+  <li>Исключения очень удобны при использовании в тестировании (в тестовых фреймворках).</li>
 </ul>
 
 <p class="cons"></p>
 <ul>
-  <li>When you add a <code>throw</code> statement to an
-  existing function, you must examine all of its
-  transitive callers. Either they must make at least the
-  basic exception safety guarantee, or they must never
-  catch the exception and be happy with the program
-  terminating as a result. For instance, if
-  <code>f()</code> calls <code>g()</code> calls
-  <code>h()</code>, and <code>h</code> throws an
-  exception that <code>f</code> catches, <code>g</code>
-  has to be careful or it may not clean up properly.</li>
+  <li>Если используется <code>throw</code> в функции, то вы должны 
+  проверить всех, кто эту функцию вызывает. Должна быть базовая 
+  гарантия безопасности при исключениях. Или же код никогда не ловит исключения и тогда
+  программа может внезапно завершиться. Например есть код, где 
+  <code>f()</code> вызывает <code>g()</code>, который вызывает 
+  <code>h()</code>. Если <code>h</code> выбрасывает исключение, 
+  которое отлавливает <code>f</code>, то <code>g</code>
+  нужно писать аккуратно, иначе могут быть утечки ресурсов и т.д.</li>
 
-  <li>More generally, exceptions make the control flow of
-  programs difficult to evaluate by looking at code:
-  functions may return in places you don't expect. This
-  causes maintainability and debugging difficulties. You
-  can minimize this cost via some rules on how and where
-  exceptions can be used, but at the cost of more that a
-  developer needs to know and understand.</li>
+  <li>Обычно использование исключений усложняет отслеживание последовательности
+  выполнения кода. Например, функции могут завершаться в неожиданных местах.
+  Это затрудняет поддержку кода и его отладку. Вы можете улучшить 
+  ситуацию, следуя (своим) правилам когда и где можно использовать
+  исключения. Однако, очень желательно, чтобы и другие разработчики
+  знали об этих правилах.</li>
 
-  <li>Exception safety requires both RAII and different
-  coding practices. Lots of supporting machinery is
-  needed to make writing correct exception-safe code
-  easy. Further, to avoid requiring readers to understand
-  the entire call graph, exception-safe code must isolate
-  logic that writes to persistent state into a "commit"
-  phase. This will have both benefits and costs (perhaps
-  where you're forced to obfuscate code to isolate the
-  commit). Allowing exceptions would force us to always
-  pay those costs even when they're not worth it.</li>
+  <li>Безопасное использование исключений требует использования дополнительных
+  принципов кодирования, например, RAII. И их количество (принципов кодирования)
+  может быть значительным. Например, чтобы разработчик не разбирался
+  в тонкостях всей цепочки вызовов неизвестного ему кода, желательно
+  выделить код сохранения данных в хранилище в отдельную фазу-фиксацию. Такое выделение
+  может нести как плюсы, так и минусы (э-э-э, корпоративная политика смешивания
+  кода в одну кучу для удобства обсфуркации?). В любом случае, использование
+  исключений уменьшает количество доступных вариантов.</li>
 
-  <li>Turning on exceptions adds data to each binary
-  produced, increasing compile time (probably slightly)
-  and possibly increasing address space pressure.
-  </li>
+  <li>Использование исключений ведёт к распуханию бинарного файла программы,
+  увеличивает время компиляции (иногда только чуть-чуть) и вообще может
+  привести к проблемам с адресным пространством.</li>
 
-  <li>The availability of exceptions may encourage
-  developers to throw them when they are not appropriate
-  or recover from them when it's not safe to do so. For
-  example, invalid user input should not cause exceptions
-  to be thrown. We would need to make the style guide
-  even longer to document these restrictions!</li>
+  <li>Само наличие исключений может провоцировать разработчиков выбрасывать их
+  по поводу и без повода, даже когда это не нужно или может привести к
+  сложностям в обработке. Например, если пользователь вводит неподходящий текст,
+  это не должно приводить к выбрасыванию исключения. И вообще, если всё это
+  расписывать, то никакого документа не хватит!</li>
 </ul>
 
 <p class="decision"></p>
-<p>On their face, the benefits of using exceptions
-outweigh the costs, especially in new projects. However,
-for existing code, the introduction of exceptions has
-implications on all dependent code. If exceptions can be
-propagated beyond a new project, it also becomes
-problematic to integrate the new project into existing
-exception-free code. Because most existing C++ code at
-Google is not prepared to deal with exceptions, it is
-comparatively difficult to adopt new code that generates
-exceptions.</p>
+<p>Для новых проектов преимуществ от использования исключений обычно
+больше, чем недостатков. Однако, для уже существующего кода
+введение исключений может повлиять на весь код. Также могут возникнуть
+проблемы стыка нового кода и старого (без исключений) кода.</p>
 
-<p>Given that Google's existing code is not
-exception-tolerant, the costs of using exceptions are
-somewhat greater than the costs in a new project. The
-conversion process would be slow and error-prone. We
-don't believe that the available alternatives to
-exceptions, such as error codes and assertions, introduce
-a significant burden. </p>
+<p>Т.к. большинство C++ кода в Google не использует исключений,
+то очень проблематично будет внедрять новый код, который будет
+генерировать исключения. Существующий код в Google не может корректно 
+работать с исключениями, поэтому цена внедрения исключений намного выше,
+чем реализация любого нового проекта. Переписывание существующего кода
+под обработку исключений - это будет очень медленный процесс, 
+с большим количеством ошибок. Поэтому лучше использовать альтернативу 
+в виде возврата кода ошибки и assert-ов: это не так сложно.</p>
 
-<p>Our advice against using exceptions is not predicated
-on philosophical or moral grounds, but practical ones.
- Because we'd like to use our open-source
-projects at Google and it's difficult to do so if those
-projects use exceptions, we need to advise against
-exceptions in Google open-source projects as well.
-Things would probably be different if we had to do it all
-over again from scratch.</p>
+<p>Этот запрет также распространяется на добавленные в C++11 возможности,
+такие как <code>std::exception_ptr</code> и <code>std::nested_exception</code>.</p>
 
-<p>This prohibition also applies to the exception handling related
-features added in C++11, such as
-<code>std::exception_ptr</code> and
-<code>std::nested_exception</code>.</p>
-
-<p>There is an <a href="#Windows_Code">exception</a> to
-this rule (no pun intended) for Windows code.</p>
+<p>Однако, для <a href="#Windows_Code">кода под Windows</a> есть послабления.</p>
 
 <h3 id="noexcept"><code>noexcept</code></h3>
 
