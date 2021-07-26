@@ -616,58 +616,55 @@ inline void my_inline_function() {
 <p>Если требуется определить функцию: в <code>.cc</code>-файле; вне класса; используемой только в локальном файле - используйте
  <a href="#Unnamed_Namespaces_and_Static_Variables">internal линковку</a> для ограничения области видимости.</p>
 
-<h3 id="Local_Variables">Local Variables</h3>
+<h3 id="Local_Variables">Локальные переменные</h3>
 
-<p>Place a function's variables in the narrowest scope
-possible, and initialize variables in the declaration.</p>
+<p>Объявляйте переменные внутри функции в наиболее узкой
+области видимости, инициализируйте такие переменные при объявлении.</p>
 
-<p>C++ allows you to declare variables anywhere in a
-function. We encourage you to declare them in as local a
-scope as possible, and as close to the first use as
-possible. This makes it easier for the reader to find the
-declaration and see what type the variable is and what it
-was initialized to. In particular, initialization should
-be used instead of declaration and assignment, e.g.:</p>
+<p>Язык C++ позволяет объявлять переменные в любом месте функции. Однако
+рекомендуется делать это в наиболее узкой (наиболее вложенной) области
+видимости, и по возможности ближе к первому использованию. Это облегчает поиск
+объявлений, проще узнать тип переменной и её начальное значение. Также
+рекомендуется использовать инициализацию, а не объявление с присваиванием.
+Примеры:</p>
 
 <pre class="badcode">int i;
-i = f();      // Bad -- initialization separate from declaration.
+i = f();      // Плохо -- инициализация отделена от объявления.
 </pre>
 
-<pre>int j = g();  // Good -- declaration has initialization.
+<pre>int j = g();  // Хорошо -- объявление с инициализацией.
 </pre>
 
 <pre class="badcode">std::vector&lt;int&gt; v;
-v.push_back(1);  // Prefer initializing using brace initialization.
+v.push_back(1);  // Желательно инициализировать с помощью {}.
 v.push_back(2);
 </pre>
 
-<pre>std::vector&lt;int&gt; v = {1, 2};  // Good -- v starts initialized.
+<pre>std::vector&lt;int&gt; v = {1, 2};  // Хорошо -- v сразу инициализирован.
 </pre>
 
-<p>Variables needed for <code>if</code>, <code>while</code>
-and <code>for</code> statements should normally be declared
-within those statements, so that such variables are confined
-to those scopes.  E.g.:</p>
+<p>Переменные, необходимые только внутри кода <code>if</code>, <code>while</code>
+и <code>for</code> лучше объявлять внутри условий, тогда область 
+их видимости будет ограничена только соответствующим блоком кода:</p>
 
 <pre>while (const char* p = strchr(str, '/')) str = p + 1;
 </pre>
 
-<p>There is one caveat: if the variable is an object, its
-constructor is invoked every time it enters scope and is
-created, and its destructor is invoked every time it goes
-out of scope.</p>
+<p>Однако учитывайте одну тонкость: если переменная есть экземпляр объекта,
+то при каждом входе в область видимости будет вызываться конструктор,
+и, соответственно, при выходе будет вызываться деструктор.</p>
 
-<pre class="badcode">// Inefficient implementation:
+<pre class="badcode">// Неэффективная реализация:
 for (int i = 0; i &lt; 1000000; ++i) {
-  Foo f;  // My ctor and dtor get called 1000000 times each.
+  Foo f;  // Конструктор и деструктор Foo вызовутся по 1000000 раз каждый.
   f.DoSomething(i);
 }
 </pre>
 
-<p>It may be more efficient to declare such a variable
-used in a loop outside that loop:</p>
+<p>Возможно было бы более эффективно такую переменную (которая 
+используется внутри цикла) объявить вне цикла:</p>
 
-<pre>Foo f;  // My ctor and dtor get called once each.
+<pre>Foo f;  // Конструктор и деструктор Foo вызовутся по разу.
 for (int i = 0; i &lt; 1000000; ++i) {
   f.DoSomething(i);
 }
