@@ -2082,85 +2082,72 @@ you can download
 
 <h3 id="noexcept"><code>noexcept</code></h3>
 
-<p>Specify <code>noexcept</code> when it is useful and correct.</p>
+<p>Указывайте <code>noexcept</code>, если это корректно и будет полезно.</p>
 
 <p class="definition"></p>
-<p>The <code>noexcept</code> specifier is used to specify whether
-a function will throw exceptions or not. If an exception
-escapes from a function marked <code>noexcept</code>, the program
-crashes via <code>std::terminate</code>.</p>
+<p>Спецификатор <code>noexcept</code> используется для указания, что 
+функция не будет выбрасывать исключения. Если же функция с таким спецификатором
+всё же выбросит исключение, то произойдёт крэш программы через <code>std::terminate</code>.</p>
 
-<p>The <code>noexcept</code> operator performs a compile-time
-check that returns true if an expression is declared to not
-throw any exceptions.</p>
+<p>Также есть оператор <code>noexcept</code>. Он выполняет проверку: объявлено ли выражение
+как "не выбрасывающее исключений". Проверка проводится на этапе компиляции.</p>
 
 <p class="pros"></p>
 <ul>
-  <li>Specifying move constructors as <code>noexcept</code>
-  improves performance in some cases, e.g.
-  <code>std::vector&lt;T&gt;::resize()</code> moves rather than
-  copies the objects if T's move constructor is
-  <code>noexcept</code>.</li>
+  <li>Спецификация конструктора перемещения как <code>noexcept</code> может улучшить 
+  производительность в ряде случаев, например <code>std::vector&lt;T&gt;::resize()</code>
+  скорее переместит объект нежели скопирует его, если конструктор перемещения для 
+  типа T заявлен как <code>noexcept</code>.</li>
 
-  <li>Specifying <code>noexcept</code> on a function can
-  trigger compiler optimizations in environments where
-  exceptions are enabled, e.g. compiler does not have to
-  generate extra code for stack-unwinding, if it knows
-  that no exceptions can be thrown due to a
-  <code>noexcept</code> specifier.</li>
+  <li>Указание <code>noexcept</code> для функций может разрешить 
+  дополнительную оптимизацию, например компилятор может не генерировать
+  код по раскрутке стека. Конечно, это имеет смысл, если в целом исключения разрешены.</li>
 </ul>
 
 <p class="cons"></p>
 <ul>
-  <li>
+  <li>Если проекты следуют данному руководству и в них исключения запрещены, то
+  очень сложно проверить правильность спецификатора <code>noexcept</code>,
+  если вообще применимо понятие правильности.</li>
 
-  In projects following this guide
-  that have exceptions disabled it is hard
-  to ensure that <code>noexcept</code>
-  specifiers are correct, and hard to define what
-  correctness even means.</li>
-
-  <li>It's hard, if not impossible, to undo <code>noexcept</code>
-  because it eliminates a guarantee that callers may be relying
-  on, in ways that are hard to detect.</li>
+  <li>Вы не можете безболезненно удалить ранее прописанный 
+  спецификатор <code>noexcept</code>, т.к. это аннулирует гарантию,
+  на которую может полагаться другой код, причём полагаться весьма
+  замысловатыми способами.</li>
 </ul>
 
 <p class="decision"></p>
-<p>You may use <code>noexcept</code> when it is useful for
-performance if it accurately reflects the intended semantics
-of your function, i.e. that if an exception is somehow thrown
-from within the function body then it represents a fatal error.
-You can assume that <code>noexcept</code> on move constructors
-has a meaningful performance benefit. If you think
-there is significant performance benefit from specifying
-<code>noexcept</code> on some other function, please discuss it
-with
-your project leads.</p>
+<p>Используйте <code>noexcept</code>, когда это может улучшить 
+производительность и точно отражает семантику функции (если 
+из функции вылетело исключение, то это явная, фатальная ошибка).
+Считается, что <code>noexcept</code> на конструкторе перемещения 
+может существенно улучшить производительность, учитывайте это.
+Если вы рассчитывайте на значительный прирост производительности
+от применения <code>noexcept</code> для других функций, пожалуйста,
+сначала проконсультируйтесь с руководителем проекта.</p>
 
-<p>Prefer unconditional <code>noexcept</code> if exceptions are
-completely disabled (i.e. most Google C++ environments).
-Otherwise, use conditional <code>noexcept</code> specifiers
-with simple conditions, in ways that evaluate false only in
-the few cases where the function could potentially throw.
-The tests might include type traits check on whether the
-involved operation might throw (e.g.
-<code>std::is_nothrow_move_constructible</code> for
-move-constructing objects), or on whether allocation can throw
-(e.g. <code>absl::default_allocator_is_nothrow</code> for
-standard default allocation). Note in many cases the only
-possible cause for an exception is allocation failure (we
-believe move constructors should not throw except due to
-allocation failure), and there are many applications where it&#8217;s
-appropriate to treat memory exhaustion as a fatal error rather
-than an exceptional condition that your program should attempt
-to recover from.  Even for other
-potential failures you should prioritize interface simplicity
-over supporting all possible exception throwing scenarios:
-instead of writing a complicated <code>noexcept</code> clause
-that depends on whether a hash function can throw, for example,
-simply document that your component doesn&#8217;t support hash
-functions throwing and make it unconditionally
-<code>noexcept</code>.</p>
+<p>Используйте безусловный <code>noexcept</code>, если исключения 
+полностью запрещены (т.е. в типовом проекте C++ в Google).
+В ином случае, используйте спецификатор <code>noexcept</code> с
+условиями (желательно простыми), которые становятся false в тех редких случаях,
+когда функция может всё-таки выбросить исключение.
+Эти тесты могут пользоваться проверками на характеристики типов
+(например, <code>std::is_nothrow_move_constructible</code> для
+объектов создаваемых через конструктор перемещения) или аллокаторов
+(например, <code>absl::default_allocator_is_nothrow</code>). 
+Отметим, что наиболее частая причина исключений - невозможность
+выделения памяти (и да, мы верим, что это не относится к конструкторам
+перемещения - они не должны выбрасывать исключений из-за ошибок 
+выделения памяти) и есть много приложений, для которых эта ситуация
+означает фатальную ошибку, которую даже не имеет смысла обрабатывать.
+И даже в других, потенциально ошибочных, ситуациях рекомендуется
+делать упор на простоту интерфейса, нежели на поддержку всех сценариев
+обработки ошибок: например, вместо написания накрученного <code>noexcept</code>
+с зависимостью от внешней хэш-функции (выбрасывает она исключения или нет),
+можно просто задокументировать, что разрабатываемый компонент не 
+поддерживает хэш-функции, которые выбрасывают исключения. И, после этого, 
+использовать <code>noexcept</code> без всяких дополнительных условий.
+</p>
 
 <h3 id="Run-Time_Type_Information__RTTI_">Run-Time Type
 Information (RTTI)</h3>
