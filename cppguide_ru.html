@@ -670,159 +670,144 @@ for (int i = 0; i &lt; 1000000; ++i) {
 }
 </pre>
 
-<h3 id="Static_and_Global_Variables">Static and Global Variables</h3>
+<h3 id="Static_and_Global_Variables">Переменные: статические и глобальные</h3>
 
-<p>Objects with
+<p>Объекты в 
 <a href="http://en.cppreference.com/w/cpp/language/storage_duration#Storage_duration">
-static storage duration</a> are forbidden unless they are
-<a href="http://en.cppreference.com/w/cpp/types/is_destructible">trivially
-destructible</a>. Informally this means that the destructor does not do
-anything, even taking member and base destructors into account. More formally it
-means that the type has no user-defined or virtual destructor and that all bases
-and non-static members are trivially destructible.
-Static function-local variables may use dynamic initialization.
-Use of dynamic initialization for static class member variables or variables at
-namespace scope is discouraged, but allowed in limited circumstances; see below
-for details.</p>
+статической области</a> видимости/действия запрещены, кроме 
+<a href="http://en.cppreference.com/w/cpp/types/is_destructible">тривиально удаляемых</a>. 
+Фактически это означает, что деструктор должен ничего не делать (включая вложенные или
+базовые типы). Формально это можно описать, что тип не содержит пользовательского
+или виртуального деструктора и что все базовые типы и не-статические члены ведут себя 
+аналогично (т.е. являются тривиально удаляемыми). Статические переменные в функциях 
+могут быть динамически инициализированными. Использование же динамической инициализации
+для статический членов класса или переменных в области пространства имён
+(namespace) в целом не рекомендуется, однако допустимо в ряде случаев (см. ниже).</p>
 
-<p>As a rule of thumb: a global variable satisfies these requirements if its
-declaration, considered in isolation, could be <code>constexpr</code>.</p>
+<p>Эмпирическое правило: если глобальную переменную (рассматривая её изолированно) можно
+объявить как <code>constexpr</code>, значить она соответствует вышеуказанным требованиям.</p>
 
 <p class="definition"></p>
-<p>Every object has a <dfn>storage duration</dfn>, which correlates with its
-lifetime. Objects with static storage duration live from the point of their
-initialization until the end of the program. Such objects appear as variables at
-namespace scope ("global variables"), as static data members of classes, or as
-function-local variables that are declared with the <code>static</code>
-specifier. Function-local static variables are initialized when control first
-passes through their declaration; all other objects with static storage duration
-are initialized as part of program start-up. All objects with static storage
-duration are destroyed at program exit (which happens before unjoined threads
-are terminated).</p>
+<p>Каждый объект имеет тот или иной тип <dfn>времени жизни / storage duration</dfn>, 
+и, очевидно, это влияет на время жизни объекта. Объекты статического типа 
+доступны с момента их инициализации до момента завершения программы. Такие объекты
+могут быть переменными в пространстве имён ("глобальные переменные"), 
+статическими членами классов, локальными переменными внутри функций со
+спецификатором <code>static</code>. Статические переменные в функциях
+инициализируются, когда поток выполнения кода проходит в первый раз через объявление;
+все остальные объекты статического типа инициализируются в фазе старта (start-up)
+приложения. Все объекты статического типа удаляются в фазе завершения
+программы (до обработки незавершённых(unjoined) потоков).</p>
 
-<p>Initialization may be <dfn>dynamic</dfn>, which means that something
-non-trivial happens during initialization. (For example, consider a constructor
-that allocates memory, or a variable that is initialized with the current
-process ID.) The other kind of initialization is <dfn>static</dfn>
-initialization. The two aren't quite opposites, though: static
-initialization <em>always</em> happens to objects with static storage duration
-(initializing the object either to a given constant or to a representation
-consisting of all bytes set to zero), whereas dynamic initialization happens
-after that, if required.</p>
+<p>Инициализация может быть <dfn>динамическая</dfn>, т.е. во время инициализации
+делается что-то нетривиальное: например, конструктор выделяет память, или
+переменная инициализируется идентификатором процесса. Также инициализации может быть 
+<dfn>статической</dfn>. Сначала выполняется статическая инициализация: для <em>всех</em> 
+объектов статического типа (объект инициализируется либо заданной константой, 
+либо заполняется нулями). Далее, если необходимо, выполняется динамическая инициализация.</p>
 
 <p class="pros"></p>
-<p>Global and static variables are very useful for a large number of
-applications: named constants, auxiliary data structures internal to some
-translation unit, command-line flags, logging, registration mechanisms,
-background infrastructure, etc.</p>
+<p>Глобальные и статические переменные бывают очень полезными: константные имена,
+дополнительные структуры данных, флаги командной строки, логирование,
+регистрирование, инфраструктура и др.</p>
 
 <p class="cons"></p>
-<p>Global and static variables that use dynamic initialization or have
-non-trivial destructors create complexity that can easily lead to hard-to-find
-bugs. Dynamic initialization is not ordered across translation units, and
-neither is destruction (except that destruction
-happens in reverse order of initialization). When one initialization refers to
-another variable with static storage duration, it is possible that this causes
-an object to be accessed before its lifetime has begun (or after its lifetime
-has ended). Moreover, when a program starts threads that are not joined at exit,
-those threads may attempt to access objects after their lifetime has ended if
-their destructor has already run.</p>
+<p>Глобальные и статические переменные с динамической инициализацией или
+нетривиальным деструктором могут сильно усложнить код и привести к труднообнаруживаемым
+багам. Порядок динамической инициализации (и разрушения) объектов может быть различным
+ когда есть несколько единиц трансляции. И, например, когда одна из инициализаций
+ссылается на некую переменную статического типа, то возможна ситуация доступа 
+к объекту до корректного начала его жизненного цикла (до полного конструирования),
+или уже после окончания жизненного цикла. Далее, если программа создаёт несколько 
+потоков, которые не завершаются к моменту выхода из программы, то эти потоки
+могут пытаться получить доступ к объектам, которые уже разрушены.</p>
 
 <p class="decision"></p>
-<h4>Decision on destruction</h4>
-
-<p>When destructors are trivial, their execution is not subject to ordering at
-all (they are effectively not "run"); otherwise we are exposed to the risk of
-accessing objects after the end of their lifetime. Therefore, we only allow
-objects with static storage duration if they are trivially destructible.
-Fundamental types (like pointers and <code>int</code>) are trivially
-destructible, as are arrays of trivially destructible types. Note that
-variables marked with <code>constexpr</code> are trivially destructible.</p>
-<pre>const int kNum = 10;  // allowed
+<p>Когда деструктор тривиальный, тогда порядок разрушения в принципе не важен. В 
+противном случае есть риск обратиться к объекту после его разрушения.
+Поэтому, настоятельно рекомендуется использовать только переменные со 
+статическим типом размещения (конечно, если они имеют тривиальный деструктор).
+Фундаментальные типы (указатели или <code>int</code>), как и массивы из них, 
+являются тривиально разрушаемыми. Переменные с типом constexp также 
+тривиально разрушаемые.</p>
+<pre>const int kNum = 10;  // Допустимо
 
 struct X { int n; };
-const X kX[] = {{1}, {2}, {3}};  // allowed
+const X kX[] = {{1}, {2}, {3}};  // Допустимо
 
 void foo() {
-  static const char* const kMessages[] = {"hello", "world"};  // allowed
+  static const char* const kMessages[] = {"hello", "world"};  // Допустимо
 }
 
-// allowed: constexpr guarantees trivial destructor
+// Допустимо: constexpr всегда имеет тривиальный деструктор
 constexpr std::array&lt;int, 3&gt; kArray = {{1, 2, 3}};</pre>
-<pre class="badcode">// bad: non-trivial destructor
+<pre class="badcode">// Плохо: нетривиальный деструктор
 const std::string kFoo = "foo";
 
-// bad for the same reason, even though kBar is a reference (the
-// rule also applies to lifetime-extended temporary objects)
+// Плохо по тем же причинам (хотя kBar и является ссылкой, но
+// правило применяется и для временных объектов в расширенным временем жизни)
 const std::string&amp; kBar = StrCat("a", "b", "c");
 
 void bar() {
-  // bad: non-trivial destructor
+  // Плохо: нетривиальный деструктор
   static std::map&lt;int, int&gt; kData = {{1, 0}, {2, 0}, {3, 0}};
 }</pre>
 
-<p>Note that references are not objects, and thus they are not subject to the
-constraints on destructibility. The constraint on dynamic initialization still
-applies, though. In particular, a function-local static reference of the form
-<code>static T&amp; t = *new T;</code> is allowed.</p>
+<p>Отметим, что ссылка не есть сам объект, и, следовательно, к ним не применяются
+ограничения по разрушению объекта. Хотя ограничения на динамическую 
+инициализацию остаются в силе. В частности, внутри функции допустим следующий
+код <code>static T&amp; t = *new T;</code>.</p>
 
-<h4>Decision on initialization</h4>
+<h4>Тонкости инициализации</h4>
 
-<p>Initialization is a more complex topic. This is because we must not only
-consider whether class constructors execute, but we must also consider the
-evaluation of the initializer:</p>
-<pre class="neutralcode">int n = 5;    // fine
-int m = f();  // ? (depends on f)
-Foo x;        // ? (depends on Foo::Foo)
-Bar y = g();  // ? (depends on g and on Bar::Bar)
+<p>Инициализация может быть запутанной: мало того, что конструктору нужно
+(желательно правильно) отработать, так есть ещё и предварительные вычисления:</p>
+<pre class="neutralcode">int n = 5;    // Отлично
+int m = f();  // ? (Зависит от f)
+Foo x;        // ? (Зависит от Foo::Foo)
+Bar y = g();  // ? (Зависит от g и Bar::Bar)
 </pre>
 
-<p>All but the first statement expose us to indeterminate initialization
-ordering.</p>
+<p>На выполнение всех выражений, кроме первого, может повлиять порядок инициализации,
+который может быть разным/неопределённым (или зависимым от ...).</p>
 
-<p>The concept we are looking for is called <em>constant initialization</em> in
-the formal language of the C++ standard. It means that the initializing
-expression is a constant expression, and if the object is initialized by a
-constructor call, then the constructor must be specified as
-<code>constexpr</code>, too:</p>
+<p>Рассмотрим <em>константную инициализацию</em>. Это означает, что инициализационное
+выражение - константное, и если при создании объекта вызывается конструктор, то
+он (конструктор) тоже должен быть заявлен как <code>constexpr</code>:</p>
 <pre>struct Foo { constexpr Foo(int) {} };
 
-int n = 5;  // fine, 5 is a constant expression
-Foo x(2);   // fine, 2 is a constant expression and the chosen constructor is constexpr
-Foo a[] = { Foo(1), Foo(2), Foo(3) };  // fine</pre>
+int n = 5;  // Отлично, 5 - константное выражение
+Foo x(2);   // Отлично, 2 - константное выражение и вызывается constexpr конструктор
+Foo a[] = { Foo(1), Foo(2), Foo(3) };  // Отлично</pre>
 
-<p>Constant initialization is always allowed. Constant initialization of
-static storage duration variables should be marked with <code>constexpr</code>
-or where possible the
+<p>Константная инициализация является рекомендуемой для большинства случаев.
+Константную инициализацию переменных со статическим размещением рекомендуется
+помечать как <code>constexpr</code> или атрибутом <a href="https://github.com/abseil/abseil-cpp/blob/03c1513538584f4a04d666be5eb469e3979febba/absl/base/attributes.h#L540">
+<code>ABSL_CONST_INIT</code></a>. Любую переменную вне функции, со статическим 
+размещением и без указанной выше маркировки следует считать динамически
+инициализируемой (и тщательно проверять на ревью кода).</p>
 
+<p>Например, следующие инициализации могут привести к проблемам:</p>
 
-<a href="https://github.com/abseil/abseil-cpp/blob/03c1513538584f4a04d666be5eb469e3979febba/absl/base/attributes.h#L540">
-<code>ABSL_CONST_INIT</code></a>
-attribute. Any non-local static storage
-duration variable that is not so marked should be presumed to have
-dynamic initialization, and reviewed very carefully.</p>
-
-<p>By contrast, the following initializations are problematic:</p>
-
-<pre class="badcode">// Some declarations used below.
-time_t time(time_t*);      // not constexpr!
-int f();                   // not constexpr!
+<pre class="badcode">// Объявления
+time_t time(time_t*);      // не constexpr !
+int f();                   // не constexpr !
 struct Bar { Bar() {} };
 
-// Problematic initializations.
-time_t m = time(nullptr);  // initializing expression not a constant expression
-Foo y(f());                // ditto
-Bar b;                     // chosen constructor Bar::Bar() not constexpr</pre>
+// Проблемные инициализации
+time_t m = time(nullptr);  // Инициализационное выражение не константное
+Foo y(f());                // Те же проблемы
+Bar b;                     // Конструктор Bar::Bar() не является constexpr</pre>
 
-<p>Dynamic initialization of nonlocal variables is discouraged, and in general
-it is forbidden. However, we do permit it if no aspect of the program depends
-on the sequencing of this initialization with respect to all other
-initializations. Under those restrictions, the ordering of the initialization
-does not make an observable difference. For example:</p>
-<pre>int p = getpid();  // allowed, as long as no other static variable
-                   // uses p in its own initialization</pre>
+<p>Динамическая инициализация переменных вне функций не рекомендуется. В общем
+случае это запрещено, однако, это можно делать если никакой код программы не
+зависит от порядка инициализации этой переменной среди других: в этом случае 
+изменение порядка инициализации не может что-то поломать. Например:</p>
+<pre>int p = getpid();  // Допустимо, пока другие статические переменные
+                   // не используют p в своей инициализации</pre>
 
-<p>Dynamic initialization of static local variables is allowed (and common).</p>
+<p>Динамическая же инициализация статических переменных в функциях (локальных)
+допустима и является широко распространённой практикой.</p>
 
 
 
