@@ -811,40 +811,42 @@ Bar b;                     // Конструктор Bar::Bar() не являе�
 
 
 
-<h4>Common patterns</h4>
+<h4>Стандартные практики</h4>
 
 <ul>
-  <li>Global strings: if you require a global or static string constant,
-    consider using a simple character array, or a char pointer to the first
-    element of a string literal. String literals have static storage duration
-    already and are usually sufficient.</li>
-  <li>Maps, sets, and other dynamic containers: if you require a static, fixed
-    collection, such as a set to search against or a lookup table, you cannot
-    use the dynamic containers from the standard library as a static variable,
-    since they have non-trivial destructors. Instead, consider a simple array of
-    trivial types, e.g. an array of arrays of ints (for a "map from int to
-    int"), or an array of pairs (e.g. pairs of <code>int</code> and <code>const
-    char*</code>). For small collections, linear search is entirely sufficient
-    (and efficient, due to memory locality); consider using the facilities from
-
+  <li>Глобальные строки: если требуется глобальная или статическая
+    строковая константа, то рекомендуется использовать простой символьный
+    массив или указатель на первый символ строкового литерала. Строковые
+    литералы обычно находятся в статическом размещении (время жизни) и
+    этого в большинстве случаев достаточно.</li>
+  <li>Динамические контейнеры (map, set и т.д.): если требуется статическая
+    коллекция с фиксированными данными (например, таблицы значений для поиска),
+    то не используйте динамические контейнеры из стандартной библиотеки как
+    тип для статической переменной, т.к. у этих контейнеров нетривиальный
+    деструктор. Вместо этого попробуйте использовать массивы простых (тривиальных)
+    типов, например массив из массивов целых чисел (вместо 
+    <code>std::map&lt;int, int&gt;</code>) или,
+    например, массив структур с полями <code>int</code> и <code>const char*</code>.
+    Учтите, что для небольших коллекций линейный поиск обычно вполне приемлем
+    (и может быть очень эффективным благодаря компактному размещению в памяти).
+    Также можете воспользоваться алгоритмами 
     <a href="https://github.com/abseil/abseil-cpp/blob/master/absl/algorithm/container.h">absl/algorithm/container.h</a>
-
-
-    for the standard operations. If necessary, keep the collection in sorted
-    order and use a binary search algorithm. If you do really prefer a dynamic
-    container from the standard library, consider using a function-local static
-    pointer, as described below.</li>
-  <li>Smart pointers (<code>unique_ptr</code>, <code>shared_ptr</code>): smart
-    pointers execute cleanup during destruction and are therefore forbidden.
-    Consider whether your use case fits into one of the other patterns described
-    in this section. One simple solution is to use a plain pointer to a
-    dynamically allocated object and never delete it (see last item).</li>
-  <li>Static variables of custom types: if you require static, constant data of
-    a type that you need to define yourself, give the type a trivial destructor
-    and a <code>constexpr</code> constructor.</li>
-  <li>If all else fails, you can create an object dynamically and never delete
-    it by using a function-local static pointer or reference (e.g. <code>static
-    const auto&amp; impl = *new T(args...);</code>).</li>
+    для стандартных операций. Также возможно создавать коллекцию данных уже 
+    отсортированной и использовать алгоритм бинарного поиска. Если без
+    динамического контейнера не обойтись, то попробуйте использовать
+    статическую переменную-указатель, объявленную в функции (см. ниже).</li>
+  <li>Умные указатели (<code>unique_ptr</code>, <code>shared_ptr</code>): умные указатели 
+    освобождают ресурсы в деструкторе и поэтому использовать их нельзя. Попробуйте
+    применить другие практики/способы, описанные в разделе. Например, одно из
+    простых решений это использовать обычный указатель на динамически выделенный 
+    объект и далее никогда не удалять его (см. последний вариант списка).</li>
+  <li>Статические переменные пользовательского типа: если требуется статический и 
+    константный пользовательский тип, заполненный данными, то можете объявить у
+    этого типа тривиальный деструктор и <code>constexpr</code> конструктор.</li>
+  <li>Если все другие способы не подходят, то можно создать динамический объект и
+    никогда не удалять его. Объект можно создать с использованием статического указателя
+    или ссылки, объявленной в функции, например: <code>static
+    const auto&amp; impl = *new T(args...);</code>.</li>
 </ul>
 
 <h3 id="thread_local">thread_local Variables</h3>
