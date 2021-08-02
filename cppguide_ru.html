@@ -2136,32 +2136,28 @@ you can download
 использовать <code>noexcept</code> без всяких дополнительных условий.
 </p>
 
-<h3 id="Run-Time_Type_Information__RTTI_">Run-Time Type
-Information (RTTI)</h3>
+<h3 id="Run-Time_Type_Information__RTTI_">Информация о типе во время выполнения (RTTI)</h3>
 
-<p>Avoid using Run Time Type Information (RTTI).</p>
+<p>Не используйте информацию о типе во время выполнения (RTTI).</p>
 
 <p class="definition"></p>
-<p> RTTI allows a
-programmer to query the C++ class of an object at run
-time. This is done by use of <code>typeid</code> or
+<p> RTTI позволяет запросить информацию о C++ классе объекта
+во время выполнения. Делается через <code>typeid</code> или
 <code>dynamic_cast</code>.</p>
 
 <p class="pros"></p>
-<p>The standard alternatives to RTTI (described below)
-require modification or redesign of the class hierarchy
-in question. Sometimes such modifications are infeasible
-or undesirable, particularly in widely-used or mature
-code.</p>
+<p>Типовые альтернативы вместо RTTI (описано ниже)
+требуют модификации или редизайна иерархии классов,
+участвующих в запросах. Иногда такую модификацию очень тяжело 
+сделать, или она нежелательна, особенно в коде, который 
+уже используется в других проектах.</p>
 
-<p>RTTI can be useful in some unit tests. For example, it
-is useful in tests of factory classes where the test has
-to verify that a newly created object has the expected
-dynamic type. It is also useful in managing the
-relationship between objects and their mocks.</p>
+<p>RTTI может быть полезен для юнит-тестов. Например, можно
+тестировать классы-фабрики на правильность сгенерированного типа.
+Также это полезно в выстраивании связей между объектами и их
+макетами (mock).</p>
 
-<p>RTTI is useful when considering multiple abstract
-objects. Consider</p>
+<p>RTTI бывает полезно при работе с абстрактными объектами. Например:</p>
 
 <pre>bool Base::Equal(Base* other) = 0;
 bool Derived::Equal(Base* other) {
@@ -2173,48 +2169,43 @@ bool Derived::Equal(Base* other) {
 </pre>
 
 <p class="cons"></p>
-<p>Querying the type of an object at run-time frequently
-means a design problem. Needing to know the type of an
-object at runtime is often an indication that the design
-of your class hierarchy is flawed.</p>
+<p>Часто сам запрос типа объекта в процессе выполнения означает 
+проблемы с дизайном приложения, показывает наличие изъянов в
+иерархии классов.</p>
 
-<p>Undisciplined use of RTTI makes code hard to maintain.
-It can lead to type-based decision trees or switch
-statements scattered throughout the code, all of which
-must be examined when making further changes.</p>
+<p>Бесконтрольное использование RTTI усложняет поддержку кода.
+Это может привести в развесистым условиям, которые зависят от 
+типа объекта, которые рассыпаны по всему коду. И которые 
+придётся досконально изучать если будет необходимость что-то 
+изменить в этом коде.</p>
 
 <p class="decision"></p>
-<p>RTTI has legitimate uses but is prone to abuse, so you
-must be careful when using it. You may use it freely in
-unittests, but avoid it when possible in other code. In
-particular, think twice before using RTTI in new code. If
-you find yourself needing to write code that behaves
-differently based on the class of an object, consider one
-of the following alternatives to querying the type:</p>
+<p>Использование RTTI может легко привести к злоупотреблениям,
+поэтому будьте аккуратны. Старайтесь ограничить использование 
+RTTI только юнит-тестами. Рекомендуется отказаться от RTTI
+в новом коде. Если же требуется написать код, который
+ведёт себя по разному в зависимости от типа объекта,
+возможно следующие альтернативы будут более подходящими:</p>
 
 <ul>
-  <li>Virtual methods are the preferred way of executing
-  different code paths depending on a specific subclass
-  type. This puts the work within the object itself.</li>
+  <li>Виртуальные методы. Это предпочтительный способ для выполнения
+  различного кода в зависимости от типа объекта. И вся работа (код)
+  делается в самом объекте.</li>
 
-  <li>If the work belongs outside the object and instead
-  in some processing code, consider a double-dispatch
-  solution, such as the Visitor design pattern. This
-  allows a facility outside the object itself to
-  determine the type of class using the built-in type
-  system.</li>
+  <li>Если код должен находится вне объектов, то можно использовать 
+  подходы, аналогичные двойной диспетчеризации, например
+  шаблон проектирования Посетитель/Visitor. Это позволит внешнему 
+  коду самому определять тип объектов (используя систему типов).</li>
 </ul>
 
-<p>When the logic of a program guarantees that a given
-instance of a base class is in fact an instance of a
-particular derived class, then a
-<code>dynamic_cast</code> may be used freely on the
-object.  Usually one
-can use a <code>static_cast</code> as an alternative in
-such situations.</p>
+<p>Когда логика программы гарантирует, что
+полученный указатель на базовый класс фактически есть указатель
+на определённый производный класс, тогда можно свободно использовать
+<code>dynamic_cast</code>. Правда, в этом случае лучше использовать
+<code>static_cast</code>.</p>
 
-<p>Decision trees based on type are a strong indication
-that your code is on the wrong track.</p>
+<p>Большое количество условий, основанных на типе объекта, есть
+показатель явных проблем в коде.</p>
 
 <pre class="badcode">if (typeid(*data) == typeid(D1)) {
   ...
@@ -2224,15 +2215,14 @@ that your code is on the wrong track.</p>
 ...
 </pre>
 
-<p>Code such as this usually breaks when additional
-subclasses are added to the class hierarchy. Moreover,
-when properties of a subclass change, it is difficult to
-find and modify all the affected code segments.</p>
+<p>Подобный код может рассыпаться, когда добавляется новый 
+дочерний класс в иерархию. И вообще, очень тяжело модифицировать
+большое количество разрозненных кусков кода в случае
+небольших изменений в свойствах или методах дочерних классов.</p>
 
-<p>Do not hand-implement an RTTI-like workaround. The
-arguments against RTTI apply just as much to workarounds
-like class hierarchies with type tags. Moreover,
-workarounds disguise your true intent.</p>
+<p>И пожалуйста, не изобретайте собственный велосипед на замену RTTI.
+Аргументы против собственного решения будут такие же (см. выше), да 
+и разбираться в чужих велосипедах обычно сложнее.</p>
 
 <h3 id="Casting">Casting</h3>
 
