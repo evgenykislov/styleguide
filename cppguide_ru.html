@@ -849,72 +849,62 @@ Bar b;                     // Конструктор Bar::Bar() не являе�
     const auto&amp; impl = *new T(args...);</code>.</li>
 </ul>
 
-<h3 id="thread_local">thread_local Variables</h3>
+<h3 id="thread_local">Потоковые переменные</h3>
 
-<p><code>thread_local</code> variables that aren't declared inside a function
-must be initialized with a true compile-time constant,
-and this must be enforced by using the
-
-
+<p>Потоковые переменные (<code>thread_local</code>), объявленные вне функций
+должны быть инициализированы константой, вычисляемой во время компиляции. И это
+должно быть сделано с помощью атрибута
 <a href="https://github.com/abseil/abseil-cpp/blob/master/absl/base/attributes.h">
-<code>ABSL_CONST_INIT</code></a>
-attribute. Prefer
-<code>thread_local</code> over other ways of defining thread-local data.</p>
+<code>ABSL_CONST_INIT</code></a>. В целом, для определения данных, специфичных для каждого потока,
+использование <code>thread_local</code> является наиболее предпочтительным.</p>
 
 <p class="definition"></p>
-<p>Starting with C++11, variables can be declared with the
-<code>thread_local</code> specifier:</p>
+<p>Начиная с C++11 переменные можно объявлять со спецификатором <code>thread_local</code>:</p>
 <pre>thread_local Foo foo = ...;
 </pre>
-<p>Such a variable is actually a collection of objects, so that when different
-threads access it, they are actually accessing different objects.
-<code>thread_local</code> variables are much like
-<a href="#Static_and_Global_Variables">static storage duration variables</a>
-in many respects. For instance, they can be declared at namespace scope,
-inside functions, or as static class members, but not as ordinary class
-members.</p>
+<p>Каждая такая переменная представляется собой коллекцию объектов. Разные потоки работают 
+с разными экземплярами переменной (каждый со своим экземпляром). По поведению 
+переменные <code>thread_local</code> во многом похожи на 
+<a href="#Static_and_Global_Variables">Переменные со статическим типом размещения</a>.
+Например, они могут быть объявлены в пространстве имён, внутри функций,
+как статические члены класса (как обычные члены класса - нельзя).</p>
 
-<p><code>thread_local</code> variable instances are initialized much like
-static variables, except that they must be initialized separately for each
-thread, rather than once at program startup. This means that
-<code>thread_local</code> variables declared within a function are safe, but
-other <code>thread_local</code> variables are subject to the same
-initialization-order issues as static variables (and more besides).</p>
+<p>Инициализация потоковых переменных очень напоминает статические переменные, за 
+исключением что это делается для каждого потока. В том числе это означает, что
+безопасно объявлять <code>thread_local</code> переменные внутри функции. Однако
+в целом <code>thread_local</code> переменные подвержены тем же проблемам, что и 
+статические переменные (различный порядок инициализации и т.д.).</p>
 
-<p><code>thread_local</code> variable instances are destroyed when their thread
-terminates, so they do not have the destruction-order issues of static
-variables.</p>
+<p>Переменная <code>thread_local</code> разрушается вместе с завершением потока,
+так что здесь нет проблем с порядком разрушения, как у статических переменных.</p>
 
 <p class="pros"></p>
 <ul>
-  <li>Thread-local data is inherently safe from races (because only one thread
-    can ordinarily access it), which makes <code>thread_local</code> useful for
-    concurrent programming.</li>
-  <li><code>thread_local</code> is the only standard-supported way of creating
-    thread-local data.</li>
+  <li>Потоковые переменные в принципе защищены от эффекта гонок (т.к. каждый поток
+    обычно имеет доступ только к своему экземпляру), что очень полезно для
+    программирования потоков.</li>
+  <li>Переменные <code>thread_local</code> являются единственным стандартизованным 
+    средством для создания локальных потоковых данных.</li>
 </ul>
 
 <p class="cons"></p>
 <ul>
-  <li>Accessing a <code>thread_local</code> variable may trigger execution of
-    an unpredictable and uncontrollable amount of other code.</li>
-  <li><code>thread_local</code> variables are effectively global variables,
-    and have all the drawbacks of global variables other than lack of
-    thread-safety.</li>
-  <li>The memory consumed by a <code>thread_local</code> variable scales with
-    the number of running threads (in the worst case), which can be quite large
-    in a  program.</li>
-  <li>An ordinary class member cannot be <code>thread_local</code>.</li>
-  <li><code>thread_local</code> may not be as efficient as certain compiler
-    intrinsics.</li>
+  <li>Операции с <code>thread_local</code> переменными могут привести к выполнению
+    кода, который не предполагался и его размер также может быть различным.</li>
+  <li>Переменные <code>thread_local</code> являются по сути глобальными переменными
+    со всеми их недостатками (за исключением потокобезопасности).</li>
+  <li>Выделяемая для <code>thread_local</code> память зависит от количества потоков и
+    её размер может быть значительным.</li>
+  <li>Обыкновенный член класса не может быть <code>thread_local</code>.</li>
+  <li>В ряде случаев <code>thread_local</code> переменные могут проигрывать по
+    эффективности хорошо оптимизированному компилятором коду (например, интринсикам/intrinsics).</li>
 </ul>
 
 <p class="decision"></p>
-  <p><code>thread_local</code> variables inside a function have no safety
-    concerns, so they can be used without restriction. Note that you can use
-    a function-scope <code>thread_local</code> to simulate a class- or
-    namespace-scope <code>thread_local</code> by defining a function or
-    static method that exposes it:</p>
+  <p>Переменные <code>thread_local</code>, заявленные внутри функций, можно 
+  использовать без ограничений, т.к. у них с безопасностью всё отлично. Отметим, 
+  что возможно использовать объявленную внутри функции переменную <code>thread_local</code>
+  и вне функции. Для этого нужна функция доступа к переменной:</p>
 
 <pre>Foo&amp; MyThreadLocalFoo() {
   thread_local Foo result = ComplicatedInitialization();
@@ -922,21 +912,19 @@ variables.</p>
 }
 </pre>
 
-<p><code>thread_local</code> variables at class or namespace scope must be
-initialized with a true compile-time constant (i.e. they must have no
-dynamic initialization). To enforce this, <code>thread_local</code> variables
-at class or namespace scope must be annotated with
-
-
+<p>Переменные <code>thread_local</code> в классе или пространстве имён необходимо
+инициализировать константой времени компиляции (т.е. динамическая инициализация 
+недопустима). Для этого необходимо аннотировать <code>thread_local</code> переменные
+класса или пространства имён с помощью 
 <a href="https://github.com/abseil/abseil-cpp/blob/master/absl/base/attributes.h">
 <code>ABSL_CONST_INIT</code></a>
-(or <code>constexpr</code>, but that should be rare):</p>
+(или <code>constexpr</code>, но это лучше использовать пореже):</p>
 
 <pre>ABSL_CONST_INIT thread_local Foo foo = ...;
 </pre>
 
-<p><code>thread_local</code> should be preferred over other mechanisms for
-defining thread-local data.</p>
+<p>Переменные <code>thread_local</code> должны быть предпочтительным способом
+определения потоковых данных.</p>
 
 <h2 id="Classes">Классы</h2>
 
