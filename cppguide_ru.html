@@ -1450,33 +1450,32 @@ class NotCopyableOrMovable {
  методы "встраиваются" в определение класса. См. также 
  <a href="#Inline_Functions">Встраиваемые функции</a>.</p>
 
-<h2 id="Functions">Functions</h2>
+<h2 id="Functions">Функции</h2>
 
-<h3 id="Output_Parameters">Output Parameters</h3>
+<h3 id="Output_Parameters">Выходные параметры</h3>
 
-<p>The output of a C++ function is naturally provided via
-a return value and sometimes via output parameters.</p>
+<p>Результат выполнения C++ функции выдаётся через
+ возвращаемое значение и иногда через выходные параметры.</p>
 
-<p>Prefer using return values over output parameters: they
-improve readability, and often provide the same or better
-performance.  If output-only parameters are used,
-they should appear after input parameters.</p>
+<p>Предпочтительно использовать именно возвращаемое значение
+ (вместо выходных параметров): это формирует понятный код,
+ производительность обычно не страдает (иногда она даже ещё лучше).
+ Если используются выходные параметры, то они должны объявляться
+ после входных параметров.</p>
 
-<p>Parameters are either input to the function, output from the
-function, or both. Input parameters are usually values or
-<code>const</code> references, while output and input/output
-parameters will be pointers to non-<code>const</code>.</p>
+<p>Параметры могут быть входными, выходными или и тем и другим.
+ Входные параметры это обычно либо значения, либо константные ссылки.
+ Выходные параметры или входные-и-выходные же лучше объявлять как
+ указатели на не константное значение.</p>
 
-<p>When ordering function parameters, put all input-only
-parameters before any output parameters. In particular,
-do not add new parameters to the end of the function just
-because they are new; place new input-only parameters before
-the output parameters.</p>
+<p>Когда объявляете параметры функции, то сначала указывайте входные параметры.
+ Выходные параметры указывайте в конце. В частности, если нужно добавить новый 
+ входной параметр, то размещайте его перед выходными параметрами 
+ (не ставьте его в конец только потому, что он новый).</p>
 
-<p>This is not a hard-and-fast rule. Parameters that are
-both input and output (often classes/structs) muddy the
-waters, and, as always, consistency with related
-functions may require you to bend the rule.</p>
+<p>Порядок объявления параметров не является жёстким правилом.
+ И расположение входных-и-выходных параметров также может меняться.
+ В общем, правило есть, но иногда нужно проявить гибкость.</p>
 
 <h3 id="Write_Short_Functions">Write Short Functions</h3>
 
@@ -2266,18 +2265,19 @@ RTTI только юнит-тестами. Рекомендуется отказ
 <p>Также может быть полезным раздел <a href="#Run-Time_Type_Information__RTTI_">
  RTTI</a> с описанием <code>dynamic_cast</code>.</p>
 
-<h3 id="Streams">Streams</h3>
+<h3 id="Streams">Потоки / Streams</h3>
 
-<p>Use streams where appropriate, and stick to "simple"
-usages. Overload <code>&lt;&lt;</code> for streaming only for types
-representing values, and write only the user-visible value, not any
-implementation details.</p>
+<p>Используйте потоки в подходящих случаях, особенно если их использование
+ упрощает код. Перегружайте операцию <code>&lt;&lt;</code> только для
+ типов-значений и выводите в поток собственно данные (доступные пользователю).
+ Не выводите в поток внутренние переменные (инварианты и т.д.) 
+ и другие детали реализации.</p>
 
 <p class="definition"></p>
-<p>Streams are the standard I/O abstraction in C++, as
-exemplified by the standard header <code>&lt;iostream&gt;</code>.
-They are widely used in Google code, mostly for debug logging
-and test diagnostics.</p>
+<p>Потоки являются стандартной абстракцией для ввода/вывода в C++,
+ (см. стандартный заголовочный файл <code>&lt;iostream&gt;</code>).
+ Они часто используются в коде в Google, особенно для отладочного
+ логирования и диагностики.</p>
 
 <p class="pros"></p>
 <p>The <code>&lt;&lt;</code> and <code>&gt;&gt;</code>
