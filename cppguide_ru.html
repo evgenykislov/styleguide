@@ -1477,31 +1477,28 @@ class NotCopyableOrMovable {
  И расположение входных-и-выходных параметров также может меняться.
  В общем, правило есть, но иногда нужно проявить гибкость.</p>
 
-<h3 id="Write_Short_Functions">Write Short Functions</h3>
+<h3 id="Write_Short_Functions">Пишите короткие функции</h3>
 
-<p>Prefer small and focused functions.</p>
+<p>Желательно писать маленькие и сфокусированные функции.</p>
 
-<p>We recognize that long functions are sometimes
-appropriate, so no hard limit is placed on functions
-length. If a function exceeds about 40 lines, think about
-whether it can be broken up without harming the structure
-of the program.</p>
+<p>Понятно, что в ряде случаев одна длинная функция лучше нескольких
+ коротких, поэтому нельзя установить жёсткую границу. Однако, если
+ длина функции превышает 40 строк, подумайте о возможности
+ разбить её на части (без ущерба для логики программы).</p>
 
-<p>Even if your long function works perfectly now,
-someone modifying it in a few months may add new
-behavior. This could result in bugs that are hard to
-find. Keeping your functions short and simple makes it
-easier for other people to read and modify your code.
-Small functions are also easier to test.</p>
+<p>Даже если длинная функция отлично работает сейчас, 
+ через месяц (или год) в неё могут добавить новый функционал.
+ И это может привести к багам, которые трудно обнаружить.
+ И наоборот, если функции короткие и простые, то другим
+ людям проще их читать и модифицировать. Также короткие функции
+ проще тестировать.</p>
 
-<p>You could find long and complicated functions when
-working with
-some code. Do not be
-intimidated by modifying existing code: if working with
-such a function proves to be difficult, you find that
-errors are hard to debug, or you want to use a piece of
-it in several different contexts, consider breaking up
-the function into smaller and more manageable pieces.</p>
+<p>Когда вы работаете с чьим-то кодом, возможно встретятся
+ длинные и запутанные функции. Не нужно боятся модифицировать
+ существующий код: если работа с такой функцией становится 
+ запутанной, её сложно отлаживать или необходимо использовать куски этой
+ функции в другом контексте, то попробуйте её разбить на 
+ несколько более маленьких кусочков, с которыми проще работать.</p>
 
 <h3 id="Reference_Arguments">Reference Arguments</h3>
 
