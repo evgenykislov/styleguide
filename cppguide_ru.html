@@ -1459,8 +1459,8 @@ class NotCopyableOrMovable {
 
 <p>Предпочтительно использовать именно возвращаемое значение
  (вместо выходных параметров): это формирует понятный код,
- производительность обычно не страдает (иногда она даже ещё лучше).
- Если используются выходные параметры, то они должны объявляться
+ производительность обычно не страдает (иногда она даже становится ещё лучше).
+ Если же используются выходные параметры, то они должны объявляться
  после входных параметров.</p>
 
 <p>Параметры могут быть входными, выходными или и тем и другим.
@@ -2280,97 +2280,86 @@ RTTI только юнит-тестами. Рекомендуется отказ
  логирования и диагностики.</p>
 
 <p class="pros"></p>
-<p>The <code>&lt;&lt;</code> and <code>&gt;&gt;</code>
-stream operators provide an API for formatted I/O that
-is easily learned, portable, reusable, and extensible.
-<code>printf</code>, by contrast, doesn't even support
-<code>std::string</code>, to say nothing of user-defined types,
-and is very difficult to use portably.
-<code>printf</code> also obliges you to choose among the
-numerous slightly different versions of that function,
-and navigate the dozens of conversion specifiers.</p>
+<p>Операторы <code>&lt;&lt;</code> и <code>&gt;&gt;</code>
+ реализуют форматированный ввод/вывод, они просты в понимании,
+ портабельны, расширяемы и повторно используемы. Противоположность
+ к ним - <code>printf</code>, который даже не поддерживает
+ работу с <code>std::string</code>. Кроме того не работает с
+ пользовательскими типа и с портабельностью там проблемы.
+ Кроме того, <code>printf</code> вынуждает выбирать среди
+ похожих версий одной функции и ориентироваться в десятках
+ форматных символах.</p>
 
-<p>Streams provide first-class support for console I/O
-via <code>std::cin</code>, <code>std::cout</code>,
-<code>std::cerr</code>, and <code>std::clog</code>.
-The C APIs do as well, but are hampered by the need to
-manually buffer the input. </p>
+<p>Потоки обеспечивают хорошую поддержку консольного ввода/вывода
+ через <code>std::cin</code>, <code>std::cout</code>,
+ <code>std::cerr</code> и <code>std::clog</code>. Функции из
+ C API тоже хорошо работают, однако могут требовать вручную 
+ буферизировать ввод.</p>
 
 <p class="cons"></p>
 <ul>
-<li>Stream formatting can be configured by mutating the
-state of the stream. Such mutations are persistent, so
-the behavior of your code can be affected by the entire
-previous history of the stream, unless you go out of your
-way to restore it to a known state every time other code
-might have touched it. User code can not only modify the
-built-in state, it can add new state variables and behaviors
-through a registration system.</li>
+<li>Форматирование потоков можно настроить через манипуляторы, изменяющие
+ состояние потока. Учтите, применение манипуляторов сохраняется во времени и, как
+ результат, поведение кода зависит от истории использования
+ потока (или необходимо будет всё восстанавливать в
+ известное состояние после каждого случая возможного применения манипуляторов).
+ Кроме того, пользовательский код может (помимо модификации
+ встроенных параметров) создавать собственные манипуляторы, добавлять 
+ переменные состояния и изменять поведение через функционал register_callback.</li>
 
-<li>It is difficult to precisely control stream output, due
-to the above issues, the way code and data are mixed in
-streaming code, and the use of operator overloading (which
-may select a different overload than you expect).</li>
+<li>Проблематично полностью контролировать вывод потока:
+ смена настроек (см. выше), вывод мешанины из параметров и 
+ собственно данных, использование перегрузки операторов
+ (и компилятор может выбрать не ту перегрузку, которая предполагалась) - всё
+ это не добавляет управляемости.</li>
 
-<li>The practice of building up output through chains
-of <code>&lt;&lt;</code> operators interferes with
-internationalization, because it bakes word order into the
-code, and streams' support for localization is <a href="http://www.boost.org/doc/libs/1_48_0/libs/locale/doc/html/rationale.html#rationale_why">
-flawed</a>.</li>
+<li>Формирование вывода посредством вызова цепочки операторов
+ <code>&lt;&lt;</code> затрудняет локализацию, т.к. при этом
+ жёстко, прямо в коде, фиксируется порядок слов. И 
+ <a href="http://www.boost.org/doc/libs/1_48_0/libs/locale/doc/html/rationale.html#rationale_why">
+ средства поддержки локализации</a> лишаются ценности.</li>
 
+<li>Потоковый API может быть сложным, с тонкостями. И программисты
+ должны уметь с ним работать, чтобы код был эффективным.</li>
 
-
-
-
-<li>The streams API is subtle and complex, so programmers must
-develop experience with it in order to use it effectively.</li>
-
-<li>Resolving the many overloads of <code>&lt;&lt;</code> is
-extremely costly for the compiler. When used pervasively in a
-large code base, it can consume as much as 20% of the parsing
-and semantic analysis time.</li>
+<li>Выбор правильной версии оператора <code>&lt;&lt;</code> из 
+ большого количества аналогичных является для компилятора затратным.
+ При частом их использовании в большой кодовой базе, время парсинга
+ и анализа может отъедать до 20% времени.</li>
 </ul>
 
 <p class="decision"></p>
-<p>Use streams only when they are the best tool for the job.
-This is typically the case when the I/O is ad-hoc, local,
-human-readable, and targeted at other developers rather than
-end-users. Be consistent with the code around you, and with the
-codebase as a whole; if there's an established tool for
-your problem, use that tool instead.
-In particular,
+<p>Используйте потоки только если они являются наилучшим решением.
+ Обычно это варианты ввода/вывода в человекочитаемый формат, предназначенный
+ для разработчиков, а не для конечного пользователя. Также не забывайте, что
+ в проекте уже могут быть устоявшиеся методы ввода/вывода - старайтесь использовать
+ их. В частности, библиотеки для логирования и диагностического вывода
+ обычно предпочтительнее нежели <code>std::cerr</code> или <code>std::clog</code>.
+ И вместо <code>std::stringstream</code> лучше использовать
+ <code>absl/strings</code> или их эквивалент.</p>
 
-logging libraries are usually a better
-choice than <code>std::cerr</code> or <code>std::clog</code>
-for diagnostic output, and the libraries in
+<p>Не рекомендуется использовать потоки для ввода/вывода
+ в случае обмена данными с конечными пользователями или
+ где возможно нарушение формата или валидности данных.
+ В таких случаях используйте подходящие (шаблонные) библиотеки,
+ которые корректно обрабатывают интернационализацию,
+ локализацию, проверяют корректность данных и формата.</p>
 
-<code>absl/strings</code>
-or the equivalent are usually a
-better choice than <code>std::stringstream</code>.</p>
+<p>Если потоки всё же используются, старайтесь избегать API
+ работы с состояниями, кроме состояния ошибки. Т.е. не 
+ используйте <code>imbue()</code>, <code>xalloc()</code> 
+ и <code>register_callback()</code>. Рекомендуется использовать
+ явные функции форматирования (см. <code>absl/strings</code>)
+ вместо манипуляторов или флагов форматирования для таких
+ вещей как смена основания системы счисления, точности или
+ набивка нулями до нужного размера чисел.</p>
 
-<p>Avoid using streams for I/O that faces external users or
-handles untrusted data. Instead, find and use the appropriate
-templating libraries to handle issues like internationalization,
-localization, and security hardening.</p>
-
-<p>If you do use streams, avoid the stateful parts of the
-streams API (other than error state), such as <code>imbue()</code>,
-<code>xalloc()</code>, and <code>register_callback()</code>.
-Use explicit formatting functions (see e.g.
-
-<code>absl/strings</code>)
-rather than
-stream manipulators or formatting flags to control formatting
-details such as number base, precision, or padding.</p>
-
-<p>Overload <code>&lt;&lt;</code> as a streaming operator
-for your type only if your type represents a value, and
-<code>&lt;&lt;</code> writes out a human-readable string
-representation of that value. Avoid exposing implementation
-details in the output of <code>&lt;&lt;</code>; if you need to print
-object internals for debugging, use named functions instead
-(a method named <code>DebugString()</code> is the most common
-convention).</p>
+<p>Перегружайте оператор <code>&lt;&lt;</code> только
+ для типа-значения с тем, чтобы оператор выводил человеко-читаемое 
+ представление. Не выводите в поток детали реализации
+ или внутренние переменные. Если же требуется отладочная печать
+ внутреннего состояния, то используйте обычные функции-методы (например,
+ метод класса <code>DebugString()</code> - подходящий вариант).</p>
 
 <h3 id="Preincrement_and_Predecrement">Preincrement and Predecrement</h3>
 
