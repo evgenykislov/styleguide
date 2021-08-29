@@ -2358,44 +2358,40 @@ RTTI только юнит-тестами. Рекомендуется отказ
  внутреннего состояния, то используйте обычные функции-методы (например,
  метод класса <code>DebugString()</code> - подходящий вариант).</p>
 
-<h3 id="Preincrement_and_Predecrement">Preincrement and Predecrement</h3>
+<h3 id="Preincrement_and_Predecrement">Преинкремент и предекремент</h3>
 
-<p>Use prefix form (<code>++i</code>) of the increment and
-decrement operators with iterators and other template
-objects.</p>
+<p>Используйте префиксные формы (<code>++i</code>) инкремента и декремента
+ над итераторами и другими шаблонными объектами.</p>
 
 <p class="definition"></p>
-<p> When a variable
-is incremented (<code>++i</code> or <code>i++</code>) or
-decremented (<code>--i</code> or <code>i--</code>) and
-the value of the expression is not used, one must decide
-whether to preincrement (decrement) or postincrement
-(decrement).</p>
+<p> Когда переменная инкрементируется (<code>++i</code>, <code>i++</code>)
+ или декрементируется (<code>--i</code>, <code>i--</code>), а
+ возвращаемое значение не используется, то необходимо чётко
+ понимать: использовать префиксную форму (<code>++i</code>, <code>--i</code>) 
+ или постфиксную (<code>i++</code>, <code>i--</code>).</p>
 
 <p class="pros"></p>
-<p>When the return value is ignored, the "pre" form
-(<code>++i</code>) is never less efficient than the
-"post" form (<code>i++</code>), and is often more
-efficient. This is because post-increment (or decrement)
-requires a copy of <code>i</code> to be made, which is
-the value of the expression. If <code>i</code> is an
-iterator or other non-scalar type, copying <code>i</code>
-could be expensive. Since the two types of increment
-behave the same when the value is ignored, why not just
-always pre-increment?</p>
+<p>Когда возвращаемое значение игнорируется, то
+ префиксная форма не менее
+ эффективна постфиксной (чаще префиксная более эффективна).
+ Связано это с тем, что постфиксная реализация должна сделать копию
+ переменной с исходным значением для возврата результата.
+ Если переменная является итератором или другим сложным типом, то
+ копирование её может быть затратным по ресурсам. Поэтому, если
+ обе формы ведут себя одинаково (возвращаемое значение игнорируется),
+ почему бы не использовать всегда префиксную форму?</p>
 
 <p class="cons"></p>
-<p>The tradition developed, in C, of using post-increment
-when the expression value is not used, especially in
-<code>for</code> loops. Some find post-increment easier
-to read, since the "subject" (<code>i</code>) precedes
-the "verb" (<code>++</code>), just like in English.</p>
+<p>Традиционно раньше в разработке (особенно на языке C) использовалась
+ постфиксная форма, особенно для циклов <code>for</code>.
+ Иногда программистам легче читать код с постинкрементом,
+ т.к. "субъект" (<code>i</code>) стоит перед "действием" (<code>++</code>),
+ как в английском предложении.</p>
 
 <p class="decision"></p>
-<p> For simple scalar
-(non-object) values there is no reason to prefer one form
-and we allow either. For iterators and other template
-types, use pre-increment.</p>
+<p>Для простых скалярных (не-объектов) типов нет особой разницы
+ в использовании префиксной или постфиксной формы. Для итераторов и
+ других шаблонных типов используйте префиксную форму.</p>
 
 <h3 id="Use_of_const">Use of const</h3>
 
