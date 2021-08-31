@@ -1502,62 +1502,55 @@ class NotCopyableOrMovable {
 
 <h3 id="Reference_Arguments">Reference Arguments</h3>
 
-<p>All parameters passed by lvalue reference must be labeled
-<code>const</code>.</p>
+<p>Все параметры, передаваемые по ссылке (lvalue reference) должны быть
+ помечены как <code>const</code>.</p>
 
 <p class="definition"></p>
-<p>In C, if a
-function needs to modify a variable, the parameter must
-use a pointer, eg <code>int foo(int *pval)</code>. In
-C++, the function can alternatively declare a reference
-parameter: <code>int foo(int &amp;val)</code>.</p>
+<p>В языке C если функции требуется модифицировать внешнюю переменную, то
+ её необходимо передавать как параметр-указатель, например
+ <code>int foo(int *pval)</code>. В C++ для этих целей также можно использовать
+ параметры-ссылки: <code>int foo(int &amp;val)</code>.</p>
 
 <p class="pros"></p>
-<p>Defining a parameter as reference avoids ugly code like
-<code>(*pval)++</code>. Necessary for some applications
-like copy constructors. Makes it clear, unlike with
-pointers, that a null pointer is not a possible
-value.</p>
+<p>Определение параметра как ссылку уменьшает количество "уродливого"
+ кода, типа <code>(*pval)++</code>. Параметры-ссылки необходимы для
+ ряда применений, например конструкторов копий. Кроме того, такие параметры
+ явно указываются на недопустимость использования указателей на NULL.</p>
 
 <p class="cons"></p>
-<p>References can be confusing, as they have value syntax
-but pointer semantics.</p>
+<p>Использование ссылок может запутывать при разборе кода, т.к. они
+ имеют синтаксис значения, но семантику указателя.</p>
 
 <p class="decision"></p>
-<p>Within function parameter lists all references must be
-<code>const</code>:</p>
+<p>В параметрах функции все ссылки должны быть <code>const</code>:</p>
 
 <pre>void Foo(const std::string &amp;in, std::string *out);
 </pre>
 
-<p>In fact it is a very strong convention in Google code
-that input arguments are values or <code>const</code>
-references while output arguments are pointers. Input
-parameters may be <code>const</code> pointers, but we
-never allow non-<code>const</code> reference parameters
-except when required by convention, e.g.,
-<code>swap()</code>.</p>
+<p>На самом деле это принципиальное требование в коде Google, что
+ входные аргументы передаются как значения или константные ссылки,
+ а выходные - как указатели. Технически, входные аргументы тоже
+ могут быть константными указателями, но не-константные ссылки не
+ допускаются (за исключением случаев, когда это явно
+ необходимо, например <code>swap()</code>).</p>
 
-<p>However, there are some instances where using
-<code>const T*</code> is preferable to <code>const
-T&amp;</code> for input parameters. For example:</p>
+<p>Также, в ряде случаев использование <code>const T*</code>
+ более предпочтительно, чем <code>const T&amp;</code>
+ для входных параметров. Например:</p>
 
 <ul>
-  <li>You want to pass in a null pointer.</li>
-
-  <li>The function saves a pointer or reference to the
-  input.</li>
+  <li>Требуется передать нулевой указатель.</li>
+  <li>Функция сохраняет указатель или ссылку на входной параметр.</li>
 </ul>
 
-<p> Remember that most of the time input
-parameters are going to be specified as <code>const
-T&amp;</code>. Using <code>const T*</code> instead
-communicates to the reader that the input is somehow
-treated differently. So if you choose <code>const
-T*</code> rather than <code>const T&amp;</code>, do so
-for a concrete reason; otherwise it will likely confuse
-readers by making them look for an explanation that
-doesn't exist.</p>
+<p>Помните, что в большинстве случаев входные параметры
+ будут передаваться как <code>const T&amp;</code>.
+ Использование <code>const T*</code> будет указанием,
+ что этот параметр немного особенный. Поэтому, если
+ вы выбираете <code>const T*</code> вместо <code>const T&amp;</code>,
+ то делайте это намеренно, с определённой целью. Иначе 
+ можно ввести в заблуждение других программистов и они будут 
+ искать причину, которой нет.</p>
 
 <h3 id="Function_Overloading">Function Overloading</h3>
 
