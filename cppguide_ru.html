@@ -2464,41 +2464,37 @@ RTTI только юнит-тестами. Рекомендуется отказ
  остальной код в проекте использует другой порядок - 
  следуйте за кодом!</p>
 
-<h3 id="Use_of_constexpr">Use of constexpr</h3>
+<h3 id="Use_of_constexpr">Использование constexpr</h3>
 
-<p>Use <code>constexpr</code> to define true
-constants or to ensure constant initialization.</p>
+<p>Используйте <code>constexpr</code> для определения
+ констант или чтобы сделать константную инициализацию.</p>
 
 <p class="definition"></p>
-<p> Some variables can be declared <code>constexpr</code>
-to indicate the variables are true constants, i.e. fixed at
-compilation/link time. Some functions and constructors
-can be declared <code>constexpr</code> which enables them
-to be used in defining a <code>constexpr</code>
-variable.</p>
+<p>Переменные можно объявлять как <code>constexpr</code> для
+ указания на константу, значение которой определяется во
+ время компиляции или линковки. Также можно объявлять функции 
+ и конструкторы как <code>constexpr</code>, чтобы их можно было 
+ использовать для определения переменной с <code>constexpr</code>.</p>
 
 <p class="pros"></p>
-<p>Use of <code>constexpr</code> enables definition of
-constants with floating-point expressions rather than
-just literals; definition of constants of user-defined
-types; and definition of constants with function
-calls.</p>
+<p><code>constexpr</code> позволяет определять выражения
+ с плавающей запятой (помимо литералов), использовать константы для 
+ пользовательских типов и вызовов функций.</p>
 
 <p class="cons"></p>
-<p>Prematurely marking something as constexpr may cause
-migration problems if later on it has to be downgraded.
-Current restrictions on what is allowed in constexpr
-functions and constructors may invite obscure workarounds
-in these definitions.</p>
+<p>Использование constexpr может вызвать проблемы с 
+ поддержкой кода (или миграцией), если константность
+ нужно будет позже убрать. Текущие ограничения для константных функций или 
+ конструкторов могут потребовать реализации дополнительных 
+ обходных путей в коде.</p>
 
 <p class="decision"></p>
-<p><code>constexpr</code> definitions enable a more
-robust specification of the constant parts of an
-interface. Use <code>constexpr</code> to specify true
-constants and the functions that support their
-definitions. Avoid complexifying function definitions to
-enable their use with <code>constexpr</code>. Do not use
-<code>constexpr</code> to force inlining.</p>
+<p><code>constexpr</code> позволяет определить неизменяемые 
+ части интерфейса. Используйте <code>constexpr</code> чтобы
+ определить константы и функции для задания им значений.
+ Не используйте <code>constexpr</code>, если это
+ потребует усложнения кода. Не используйте <code>constexpr</code>,
+ чтобы сделать код "встраиваемым" (inlining).</p>
 
 <h3 id="Integer_Types">Integer Types</h3>
 
