@@ -1552,19 +1552,17 @@ class NotCopyableOrMovable {
  можно ввести в заблуждение других программистов и они будут 
  искать причину, которой нет.</p>
 
-<h3 id="Function_Overloading">Function Overloading</h3>
+<h3 id="Function_Overloading">Перегрузка функций</h3>
 
-<p>Use overloaded functions (including constructors) only if a
-reader looking at a call site can get a good idea of what
-is happening without having to first figure out exactly
-which overload is being called.</p>
+<p>Используйте перегрузку функций (включая конструкторы)
+ только если по коду вызова можно понять, что будет вызываться,
+ без детального изучения вариантов перегружаемых функций.</p>
 
 <p class="definition"></p>
-<p>You may write a function that takes a <code>const
-std::string&amp;</code> and overload it with another that
-takes <code>const char*</code>. However, in this case consider
-std::string_view
- instead.</p>
+<p>Можно написать функцию, которая принимает аргумент
+ <code>const std::string&amp;</code>. И, например, перегрузить её
+ другой функцией, принимающей <code>const char*</code>
+ (хотя в этом случае лучше использовать std::string_view).</p>
 
 <pre>class MyClass {
  public:
@@ -1574,31 +1572,31 @@ std::string_view
 </pre>
 
 <p class="pros"></p>
-<p>Overloading can make code more intuitive by allowing an
-identically-named function to take different arguments.
-It may be necessary for templatized code, and it can be
-convenient for Visitors.</p>
-<p>Overloading based on const or ref qualification may make utility
-  code more usable, more efficient, or both.
-  (See <a href="http://abseil.io/tips/148">TotW 148</a> for more.)
-</p>
+<p>Перегрузка может сделать код более интуитивным и понятным,
+ позволяя создать функции с одинаковым именем, но принимающих
+ разные аргументы. Такая возможность очень востребована при
+ программировании шаблонов и может быть удобна при использовании
+ паттерна Посетитель (Visitor).</p>
+<p>Перегрузка с использованием различных вариаций константных и
+ ссылочных аргументов может сделать код более удобным и эффективным
+ (См. <a href="http://abseil.io/tips/148">TotW 148</a>).</p>
 
 <p class="cons"></p>
-<p>If a function is overloaded by the argument types alone,
-a reader may have to understand C++'s complex matching
-rules in order to tell what's going on. Also many people
-are confused by the semantics of inheritance if a derived
-class overrides only some of the variants of a
-function.</p>
+<p>Когда функция перегружается только по типу аргументов (не по количеству),
+ то необходимо понимать правила C++ по сопоставлению типов.
+ Также перегрузка может быть запутанной, если наследуемый класс 
+ переопределяет только некоторые из вариантов перегружаемых функций
+ исходного класса.</p>
 
 <p class="decision"></p>
-<p>You may overload a function when there are no semantic differences
-between variants. These overloads may vary in types, qualifiers, or
-argument count. However, a reader of such a call must not need to know
-which member of the overload set is chosen, only that <b>something</b>
-from the set is being called. If you can document all entries in the
-overload set with a single comment in the header, that is a good sign
-that it is a well-designed overload set.</p>
+<p>Перегружайте функцию, если нет семантических различий между её
+ вариантами. В этом случае допустимо изменять как типы аргументов,
+ так и квалификаторы (const и др.) или количество аргументов.
+ Делайте перегрузку так, чтобы не было нужды разбираться, какая 
+ именно версия функции будет вызвана (достаточно того, что 
+ <b>какая-нибудь</b> версия будет вызвана). Если же ещё все варианты
+ функции можно будет описать одним комментарием в заголовочном файле, то
+ (да, сделайте так) это признак хорошего дизайна программного интерфейса.</p>
 
 <h3 id="Default_Arguments">Default Arguments</h3>
 
