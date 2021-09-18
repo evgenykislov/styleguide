@@ -1600,53 +1600,50 @@ class NotCopyableOrMovable {
 
 <h3 id="Default_Arguments">Default Arguments</h3>
 
-<p>Default arguments are allowed on non-virtual functions
-when the default is guaranteed to always have the same
-value. Follow the same restrictions as for <a href="#Function_Overloading">function overloading</a>, and
-prefer overloaded functions if the readability gained with
-default arguments doesn't outweigh the downsides below.</p>
+<p>Аргументы по-умолчанию допустимы в не-виртуальных функциях; 
+ также само значение не должно изменяться. Здесь ограничения 
+ аналогичны <a href="#Function_Overloading">Перегрузке функций</a> и,
+ в целом, использование перегрузки является предпочтительным.
+ Аргументы же по-умолчанию желательно использовать, только если
+ преимущества от их использования (читабельность кода) перевешивают
+ указанные ниже недостатки.</p>
 
 <p class="pros"></p>
-<p>Often you have a function that uses default values, but
-occasionally you want to override the defaults. Default
-parameters allow an easy way to do this without having to
-define many functions for the rare exceptions. Compared
-to overloading the function, default arguments have a
-cleaner syntax, with less boilerplate and a clearer
-distinction between 'required' and 'optional'
-arguments.</p>
+<p>Часто есть функция, в которой используются типовые значения,
+ но иногда требуется для них задать другую величину. Параметры по-умолчанию
+ предлагают удобный способ это сделать, не определяя несколько 
+ функций для редко используемых значений. По сравнению с перегрузкой
+ функций, аргументы по-умолчанию позволяют написать более чистый
+ код, с меньшим количеством дублирования и явным разделением
+ аргументов на обязательные и опциональные.</p>
 
 <p class="cons"></p>
-<p>Defaulted arguments are another way to achieve the
-semantics of overloaded functions, so all the <a href="#Function_Overloading">reasons not to overload
-functions</a> apply.</p>
+<p>Аргументы по-умолчанию по сути являются другим способом получить
+ семантику перегруженных функций, поэтому все причины отказаться от
+ <a href="#Function_Overloading">перегрузки функций</a> здесь также актуальны.</p>
 
-<p>The defaults for arguments in a virtual function call are
-determined by the static type of the target object, and
-there's no guarantee that all overrides of a given function
-declare the same defaults.</p>
+<p>Значение для аргументов по-умолчанию в случае виртуальных функций
+ определяется типом целевого объекта и нет никакой гарантии, что
+ все объявления данной функции (в наследниках) содержат одно и то же значение.</p>
 
-<p>Default parameters are re-evaluated at each call site,
-which can bloat the generated code. Readers may also expect
-the default's value to be fixed at the declaration instead
-of varying at each call.</p>
+<p>Параметры по-умолчанию вычисляются для каждой точки вызова заново. И это
+ может увеличить объём генерируемого кода. Однако, обычно ожидается, что
+ значение по-умолчанию всегда одинаковое (т.е. не меняется в от вызова к вызову).</p>
 
-<p>Function pointers are confusing in the presence of
-default arguments, since the function signature often
-doesn't match the call signature. Adding
-function overloads avoids these problems.</p>
+<p>Указатели на функции с аргументами по-умолчанию также
+ могут сбивать с толку, т.к. сигнатура функции часто не соответствует
+ форме вызова. И перегрузка функции позволяет решить эти проблемы.</p>
 
 <p class="decision"></p>
-<p>Default arguments are banned on virtual functions, where
-they don't work properly, and in cases where the specified
-default might not evaluate to the same value depending on
-when it was evaluated. (For example, don't write <code>void
-f(int n = counter++);</code>.)</p>
+<p>Аргументы по-умолчанию под запретом для виртуальных функций
+ (где они могут работать некорректно) и для случаев, когда
+ значение для аргумента может измениться. Например, не пишите
+ такой код: <code>void f(int n = counter++);</code>.</p>
 
-<p>In some other cases, default arguments can improve the
-readability of their function declarations enough to
-overcome the downsides above, so they are allowed. When in
-doubt, use overloads.</p>
+<p>В ряде случаев аргументы по-умолчанию могут сильно улучшить 
+ читабельность кода (даже с учётом вышеуказанных недостатков) и
+ тогда их можно использовать. Если же есть сомнения, то используйте
+ перегрузку функций.</p>
 
 <h3 id="trailing_return">Trailing Return Type Syntax</h3>
 
