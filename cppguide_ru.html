@@ -2493,107 +2493,78 @@ RTTI только юнит-тестами. Рекомендуется отказ
  потребует усложнения кода. Не используйте <code>constexpr</code>,
  чтобы сделать код "встраиваемым" (inlining).</p>
 
-<h3 id="Integer_Types">Integer Types</h3>
+<h3 id="Integer_Types">Целочисленные типы</h3>
 
-<p>Of the built-in C++ integer types, the only one used
- is
-<code>int</code>. If a program needs a variable of a
-different size, use
-a precise-width integer type from
-<code>&lt;stdint.h&gt;</code>, such as
-<code>int16_t</code>. If your variable represents a
-value that could ever be greater than or equal to 2^31
-(2GiB), use a 64-bit type such as
-<code>int64_t</code>.
-Keep in mind that even if your value won't ever be too large
-for an <code>int</code>, it may be used in intermediate
-calculations which may require a larger type. When in doubt,
-choose a larger type.</p>
+<p>Среди встроенных целочисленных типов C++ необходимо использовать
+ <code>int</code>. Если в программе требуется переменная другого размера,
+ то используйте целочисленные типы фиксированной длины из <code>&lt;stdint.h&gt;</code>,
+ такие как <code>int16_t</code>. Если переменной нужно хранить значения,
+ равные или превышающие 2^31 (2GiB), используйте 64-битный тип <code>int64_t</code>.
+ При оценке размера не забудьте, что в <code>int</code> должен укладываться не только
+ результат, но и промежуточные значения при вычислениях.
+ И, если сомневаетесь, используйте тип подлиннее.</p>
 
 <p class="definition"></p>
-<p> C++ does not specify the sizes of integer types
-like <code>int</code>. Typically people assume
-that <code>short</code> is 16 bits,
-<code>int</code> is 32 bits, <code>long</code> is 32 bits
-and <code>long long</code> is 64 bits.</p>
+<p>C++ не уточняет размер целочисленных типов, таких как <code>int</code>.
+ Обычно считается, что <code>short</code> содержит 16 битов,
+ <code>int</code> - 32, <code>long</code> - 32 и <code>long long</code> содержит 64 бита.</p>
 
 <p class="pros"></p>
-<p>Uniformity of declaration.</p>
+<p>Унификация в коде.</p>
 
 <p class="cons"></p>
-<p>The sizes of integral types in C++ can vary based on
-compiler and architecture.</p>
+<p>Размеры целочисленных типов в C++ могут изменяться в зависимости 
+ от компилятора и архитектуры.</p>
 
 <p class="decision"></p>
 
-<p>
-<code>&lt;cstdint&gt;</code> defines types
-like <code>int16_t</code>, <code>uint32_t</code>,
-<code>int64_t</code>, etc. You should always use
-those in preference to <code>short</code>, <code>unsigned
-long long</code> and the like, when you need a guarantee
-on the size of an integer. Of the C integer types, only
-<code>int</code> should be used. When appropriate, you
-are welcome to use standard types like
-<code>size_t</code> and <code>ptrdiff_t</code>.</p>
+<p>В <code>&lt;cstdint&gt;</code> определяются различные типы:
+ <code>int16_t</code>, <code>uint32_t</code>, <code>int64_t</code> и т.д.
+ Если требуются типы фиксированного размера, то не используйте
+ <code>short</code>, <code>unsigned long long</code> и им подобные.
+ Из целочисленных типов языка C можно использовать только <code>int</code>.
+ Также, в соответствующих случаях, используйте <code>size_t</code> и <code>ptrdiff_t</code>.</p>
 
-<p>We use <code>int</code> very often, for integers we
-know are not going to be too big, e.g., loop counters.
-Use plain old <code>int</code> for such things. You
-should assume that an <code>int</code> is
+<p>Тип <code>int</code> используется очень часто, особенно для
+ небольших значений, например как счётчики в циклах. Можете
+ считать, что <code>int</code> содержит минимум 32 бита (но не больше).
+ Если требуется 64 битный целочисленный тип, то используйте <code>int64_t</code>
+ или <code>uint64_t</code>.</p>
 
-at least 32 bits, but don't
-assume that it has more than 32 bits. If you need a 64-bit
-integer type, use
-<code>int64_t</code>
-or
-<code>uint64_t</code>.</p>
+<p>Для типа который может хранить "большие значения" используйте <code>int64_t</code>.</p>
 
-<p>For integers we know can be "big",
- use
-<code>int64_t</code>.
-</p>
+<p>Старайтесь не использовать беззнаковые числа (например, <code>uint32_t</code>).
+ Допустимое применение беззнаковых чисел это использование битовых представлений
+ или использование переполнения (по модулю 2^N) в расчётах. Отметим, что
+ также не рекомендуется использовать беззнаковый тип чтобы указать на отсутствие
+ отрицательных значений: в этом случае используйте assert-ы.</p>
 
-<p>You should not use the unsigned integer types such as
+<p>Если код возвращает размер контейнера, то убедитесь, что его тип (размера)
+ является достаточным для любого возможного использования. И если сомневаетесь,
+ используйте тип подлиннее.</p>
 
-<code>uint32_t</code>, unless there is a valid
-reason such as representing a bit pattern rather than a
-number, or you need defined overflow modulo 2^N. In
-particular, do not use unsigned types to say a number
-will never be negative. Instead, use
+<p>Будьте внимательны при конвертировании целочисленных типов. Может
+ появится неопределённое поведение (UB), ведущее к багам безопасности и
+ другим проблемам.</p>
 
-assertions for this.</p>
+<h4>Беззнаковые целые числа</h4>
 
+<p>Беззнаковые целые числа отлично подходят для работы с битовыми полями
+ и модульной арифметики. Так сложилось, что стандарт C++ использует 
+ беззнаковые числа и для возврата размера контейнеров (хотя многие члены
+ организации по стандартизации и считают это ошибкой; в любом случае, 
+ сейчас это уже не изменить). Ситуация, что беззнаковая арифметика
+ по поведению является модульной (заворачивание значений при переполнении)
+ и отличается от обычной (знаковой), не позволяет компилятору
+ диагностировать большое количество ошибок. Фактически, такое поведение
+ затрудняет оптимизацию.</p>
 
-
-<p>If your code is a container that returns a size, be
-sure to use a type that will accommodate any possible
-usage of your container. When in doubt, use a larger type
-rather than a smaller type.</p>
-
-<p>Use care when converting integer types. Integer conversions and
-promotions can cause undefined behavior, leading to security bugs and
-other problems.</p>
-
-<h4>On Unsigned Integers</h4>
-
-<p>Unsigned integers are good for representing bitfields and modular
-arithmetic. Because of historical accident, the C++ standard also uses
-unsigned integers to represent the size of containers - many members
-of the standards body believe this to be a mistake, but it is
-effectively impossible to fix at this point. The fact that unsigned
-arithmetic doesn't model the behavior of a simple integer, but is
-instead defined by the standard to model modular arithmetic (wrapping
-around on overflow/underflow), means that a significant class of bugs
-cannot be diagnosed by the compiler. In other cases, the defined
-behavior impedes optimization.</p>
-
-<p>That said, mixing signedness of integer types is responsible for an
-equally large class of problems. The best advice we can provide: try
-to use iterators and containers rather than pointers and sizes, try
-not to mix signedness, and try to avoid unsigned types (except for
-representing bitfields or modular arithmetic). Do not use an unsigned
-type merely to assert that a variable is non-negative.</p>
+<p>С другой стороны, совместное использование беззнаковых и знаковых
+ целых чисел создаёт ещё больше проблем. Лучшее решение: старайтесь использовать
+ итераторы вместо указателей и явных размеров; не мешайте беззнаковые числа
+ вместе со знаковыми; избегайте беззнаковых чисел (кроме работы с битовыми
+ полями и для модульной арифметики); не используйте беззнаковые числа только
+ чтобы показать, что переменная неотрицательная.</p>
 
 <h3 id="64-bit_Portability">64-bit Portability</h3>
 
