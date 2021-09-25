@@ -1645,69 +1645,64 @@ class NotCopyableOrMovable {
  тогда их можно использовать. Если же есть сомнения, то используйте
  перегрузку функций.</p>
 
-<h3 id="trailing_return">Trailing Return Type Syntax</h3>
+<h3 id="trailing_return">Синтаксис указания возвращаемого типа в конце</h3>
 
-<p>Use trailing return types only where using the ordinary syntax (leading
-  return types) is impractical or much less readable.</p>
+<p>Указывайте возвращаемый тип в конце, только если обычный синтаксис (возвращаемый тип в начале)
+ неудобен или нечитабелен.</p>
 
 <p class="definition"></p>
-<p>C++ allows two different forms of function declarations. In the older
-  form, the return type appears before the function name. For example:</p>
+<p>В C++ есть две формы декларации функций. В обычной (более старой) форме
+ возвращаемый тип указывается перед именем функции:</p>
 <pre>int foo(int x);
 </pre>
-<p>The newer form, introduced in C++11, uses the <code>auto</code>
-  keyword before the function name and a trailing return type after
-  the argument list. For example, the declaration above could
-  equivalently be written:</p>
+<p>В C++11 появилась новая форма, использующая <code>auto</code> перед
+ именем функции и завершающаяся возвращаемым типом, указываемым после
+ списка аргументов. Например, предыдущую декларацию можно записать как:</p>
 <pre>auto foo(int x) -&gt; int;
 </pre>
-<p>The trailing return type is in the function's scope. This doesn't
-  make a difference for a simple case like <code>int</code> but it matters
-  for more complicated cases, like types declared in class scope or
-  types written in terms of the function parameters.</p>
+<p>Основное отличие двух форм в том, что завершающий тип находится уже в области
+ видимости самой функции. Конечно, для простых типов (например, <code>int</code>)
+ большой разницы нет. Однако для сложных типов (использование типов, объявленных
+ в области видимости класса; или объявленных через параметры функции) это может
+ иметь значение.</p>
 
 <p class="pros"></p>
-<p>Trailing return types are the only way to explicitly specify the
-  return type of a <a href="#Lambda_expressions">lambda expression</a>.
-  In some cases the compiler is able to deduce a lambda's return type,
-  but not in all cases. Even when the compiler can deduce it automatically,
-  sometimes specifying it explicitly would be clearer for readers.
-</p>
-<p>Sometimes it's easier and more readable to specify a return type
-  after the function's parameter list has already appeared. This is
-  particularly true when the return type depends on template parameters.
-  For example:</p>
+<p>Возвращаемый тип, указанный в конце, является единственным способом
+ явно его задать для <a href="#Lambda_expressions">лямбда-выражения</a>.
+ В ряде случаев компилятор может самостоятельно вывести возвращаемый тип
+ лямбды, однако это возможно не всегда. И даже в случае умного компилятора,
+ иногда требуется явно указать тип (для читабельности или др.)</p>
+ 
+<p>Иногда намного проще и удобнее указать возвращаемый тип в конце, после
+  списка параметров. Особенно в случаях, когда возвращаемый тип зависит
+  от параметров шаблона. Например:</p>
   <pre>    template &lt;typename T, typename U&gt;
     auto add(T t, U u) -&gt; decltype(t + u);
   </pre>
-    <p>versus</p>
+    <p>понятнее, чем:</p>
   <pre>    template &lt;typename T, typename U&gt;
     decltype(declval&lt;T&amp;&gt;() + declval&lt;U&amp;&gt;()) add(T t, U u);
   </pre>
 
 <p class="cons"></p>
-<p>Trailing return type syntax is relatively new and it has no
-  analogue in C++-like languages such as C and Java, so some readers may
-  find it unfamiliar.</p>
-<p>Existing code bases have an enormous number of function
-  declarations that aren't going to get changed to use the new syntax,
-  so the realistic choices are using the old syntax only or using a mixture
-  of the two. Using a single version is better for uniformity of style.</p>
+<p>Указание возвращаемого типа в конце является новым относительно синтаксисом,
+ у которого нет аналогов в таких (C++-подобных) языках, как C и Java. Поэтому
+ такая форма записи может показаться чуждой.</p>
+<p>Существующие кодовые базы содержат огромное количество деклараций в обычном стиле.
+ И они не будут переписываться под новый синтаксис. Поэтому на практике
+ выбор такой: либо использовать только обычный стиль, либо смесь обычного и нового.
+ Далее учитываем: унификация стиля это есть хорошо; единая версия синтаксиса
+ более унифицирована, чем две разные версии. В общем, вы поняли.</p>
 
 <p class="decision"></p>
-<p>In most cases, continue to use the older style of function
-  declaration where the return type goes before the function name.
-  Use the new trailing-return-type form only in cases where it's
-  required (such as lambdas) or where, by putting the type after the
-  function's parameter list, it allows you to write the type in a much
-  more readable way. The latter case should be rare; it's mostly an
-  issue in fairly complicated template code, which is
-  <a href="#Template_metaprogramming">discouraged in most cases</a>.</p>
-
+<p>Используйте обычный (более старый) стиль декларации функции, когда
+ возвращаемый тип указывается перед именем функции. Новую же форму
+ (возвращаемый тип в конце) используйте либо по явной необходимости (лямбды), либо
+ для улучшения читабельности кода. Причём последний вариант (читабельность)
+ часто свидетельствует о чересчур <a href="#Template_metaprogramming">сложных
+ шаблонах</a>, лучше их избегать.</p>
 
 <h2 id="Google-Specific_Magic">Google-Specific Magic</h2>
-
-
 
 <div>
 <p>There are various tricks and utilities that
