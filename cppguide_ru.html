@@ -2561,75 +2561,56 @@ RTTI только юнит-тестами. Рекомендуется отказ
  полями и для модульной арифметики); не используйте беззнаковые числа только
  чтобы показать, что переменная неотрицательная.</p>
 
-<h3 id="64-bit_Portability">64-bit Portability</h3>
+<h3 id="64-bit_Portability">Совместимость с 64-бит</h3>
 
-<p>Code should be 64-bit and 32-bit friendly. Bear in mind
-problems of printing, comparisons, and structure alignment.</p>
+<p>Написанный код должен быть совместим как с 64-битной, так и с 32-битной
+ архитектурой. Особое внимание обращайте на печать в
+ консоль, операции сравнения и выравнивание структур.</p>
 
 <ul>
   <li>
-  <p>Correct portable <code>printf()</code> conversion specifiers for
-  some integral typedefs rely on macro expansions that we find unpleasant to
-  use and impractical to require (the <code>PRI</code> macros from
-  <code>&lt;cinttypes&gt;</code>). Unless there is no reasonable alternative
-  for your particular case, try to avoid or even upgrade APIs that rely on the
-  <code>printf</code> family. Instead use a library supporting typesafe numeric
-  formatting, such as
-
-
-    <a href="https://github.com/abseil/abseil-cpp/blob/master/absl/strings/str_cat.h"><code>StrCat</code></a>
-
-    or
-
-
-    <a href="https://github.com/abseil/abseil-cpp/blob/master/absl/strings/substitute.h"><code>Substitute</code></a>
-
-    for fast simple conversions,
-
-    or <a href="#Streams"><code>std::ostream</code></a>.</p>
-
-  <p>Unfortunately, the <code>PRI</code> macros are the only portable way to
-  specify a conversion for the standard bitwidth typedefs (e.g.
-  <code>int64_t</code>, <code>uint64_t</code>, <code>int32_t</code>,
-  <code>uint32_t</code>, etc).
-
-  Where possible, avoid passing arguments of types specified by bitwidth
-  typedefs to <code>printf</code>-based APIs. Note that it is acceptable
-  to use typedefs for which printf has dedicated length modifiers, such as
+  <p>Форматные символы <code>printf()</code> для некоторых целочисленных типов
+  основываются на макроопределениях (например, <code>PRI</code> из <code>&lt;cinttypes&gt;</code>).
+  И такой подход является непрактичным, нежелательным и т.д.
+  Поэтому очень желательно не использовать функцию <code>printf</code> (и подобные)
+  в своём коде, или даже переписать существующий код.
+  Вместо неё можно использовать библиотеки, поддерживающие безопасное
+  форматирование числовых значений, такие как
+  <a href="https://github.com/abseil/abseil-cpp/blob/master/absl/strings/str_cat.h"><code>StrCat</code></a>
+  или
+  <a href="https://github.com/abseil/abseil-cpp/blob/master/absl/strings/substitute.h"><code>Substitute</code></a>
+  для простых преобразований, или
+  <a href="#Streams"><code>std::ostream</code></a>.</p>
+  <p>К сожалению, макросы <code>PRI</code> являются единственным
+  переносимым способом указать формат для типов данных с задаваемым размером
+  (<code>int64_t</code>, <code>uint64_t</code>, <code>int32_t</code>,
+  <code>uint32_t</code> и т.д.). По возможности не передавайте аргументы
+  таких типов в функции, основанные на <code>printf</code>. Исключение составляют
+  типы, для которых есть свой выделенный модификатор длины, например 
   <code>size_t</code> (<code>z</code>),
-  <code>ptrdiff_t</code> (<code>t</code>), and
+  <code>ptrdiff_t</code> (<code>t</code>) и
   <code>maxint_t</code> (<code>j</code>).</p>
   </li>
-
-  <li>Remember that <code>sizeof(void *)</code> !=
-  <code>sizeof(int)</code>. Use <code>intptr_t</code> if
-  you want a pointer-sized integer.</li>
-
-  <li>You may need to be careful with structure
-  alignments, particularly for structures being stored on
-  disk. Any class/structure with a
-  <code>int64_t</code>/<code>uint64_t</code>
-  member will by default end up being 8-byte aligned on a
-  64-bit system. If you have such structures being shared
-  on disk between 32-bit and 64-bit code, you will need
-  to ensure that they are packed the same on both
-  architectures.
-  Most compilers offer a way to
-  alter structure alignment. For gcc, you can use
-  <code>__attribute__((packed))</code>. MSVC offers
-  <code>#pragma pack()</code> and
-  <code>__declspec(align())</code>.</li>
+  <li>Помните, что <code>sizeof(void*)</code> != <code>sizeof(int)</code>.
+  Используйте <code>intptr_t</code> в случае, если требуется целочисленный тип
+  размером, равным размеру указателя.</li>
+  <li>Будьте аккуратны с выравниванием структур, особенно тех
+  что записываются на диск. Обычно классы и структуры, в которых есть член типа
+  <code>int64_t</code> или <code>uint64_t</code>, по умолчанию
+  выравниваются на границу 8 байт в 64-битных системах.
+  Если в коде есть подобные структуры, они сохраняются на диске
+  и используются 32-битным и 64-битным кодом, то обязательно
+  проверьте, что структуры упаковываются одинаково на обеих
+  архитектурах. Большинство компиляторов позволяют задать
+  выравнивание структур. В gcc можно использовать <code>__attribute__((packed))</code>.
+  В MSVC - <code>#pragma pack()</code> и <code>__declspec(align())</code>.</li>
 
   <li>
-  <p>Use <a href="#Casting">braced-initialization</a> as needed to create
-  64-bit constants. For example:</p>
-
-
-<div>
+  <p>Используйте <a href="#Casting">инициализацию в фигурных скобках</a> если
+  требуется создать 64-битную константу. Например:</p>
 <pre>int64_t my_value{0x123456789};
 uint64_t my_mask{3ULL &lt;&lt; 48};
 </pre>
-</div>
   </li>
 </ul>
 
