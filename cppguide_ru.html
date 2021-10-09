@@ -2614,26 +2614,24 @@ uint64_t my_mask{3ULL &lt;&lt; 48};
   </li>
 </ul>
 
-<h3 id="Preprocessor_Macros">Preprocessor Macros</h3>
+<h3 id="Preprocessor_Macros">Макросы препроцессора</h3>
 
-<p>Avoid defining macros, especially in headers; prefer
-inline functions, enums, and <code>const</code> variables.
-Name macros with a project-specific prefix. Do not use
-macros to define pieces of a C++ API.</p>
+<p>Избегайте определения макросов, особенно в заголовочных файлах.
+ Вместо этого используйте встраиваемые функции, перечисления или
+ переменные-константы. Если используете макросы, то в имени
+ используйте префикс - название проекта. Не используйте макросы,
+ чтобы переопределить или дополнить C++ API.</p>
 
-<p>Macros mean that the code you see is not the same as
-the code the compiler sees. This can introduce unexpected
-behavior, especially since macros have global scope.</p>
+<p>Использование макросов подразумевает, что программист видит
+ один код, а компилятор - другой. Это может вызвать неожиданные
+ последствия, особенно если макросы глобальные.</p>
 
-<p>The problems introduced by macros are especially severe
-when they are used to define pieces of a C++ API,
-and still more so for public APIs. Every error message from
-the compiler when developers incorrectly use that interface
-now must explain how the macros formed the interface.
-Refactoring and analysis tools have a dramatically harder
-time updating the interface. As a consequence, we
-specifically disallow using macros in this way.
-For example, avoid patterns like:</p>
+<p>Ситуация может усугубиться, когда макросы используются для
+ переопределения С++ или другого публичного API. При любых ошибках
+ в использовании API потребуется разбираться в логике макросов;
+ увеличивается время разбора кода инструментами рефакторинга или
+ анализаторами. Как результат, использование макросов в таких 
+ случаях запрещено. Например, откажитесь от подобного кода:</p>
 
 <pre class="badcode">class WOMBAT_TYPE(Foo) {
   // ...
@@ -2645,57 +2643,53 @@ For example, avoid patterns like:</p>
 };
 </pre>
 
-<p>Luckily, macros are not nearly as necessary in C++ as
-they are in C. Instead of using a macro to inline
-performance-critical code, use an inline function.
-Instead of using a macro to store a constant, use a
-<code>const</code> variable. Instead of using a macro to
-"abbreviate" a long variable name, use a reference.
-Instead of using a macro to conditionally compile code
-... well, don't do that at all (except, of course, for
-the <code>#define</code> guards to prevent double
-inclusion of header files). It makes testing much more
-difficult.</p>
+<p>К счастью, в C++ зависимость от макросов поменьше, чем в C.
+ Вместо макросов для высокопроизводительного кода можно 
+ использовать встраиваемые функции. Для хранения констант
+ есть <code>const</code> переменные. Чтобы для удобства "укоротить"
+ длинное имя переменной используйте ссылки. Вместо
+ применения макросов для условной компиляции кода
+ используйте ... лучше не используйте условную компиляцию
+ (конечно же это не касается защиты от повторного включения
+ заголовочных файлов через <code>#define</code>). Тем более
+ условная компиляция затрудняет тестирование кода.</p>
 
-<p>Macros can do things these other techniques cannot,
-and you do see them in the codebase, especially in the
-lower-level libraries. And some of their special features
-(like stringifying, concatenation, and so forth) are not
-available through the language proper. But before using a
-macro, consider carefully whether there's a non-macro way
-to achieve the same result. If you need to use a macro to
-define an interface, contact
-your project leads to request
-a waiver of this rule.</p>
+<p>С другой стороны, есть приёмы кодирования, которые делаются 
+ только через макросы. Обычно это можно увидеть в 
+ низко-уровневых библиотеках. Также есть приёмы
+ (преобразование в строку, объединение строк и т.д.),
+ которые нельзя сделать средствами самого языка напрямую.
+ В любом случае, перед использованием макросов попробуйте
+ найти способ реализации без макросов. Если же необходимо
+ использовать макросы для определения интерфейса то
+ предварительно обязательно проконсультируйтесь с руководством.</p>
 
-<p>The following usage pattern will avoid many problems
-with macros; if you use macros, follow it whenever
-possible:</p>
-
+<p>Следующие правила позволят избежать ряда проблем с макросами.
+ По возможности следуйте им:</p>
 <ul>
-  <li>Don't define macros in a <code>.h</code> file.</li>
+  <li>Не определяйте макросы в заголовочных (<code>.h</code>) файлах.</li>
+  <li>Определяйте (<code>#define</code>) макросы по возможности ближе
+  к месту первого использования. И когда макросы уже не используются,
+  то делайте <code>#undef</code>.</li>
 
-  <li><code>#define</code> macros right before you use
-  them, and <code>#undef</code> them right after.</li>
+  <li>Не делайте <code>#undef</code> существующих макросов с последующим
+  их переопределением своей версией. Вместо этого лучше придумайте
+  для своих макросов уникальное имя и используйте его.</li>
 
-  <li>Do not just <code>#undef</code> an existing macro
-  before replacing it with your own; instead, pick a name
-  that's likely to be unique.</li>
+  <li>Постарайтесь не использовать макросы, которые раскрываются в
+  большие и неустойчивые конструкции C++. По крайней мере, документируйте
+  такое поведение.</li>
 
-  <li>Try not to use macros that expand to unbalanced C++
-  constructs, or at least document that behavior
-  well.</li>
-
-  <li>Prefer not using <code>##</code> to generate
-  function/class/variable names.</li>
+  <li>Старайтесь не использовать <code>##</code> для генерации имени
+  функции/класса/переменной.</li>
 </ul>
 
-<p>Exporting macros from headers (i.e. defining them in a header
-without <code>#undef</code>ing them before the end of the header)
-is extremely strongly discouraged. If you do export a macro from a
-header, it must have a globally unique name. To achieve this, it
-must be named with a prefix consisting of your project's namespace
-name (but upper case). </p>
+<p>Настоятельно не рекомендуется экспортировать макросы из заголовочных
+ файлов (т.е. определять макрос и не делать <code>#undef</code> его
+ в конце заголовочного файла). Если макрос экспортируется из
+ заголовочного файла, то он должен иметь глобальное уникальное имя.
+ Как вариант, добавьте префикс с именем пространства имён проекта 
+ (заглавными буквами).</p>
 
 <h3 id="0_and_nullptr/NULL">0 and nullptr/NULL</h3>
 
