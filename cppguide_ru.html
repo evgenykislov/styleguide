@@ -2691,22 +2691,24 @@ uint64_t my_mask{3ULL &lt;&lt; 48};
  Как вариант, добавьте префикс с именем пространства имён проекта 
  (заглавными буквами).</p>
 
-<h3 id="0_and_nullptr/NULL">0 and nullptr/NULL</h3>
+<h3 id="0_and_nullptr/NULL">0 и nullptr/NULL</h3>
 
-<p>Use <code>nullptr</code> for pointers, and <code>'\0'</code> for chars (and
-not the <code>0</code> literal).</p>
+<p>Используйте <code>nullptr</code> для указателей и <code>'\0'</code> для char-ов
+ (не используйте <code>0</code> для этих целей).</p>
 
-<p>For pointers (address values), use <code>nullptr</code>, as this
-provides type-safety.</p>
+<p>Для указателей (адресов) используйте <code>nullptr</code>,
+ это улучшает безопасность типов.</p>
 
-<p>For C++03 projects, prefer <code>NULL</code> to <code>0</code>. While the
-values are equivalent, <code>NULL</code> looks more like a pointer to the
-reader, and some C++ compilers provide special definitions of <code>NULL</code>
-which enable them to give useful warnings. Never use <code>NULL</code> for
-numeric (integer or floating-point) values.</p>
+<p>Для проектов C++03 лучше используйте <code>NULL</code>, а не <code>0</code>.
+ Хотя оба варианта эквивалентны, <code>NULL</code> обычно 
+ ассоциируется с указателями. Также некоторые C++ компиляторы 
+ могут определять <code>NULL</code> специальным образом и
+ выдавать более адекватные предупреждения компиляции. 
+ Никогда не используйте <code>NULL</code> как числовое
+ значение (целочисленное или с плавающей запятой).</p>
 
-<p>Use <code>'\0'</code> for the null character. Using the correct type makes
-the code more readable.</p>
+<p>Используйте <code>'\0'</code> в качестве символа конца строки (пустого символа).
+ Это улучшает читабельность кода.</p>
 
 <h3 id="sizeof">sizeof</h3>
 
