@@ -1702,142 +1702,118 @@ class NotCopyableOrMovable {
  часто свидетельствует о чересчур <a href="#Template_metaprogramming">сложных
  шаблонах</a>, лучше их избегать.</p>
 
-<h2 id="Google-Specific_Magic">Google-Specific Magic</h2>
+<h2 id="Google-Specific_Magic">Специфика Google</h2>
 
-<div>
-<p>There are various tricks and utilities that
-we use to make C++ code more robust, and various ways we use
-C++ that may differ from what you see elsewhere.</p>
-</div>
+<p>Есть различные трюки и средства, которые используются чтобы сделать
+ код на C++ более надёжным. И они могут отличаться от того,
+ что используют другие.</p>
 
+<h3 id="Ownership_and_Smart_Pointers">Владение и умные указатели</h3>
 
-
-<h3 id="Ownership_and_Smart_Pointers">Ownership and Smart Pointers</h3>
-
-<p>Prefer to have single, fixed owners for dynamically
-allocated objects. Prefer to transfer ownership with smart
-pointers.</p>
+<p>Предпочтительно, чтобы динамически созданный объект имел одного
+ (выделенного) владельца. Передачу такого "владения" желательно
+ проводить через умные указатели.</p>
 
 <p class="definition"></p>
-<p>"Ownership" is a bookkeeping technique for managing
-dynamically allocated memory (and other resources). The
-owner of a dynamically allocated object is an object or
-function that is responsible for ensuring that it is
-deleted when no longer needed. Ownership can sometimes be
-shared, in which case the last owner is typically
-responsible for deleting it. Even when ownership is not
-shared, it can be transferred from one piece of code to
-another.</p>
+<p>"Владение" это технология учёта, используемая для управления
+ динамически выделенной памятью или другими ресурсами. Владелец
+ динамической сущности (объекта) это объект или функция, которые ответственны
+ за удаление сущности, когда она будет не нужна. Владение может
+ быть распределённым, и в этом случае обычно последний оставшийся
+ владелец отвечает за удаление. Даже если владение не
+ является распределённым, этот механизм может использоваться, чтобы
+ передать владение от одного объекта (или кода) другому.</p>
 
-<p>"Smart" pointers are classes that act like pointers,
-e.g. by overloading the <code>*</code> and
-<code>-&gt;</code> operators. Some smart pointer types
-can be used to automate ownership bookkeeping, to ensure
-these responsibilities are met.
-<a href="http://en.cppreference.com/w/cpp/memory/unique_ptr">
-<code>std::unique_ptr</code></a> is a smart pointer type
-introduced in C++11, which expresses exclusive ownership
-of a dynamically allocated object; the object is deleted
-when the <code>std::unique_ptr</code> goes out of scope.
-It cannot be copied, but can be <em>moved</em> to
-represent ownership transfer.
-<a href="http://en.cppreference.com/w/cpp/memory/shared_ptr">
-<code>std::shared_ptr</code></a> is a smart pointer type
-that expresses shared ownership of
-a dynamically allocated object. <code>std::shared_ptr</code>s
-can be copied; ownership of the object is shared among
-all copies, and the object is deleted when the last
-<code>std::shared_ptr</code> is destroyed. </p>
+<p>"Умные" указатели это классы, которые функционируют как
+ обычные указатели; например, в них перегружены операторы <code>*</code>
+ и <code>-&gt;</code>. Некоторые типы умных указателей можно
+ использовать для автоматического управления "владением": учёт 
+ владельцев, удаление объектов.
+ <a href="http://en.cppreference.com/w/cpp/memory/unique_ptr">
+<code>std::unique_ptr</code></a> это умный указатель, добавленный
+ в C++11, который реализует эксклюзивное владение (только один
+ владелец); объект удаляется в случае выхода из области видимости
+ экземпляра <code>std::unique_ptr</code>.
+ <code>std::unique_ptr</code> не может быть скопирован, однако
+ его можно передать (<em>move</em>) другому <code>std::unique_ptr</code>,
+ что фактически есть передача владения.
+ <a href="http://en.cppreference.com/w/cpp/memory/shared_ptr">
+<code>std::shared_ptr</code></a> это умный указатель, реализующий
+ распределённое владение. <code>std::shared_ptr</code> можно
+ копировать, при этом владение распределяется между всеми копиями.
+ Управляемый объект удаляется, когда разрушается последняя копия
+ <code>std::shared_ptr</code>.</p>
 
 <p class="pros"></p>
 <ul>
-  <li>It's virtually impossible to manage dynamically
-  allocated memory without some sort of ownership
-  logic.</li>
-
-  <li>Transferring ownership of an object can be cheaper
-  than copying it (if copying it is even possible).</li>
-
-  <li>Transferring ownership can be simpler than
-  'borrowing' a pointer or reference, because it reduces
-  the need to coordinate the lifetime of the object
-  between the two users.</li>
-
-  <li>Smart pointers can improve readability by making
-  ownership logic explicit, self-documenting, and
-  unambiguous.</li>
-
-  <li>Smart pointers can eliminate manual ownership
-  bookkeeping, simplifying the code and ruling out large
-  classes of errors.</li>
-
-  <li>For const objects, shared ownership can be a simple
-  and efficient alternative to deep copying.</li>
+  <li>Очень тяжело управлять динамической памятью без какого-либо
+  механизма учёта владения.</li>
+  <li>Передача владения может быть проще и быстрее, чем копирование
+  объекта. Также не все объекты можно скопировать.</li>
+  <li>Передача владения может быть проще, чем копирование указателя или
+  использование ссылок, т.к. нет необходимости согласовывать
+  жизненный цикл объекта между различными частями кода.</li>
+  <li>Умные указатели могут улучшить читабельность кода, сделать
+  его логику более понятной, самодокументируемой и непротиворечивой.</li>
+  <li>Умные указатели могут исключить ручное управление владением,
+  упростить код и избежать большого количества ошибок.</li>
+  <li>Для константных объектов распределённое владение может быть
+  простой и эффективной альтернативой против полного копирования.</li>
 </ul>
 
 <p class="cons"></p>
 <ul>
-  <li>Ownership must be represented and transferred via
-  pointers (whether smart or plain). Pointer semantics
-  are more complicated than value semantics, especially
-  in APIs: you have to worry not just about ownership,
-  but also aliasing, lifetime, and mutability, among
-  other issues.</li>
-
-  <li>The performance costs of value semantics are often
-  overestimated, so the performance benefits of ownership
-  transfer might not justify the readability and
-  complexity costs.</li>
-
-  <li>APIs that transfer ownership force their clients
-  into a single memory management model.</li>
-
-  <li>Code using smart pointers is less explicit about
-  where the resource releases take place.</li>
-
-  <li><code>std::unique_ptr</code> expresses ownership
-  transfer using C++11's move semantics, which are
-  relatively new and may confuse some programmers.</li>
-
-  <li>Shared ownership can be a tempting alternative to
-  careful ownership design, obfuscating the design of a
-  system.</li>
-
-  <li>Shared ownership requires explicit bookkeeping at
-  run-time, which can be costly.</li>
-
-  <li>In some cases (e.g. cyclic references), objects
-  with shared ownership may never be deleted.</li>
-
-  <li>Smart pointers are not perfect substitutes for
-  plain pointers.</li>
+  <li>Владение должно представляться и передаваться через
+  указатели (любо умные, либо обычные). Семантика указателей
+  сложнее работы со значениями, особенно в API: помимо владения
+  необходимо беспокоиться о правильности используемых типов (aliasing),
+  времени жизни, изменяемости объектов и т.д.</li>
+  <li>Затраты по производительности при копировании значений
+  часто завышены, поэтому прирост производительности при передаче
+  владения (против простого копирования) в ряде случаев
+  не может оправдать ухудшение читабельности и увеличение 
+  сложности кода.</li>
+  <li>API управления владением могут накладывать свои ограничения на
+  модель (порядок) управления памятью.</li>
+  <li>При использовании умных указателей нет чёткого понимания где
+  именно (в коде) будет производится освобождение ресурсов.</li>
+  <li><code>std::unique_ptr</code> реализует передачу владения
+  через семантику перемещения C++11, которая является новой и
+  может затруднить понимание кода.</li>
+  <li>Распределённое владение с одной стороны позволяет аккуратно
+  управлять владением, с другой стороны может усложнить 
+  архитектуру системы.</li>
+  <li>Распределённое владение требует операций учёта во время выполнения,
+  это может отразиться на производительности.</li>
+  <li>В ряде случаев (например, создании циклических ссылок) объекты
+  с распределённым владением никогда не удалятся.</li>
+  <li>Умные указатели не всегда могут заменить обычные указатели.</li>
 </ul>
 
 <p class="decision"></p>
-<p>If dynamic allocation is necessary, prefer to keep
-ownership with the code that allocated it. If other code
-needs access to the object, consider passing it a copy,
-or passing a pointer or reference without transferring
-ownership. Prefer to use <code>std::unique_ptr</code> to
-make ownership transfer explicit. For example:</p>
+<p>Если необходима работа с динамической памятью, то
+ предпочтительно чтобы код, выделяющий память, ею же
+ и владел. Если другой код хочет получить доступ к этой
+ памяти, то можно передать копию, указатель или ссылку
+ (и всё это без передачи владения). Предпочтительно
+ использовать <code>std::unique_ptr</code> для
+ явной передачи владения. Например:</p>
 
 <pre>std::unique_ptr&lt;Foo&gt; FooFactory();
 void FooConsumer(std::unique_ptr&lt;Foo&gt; ptr);
 </pre>
 
+<p>Без существенной причины не проектируйте (не используйте)
+ код с распределённым владением. Как вариант, это может
+ быть желание избежать "тяжелой" операции копирования,
+ однако обязательно убедитесь, что выигрыш будет существенным
+ и разделяемый объект - неизменяемый (т.е.
+ <code>std::shared_ptr&lt;const Foo&gt;</code>). Если же
+ требуется именно распределённое владение, то используйте
+ <code>std::shared_ptr</code>.</p>
 
-
-<p>Do not design your code to use shared ownership
-without a very good reason. One such reason is to avoid
-expensive copy operations, but you should only do this if
-the performance benefits are significant, and the
-underlying object is immutable (i.e.
-<code>std::shared_ptr&lt;const Foo&gt;</code>).  If you
-do use shared ownership, prefer to use
-<code>std::shared_ptr</code>.</p>
-
-<p>Never use <code>std::auto_ptr</code>. Instead, use
-<code>std::unique_ptr</code>.</p>
+<p>Никогда не используйте <code>std::auto_ptr</code>. В качестве замены
+ есть <code>std::unique_ptr</code>.</p>
 
 <h3 id="cpplint">cpplint</h3>
 
