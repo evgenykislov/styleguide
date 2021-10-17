@@ -2713,146 +2713,141 @@ memset(&amp;data, 0, sizeof(data));
 }
 </pre>
 
-<h3 id="Type_deduction">Type deduction</h3>
+<h3 id="Type_deduction">Вывод типов</h3>
 
-<p>Use type deduction only if it makes the code clearer to readers who aren't
-  familiar with the project, or if it makes the code safer. Do not use it
-  merely to avoid the inconvenience of writing an explicit type.</p>
+<p>Используйте вывод типов только если это сделает код
+ более читабельным или более безопасным. Не используйте его
+ только из-за неудобства написания полного типа.</p>
 
 <p class="definition"></p>
 
-<p>There are several contexts in which C++ allows (or even requires) types to
-be deduced by the compiler, rather than spelled out explicitly in the code:</p>
+<p>Есть ряд ситуаций, когда типы в C++ коде могут (или даже
+ необходимо) быть выведены компилятором и это более предпочтительно,
+ чем явно их прописывать:</p>
 <dl>
-  <dt><a href="https://en.cppreference.com/w/cpp/language/template_argument_deduction">Function template argument deduction</a></dt>
-  <dd>A function template can be invoked without explicit template arguments.
-    The compiler deduces those arguments from the types of the function
-    arguments:
+  <dt><a href="https://en.cppreference.com/w/cpp/language/template_argument_deduction">вывод типов
+  аргументов шаблонной функции</a></dt>
+  <dd>Шаблонная функция может вызываться без указания явных шаблонных типов.
+  Компилятор выводит эти типы из аргументов функции:
     <pre class="neutralcode">template &lt;typename T&gt;
 void f(T t);
 
-f(0);  // Invokes f&lt;int&gt;(0)</pre>
+f(0);  // Вызывается f&lt;int&gt;(0)</pre>
   </dd>
-  <dt><a href="https://en.cppreference.com/w/cpp/language/auto"><code>auto</code> variable declarations</a></dt>
-  <dd>A variable declaration can use the <code>auto</code> keyword in place
-    of the type. The compiler deduces the type from the variable's
-    initializer, following the same rules as function template argument
-    deduction with the same initializer (so long as you don't use curly braces
-    instead of parentheses).
-    <pre class="neutralcode">auto a = 42;  // a is an int
-auto&amp; b = a;  // b is an int&amp;
-auto c = b;   // c is an int
-auto d{42};   // d is an int, not a std::initializer_list&lt;int&gt;
+  <dt><a href="https://en.cppreference.com/w/cpp/language/auto">переменная с <code>auto</code> типом</a></dt>
+  <dd>Декларация переменной может использовать <code>auto</code> вместо типа.
+	Компилятор выводит тип из выражения инициализации, следуя правилам,
+	аналогичным для шаблонной функции (во всяком случае, пока не используются
+	фигурные скобки вместо круглых).
+    <pre class="neutralcode">auto a = 42;  // a типа int
+auto&amp; b = a;  // b типа int&amp;
+auto c = b;   // c типа int
+auto d{42};   // d типа int, а не std::initializer_list&lt;int&gt;
 </pre>
-    <code>auto</code> can be qualified with <code>const</code>, and can be
-    used as part of a pointer or reference type, but it can't be used as a
-    template argument. A rare variant of this syntax uses
-    <code>decltype(auto)</code> instead of <code>auto</code>, in which case
-    the deduced type is the result of applying
+    <code>auto</code> может использоваться совместно с <code>const</code>,
+    или в составе указателя или ссылки. Однако, <code>auto</code> не может
+    использоваться как аргумент шаблона. Изредка можно увидеть использование  
+    <code>decltype(auto)</code> вместо <code>auto</code> и в этом случае
+    выводимый тип является результатом применения
     <a href="https://en.cppreference.com/w/cpp/language/decltype"><code>decltype</code></a>
-    to the initializer.
+    к переданному выражению инициализации
+    (прим.: и, например, сохранить квалификаторы ссылки).
   </dd>
-  <dt><a href="https://en.cppreference.com/w/cpp/language/function#Return_type_deduction">Function return type deduction</a></dt>
-  <dd><code>auto</code> (and <code>decltype(auto)</code>) can also be used in
-    place of a function return type. The compiler deduces the return type from
-    the <code>return</code> statements in the function body, following the same
-    rules as for variable declarations:
-    <pre class="neutralcode">auto f() { return 0; }  // The return type of f is int</pre>
-    <a href="#Lambda_expressions">Lambda expression</a> return types can be
-    deduced in the same way, but this is triggered by omitting the return type,
-    rather than by an explicit <code>auto</code>. Confusingly,
-    <a href="trailing_return">trailing return type</a> syntax for functions
-    also uses <code>auto</code> in the return-type position, but that doesn't
-    rely on type deduction; it's just an alternate syntax for an explicit
-    return type.
-  </dd>
-  <dt><a href="https://isocpp.org/wiki/faq/cpp14-language#generic-lambdas">Generic lambdas</a></dt>
-  <dd>A lambda expression can use the <code>auto</code> keyword in place of
-    one or more of its parameter types. This causes the lambda's call operator
-    to be a function template instead of an ordinary function, with a separate
-    template parameter for each <code>auto</code> function parameter:
-    <pre class="neutralcode">// Sort `vec` in increasing order
+  <dt><a href="https://en.cppreference.com/w/cpp/language/function#Return_type_deduction">вывод типа возвращаемого значения функции</a></dt>
+  <dd><code>auto</code> (и <code>decltype(auto)</code>) можно использовать для указания
+  возвращаемого значения функции. Компилятор выводит тип возвращаемого значения
+  из выражения <code>return</code> в теле функции, следуя тем же правилам, что и 
+  при объявлении переменной: 
+  <pre class="neutralcode">auto f() { return 0; }  // Возвращаемый f тип - int</pre>
+    Возвращаемый тип <a href="#Lambda_expressions">лямбды</a> может быть выведен
+    аналогичным способом (хотя это делается при отсутствии возвращаемого типа, а
+    не в случае использования <code>auto</code>). Синтаксис указания 
+    <a href="trailing_return">возвращаемого типа в конце</a> для функций
+    также использует <code>auto</code>, но это не вывод типа, скорее альтернативный 
+    синтаксис для явно указанного возвращаемого типа.</dd>
+  <dt><a href="https://isocpp.org/wiki/faq/cpp14-language#generic-lambdas">общие (generic) лямбды</a></dt>
+  <dd>В описании лямбды можно использовать <code>auto</code> в качестве
+  одного или нескольких типов параметров. Как результат, оператор вызова
+  лямбды будет шаблонной функцией вместо обычной, с отдельными 
+  параметрами шаблона по одному на каждый <code>auto</code>: 
+  <pre class="neutralcode">// Сортируем `vec` по возрастанию
 std::sort(vec.begin(), vec.end(), [](auto lhs, auto rhs) { return lhs &gt; rhs; });</pre>
   </dd>
-  <dt><a href="https://isocpp.org/wiki/faq/cpp14-language#lambda-captures">Lambda init captures</a></dt>
-  <dd>Lambda captures can have explicit initializers, which can be used to
-    declare wholly new variables rather than only capturing existing ones:
-    <pre class="neutralcode">[x = 42, y = "foo"] { ... }  // x is an int, and y is a const char*</pre>
-    This syntax doesn't allow the type to be specified; instead, it's deduced
-    using the rules for <code>auto</code> variables.
+  <dt><a href="https://isocpp.org/wiki/faq/cpp14-language#lambda-captures">инициализация захватываемых переменных лямбды</a></dt>
+  <dd>В лямбде в секции захвата можно явно прописать новые переменные,
+  инициализированные значением:
+    <pre class="neutralcode">[x = 42, y = "foo"] { ... }  // тип x - int, y - const char*</pre>
+    Синтаксис не позволяет указать тип новой переменной, он выводится аналогично
+    <code>auto</code> переменным.
   </dd>
-  <dt><a href="https://en.cppreference.com/w/cpp/language/class_template_argument_deduction">Class template argument deduction</a></dt>
-  <dd>See <a href="#CTAD">below</a>.</dd>
-  <dt><a href="https://en.cppreference.com/w/cpp/language/structured_binding">Structured bindings</a></dt>
-  <dd>When declaring a tuple, struct, or array using <code>auto</code>, you can
-    specify names for the individual elements instead of a name for the whole
-    object; these names are called "structured bindings", and the whole
-    declaration is called a "structured binding declaration". This syntax
-    provides no way of specifying the type of either the enclosing object
-    or the individual names:
+  <dt><a href="https://en.cppreference.com/w/cpp/language/class_template_argument_deduction">вывод аргументов шаблонного класса</a></dt>
+  <dd>См. <a href="#CTAD">соответствующий раздел</a>.</dd>
+  <dt><a href="https://en.cppreference.com/w/cpp/language/structured_binding">структурная привязка</a></dt>
+  <dd>При объявлении кортежей, структур или массивов с использованием <code>auto</code>
+  можно указать имена отдельных элементов вместо имени полного объекта. Эти имена
+  называются "структурная привязка", а декларация - соответственно
+  "декларация структурной привязки". Синтаксис не позволяет задать тип
+  ни полного объекта, ни отдельных имён:
     <pre class="neutralcode">auto [iter, success] = my_map.insert({key, value});
 if (!success) {
   iter-&gt;second = value;
 }</pre>
-    The <code>auto</code> can also be qualified with <code>const</code>,
-    <code>&amp;</code>, and <code>&amp;&amp;</code>, but note that these qualifiers
-    technically apply to the anonymous tuple/struct/array, rather than the
-    individual bindings. The rules that determine the types of the bindings
-    are quite complex; the results tend to be unsurprising, except that
-    the binding types typically won't be references even if the declaration
-    declares a reference (but they will usually behave like references anyway).
+  <code>auto</code> можно использовать с квалификаторами <code>const</code>,
+    <code>&amp;</code> и <code>&amp;&amp;</code>. Отметим, что эти квалификаторы
+    формально применяются к анонимному кортежу/структуре/массиву, а не к 
+    отдельным привязкам. Правила определения конечного типа привязок довольно
+    запутанные, однако в большинстве случаев всё довольно логично. Можно только
+    отметить, что тип привязки обычно не может быть ссылочным, даже если в декларации
+    указана ссылка (хотя поведение всё равно может быть как у ссылки).
   </dd></dl>
 
-<p>(These summaries omit many details and caveats; see the links for further
-  information.)</p>
+<p>В приведённом выше описании не указаны многие детали, для дополнительной информации
+  используйте приведённые ссылки.</p>
 
 <p class="pros"></p>
 
 <ul>
-  <li>C++ type names can be long and cumbersome, especially when they
-    involve templates or namespaces.</li>
-  <li>When a C++ type name is repeated within a single declaration or a
-    small code region, the repetition may not be aiding readability.</li>
-  <li>It is sometimes safer to let the type be deduced, since that avoids
-    the possibility of unintended copies or type conversions.</li>
+  <li>Название типов в C++ может быть длинным и громоздким, особенно при
+  использовании шаблонов и пространств имён.</li>
+  <li>Когда название типа C++ повторяется несколько раз внутри небольшого
+  куска кода или декларации, это повторение не улучшает читабельность.</li>
+  <li>В ряде случаев вывод типов безопаснее, т.к. позволяет избежать
+  случайных копирований или преобразований типов.</li>
 </ul>
 
 <p class="cons"></p>
-<p>C++ code is usually clearer when types are explicit,
-  especially when type deduction would depend on information from
-  distant parts of the code. In expressions like:</p>
+<p>При явном указании типов код C++ становится более ясным и понятным,
+  особенно если вывод типов опирается на информацию из совершенно
+  другой части кода. В выражении наподобие:</p>
 
-<pre class="badcode">auto foo = x.add_foo();
+<pre class="badcode">auto foo = x.add_foo(); // Плохо. Что есть foo?
 auto i = y.Find(key);
 </pre>
 
-<p>it may not be obvious what the resulting types are if the type
-  of <code>y</code> isn't very well known, or if <code>y</code> was
-  declared many lines earlier.</p>
+<p>может быть неочевидно какие типы выводятся для переменных, особенно
+  если <code>y</code> не является хорошо известным типом или объявлен 
+  намного раньше по коду.</p>
 
-<p>Programmers have to understand when type deduction will or won't
-  produce a reference type, or they'll get copies when they didn't
-  mean to.</p>
+<p>Необходимо разбираться, выдаётся ли ссылка при выводе типа, производится
+  ли копирование (особенно если оно не предполагалось).</p>
 
-<p>If a deduced type is used as part of an interface, then a
-  programmer might change its type while only intending to
-  change its value, leading to a more radical API change
-  than intended.</p>
+<p>Если выводимые типы используется как часть интерфейса, то любые
+ незначительные изменения в выражениях могут привести к радикальным
+ изменениям API.</p>
 
 <p class="decision"></p>
 
-<p>The fundamental rule is: use type deduction only to make the code
-  clearer or safer, and do not use it merely to avoid the
-  inconvenience of writing an explicit type. When judging whether the
-  code is clearer, keep in mind that your readers are not necessarily
-  on your team, or familiar with your project, so types that you and
-  your reviewer experience as as unnecessary clutter will very often
-  provide useful information to others. For example, you can assume that
-  the return type of <code>make_unique&lt;Foo&gt;()</code> is obvious,
-  but the return type of <code>MyWidgetFactory()</code> probably isn't.</p>
+<p>Основное правило: используйте вывод типов только если это сделает код
+  более ясным и безопасным. Не используйте вывод типов только чтобы
+  облегчить написание кода. Не забывайте, что читатели кода могут
+  быть в другой команде и не знакомы с этим проектом. Поэтому, хотя явные типы
+  могут считаться понятным, очевидным и избыточными для одних, они
+  могут содержать полезную информацию для других. Например, можно
+  полагать, что возвращаемый тип <code>make_unique&lt;Foo&gt;()</code> очевиден.
+  Однако, в случае <code>MyWidgetFactory()</code> лучше считать по-другому.</p>
 
-  <p>These principles applies to all forms of type deduction, but the
-  details vary, as described in the following sections.</p>
+  <p>Эти принципы применяются для всех видов вывода типов. Однако, существуют 
+  тонкости, описанные ниже.</p>
 
 <h4>Function template argument deduction</h4>
 
