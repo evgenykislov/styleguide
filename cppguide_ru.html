@@ -2849,20 +2849,20 @@ auto i = y.Find(key);
   <p>Эти принципы применяются для всех видов вывода типов. Однако, существуют 
   тонкости, описанные ниже.</p>
 
-<h4>Function template argument deduction</h4>
+<h4>Вывод аргументов шаблонной функции</h4>
 
-<p>Function template argument deduction is almost always OK. Type deduction
-  is the expected default way of interacting with function templates,
-  because it allows function templates to act like infinite sets of ordinary
-  function overloads. Consequently, function templates are almost always
-  designed so that template argument deduction is clear and safe, or
-  doesn't compile.</p>
+<p>Вывод аргументов шаблонной функции это практически всегда хорошо. 
+  Это стандартный и ожидаемый способ работы с шаблонными функциями,
+  т.к. вызов такой функции напоминает работу с обычной (но перегруженной
+  для различных аргументов) функцией. И шаблонные функции желательно
+  проектировать так, чтобы вывод аргументов был корректный и безопасный,
+  или функция не должна компилироваться.</p>
 
-<h4>Local variable type deduction</h4>
+<h4>Вывод типов локальных переменных</h4>
 
-<p>For local variables, you can use type deduction to make the code clearer
-  by eliminating type information that is obvious or irrelevant, so that
-  the reader can focus on the meaningful parts of the code:
+<p>В случае локальных переменных можно использовать вывод типов, чтобы
+  сделать код более простым, убрав очевидную или нежелательную информацию о типах,
+  и читатель может сконцентрироваться на важных частях кода. Сравните примеры кода:
   </p><pre class="neutralcode">std::unique_ptr&lt;WidgetWithBellsAndWhistles&gt; widget_ptr =
     absl::make_unique&lt;WidgetWithBellsAndWhistles&gt;(arg1, arg2);
 absl::flat_hash_map&lt;std::string,
@@ -2874,80 +2874,75 @@ std::array&lt;int, 0&gt; numbers = {4, 8, 15, 16, 23, 42};</pre>
 auto it = my_map_.find(key);
 std::array numbers = {4, 8, 15, 16, 23, 42};</pre>
 
-<p>Types sometimes contain a mixture of useful information and boilerplate,
-  such as <code>it</code> in the example above: it's obvious that the
-  type is an iterator, and in many contexts the container type and even the
-  key type aren't relevant, but the type of the values is probably useful.
-  In such situations, it's often possible to define local variables with
-  explicit types that convey the relevant information:
-  </p><pre class="goodcode">auto it = my_map_.find(key);
+<p>Типы иногда содержат смесь как полезной, так и формальной информации.
+  Например в примере выше очевидно, что <code>it</code> это итератор.
+  Вообще в большинстве аналогичных случаев информация о контейнере и даже типе ключа не особо
+  полезна, однако тип значения обычно важен. В этом случае можно
+  определить локальную переменную с явно указанным (полезным для читателя) типом:
+  </p>
+<pre class="goodcode">auto it = my_map_.find(key);
 if (it != my_map_.end()) {
   WidgetWithBellsAndWhistles&amp; widget = *it-&gt;second;
   // Do stuff with `widget`
 }</pre>
-    <p>
-        If the type is a template instance, and the parameters are
-        boilerplate but the template itself is informative, you can use
-        class template argument deduction to suppress the boilerplate. However,
-        cases where this actually provides a meaningful benefit are quite rare.
-        Note that class template argument deduction is also subject to a
-        <a href="#CTAD">separate style rule</a>.
-    </p>
+<p>Если тип является шаблонным, у которого параметры неинформативны, но
+ тип самого шаблона является важным, то можно использовать вывод
+ аргументов шаблонного класса чтобы избавиться от формального (ненужного) кода.
+ Отметим что случаи, когда это является полезным, довольно редки.
+ Также учтите, что при использовании вывода аргументов шаблонного класса
+ желательно следовать <a href="#CTAD">специальным рекомендациям</a>.</p>
 
-<p>Do not use <code>decltype(auto)</code> if a simpler option will work,
-  because it's a fairly obscure feature, so it has a high cost in code
-  clarity.</p>
+<p>Не используйте <code>decltype(auto)</code> при наличии более простых
+ альтернатив, т.к. результат использования не всегда легко предсказуем.</p>
 
-<h4>Return type deduction</h4>
+<h4>Вывод типа возвращаемого значения</h4>
 
-<p>Use return type deduction (for both functions and lambdas) only if the
-  function body has a very small number of <code>return</code> statements,
-  and very little other code, because otherwise the reader may not be able
-  to tell at a glance what the return type is. Furthermore, use it only
-  if the function or lambda has a very narrow scope, because functions with
-  deduced return types don't define abstraction boundaries: the implementation
-  <em>is</em> the interface. In particular, public functions in header files
-  should almost never have deduced return types.</p>
+<p>Используйте вывод типа возвращаемого значения (как для функция, так и для
+ лямбд), только если тело функции содержит небольшое количество <code>return</code>
+ и сам код небольшой. В противном случае читатель не сможет понять возвращаемый
+ тип без его исследования. Также применяйте такой вывод типов только для
+ функций или лямбд с очень маленькой областью видимости, т.к. функции не могут
+ установить границы абстракции: сама реализация <em>формирует</em> интерфейс.
+ В частности, публичные функции в заголовочных файлах никогда не должны 
+ использовать вывод типа возвращаемого значения.</p>
 
-<h4>Parameter type deduction</h4>
+<h4>Вывод типов параметров</h4>
 
-<p><code>auto</code> parameter types for lambdas should be used with caution,
-  because the actual type is determined by the code that calls the lambda,
-  rather than by the definition of the lambda. Consequently, an explicit
-  type will almost always be clearer unless the lambda is explicitly called
-  very close to where it's defined (so that the reader can easily see both),
-  or the lambda is passed to an interface so well-known that it's
-  obvious what arguments it will eventually be called with (e.g.
-  the <code>std::sort</code> example above).</p>
+<p>Параметры с <code>auto</code> в ламбдах должны использовать с осторожностью,
+ т.к. реальный тип определяется кодом лямбды, а не её объявлением. И, конечно,
+ явное указание типа обычно более понятно, за исключением случаев, когда
+ лямбда определяется рядом с местом её использования (можно одновременно
+ видеть и определение лямбды и её вызов) или лямбда передаётся в 
+ настолько известный интерфейс, что используемые аргументы очевидны
+ (например, см. вызов <code>std::sort</code> выше).</p>
 
-<h4>Lambda init captures</h4>
+<h4>Инициализация переменных захвата ламбды</h4>
 
-<p>Init captures are covered by a <a href="#Lambda_expressions">more specific
-    style rule</a>, which largely supersedes the general rules for
-  type deduction.</p>
+<p>При инициализации переменных захвата предпочтительны <a href="#Lambda_expressions">специальные
+ рекомендации</a>, которые в целом подменяют общие правила для использования вывода типов.</p>
 
-<h4>Structured bindings</h4>
+<h4>Структурные привязки</h4>
 
-<p>Unlike other forms of type deduction, structured bindings can actually
-  give the reader additional information, by giving meaningful names to the
-  elements of a larger object. This means that a structured binding declaration
-  may provide a net readability improvement over an explicit type, even in cases
-  where <code>auto</code> would not. Structured bindings are especially
-  beneficial when the object is a pair or tuple (as in the <code>insert</code>
-  example above), because they don't have meaningful field names to begin with,
-  but note that you generally <a href="#Structs_vs._Tuples">shouldn't use
-    pairs or tuples</a> unless a pre-existing API like <code>insert</code>
-  forces you to.</p>
+<p>В отличие от других форм вывода типов, структурные привязки могут
+ дать дополнительную информацию за счёт правильного именования элементов
+ полного объекта. Т.е. декларация структурной привязки может улучшить
+ читабельность кода по сравнению с использованием явного типа (даже если
+ <code>auto</code> не рекомендуется). Структурные привязки хорошо подходят
+ при работе с парами или кортежами (см. пример использования
+ <code>insert</code> выше), потому что в последних нет "говорящих" названий полей.
+ С другой стороны, в целом <a href="#Structs_vs._Tuples">не рекомендуется использовать
+ пары и кортежи</a>, пока внешний API, наподобие <code>insert</code>, явно
+ этого не потребует.</p>
 
-<p>If the object being bound is a struct, it may sometimes be helpful to
-  provide names that are more specific to your usage, but keep in mind that
-  this may also mean the names are less recognizable to your reader than the
-  field names. We recommend using a comment to indicate the name of the
-  underlying field, if it doesn't match the name of the binding, using the
-  same syntax as for function parameter comments:
-  </p><pre>auto [/*field_name1=*/ bound_name1, /*field_name2=*/ bound_name2] = ...</pre>
-<p>As with function parameter comments, this can enable tools to detect if
-  you get the order of the fields wrong.</p>
+<p>Если объектом привязки является структура, иногда может быть полезно
+ указать имена, лучше подходящие для данного кода. Однако учитывайте, что
+ такие имена могут быть менее понятны читателям кода, чем штатные имена полей.
+ Рекомендуется использовать комментарии для указания имён полей, если
+ они отличаются от имён привязок. Используйте синтаксис, аналогичный комментариям
+ к параметрам функций:</p>
+<pre>auto [/*field_name1=*/ bound_name1, /*field_name2=*/ bound_name2] = ...</pre>
+<p>Также, как и с параметрами функций, комментарии могут помочь внешним инструментам
+ определить ошибки в порядке указания полей.</p>
 
 <h3 id="CTAD">Class template argument deduction</h3>
 
