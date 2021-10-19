@@ -2944,66 +2944,57 @@ if (it != my_map_.end()) {
 <p>Также, как и с параметрами функций, комментарии могут помочь внешним инструментам
  определить ошибки в порядке указания полей.</p>
 
-<h3 id="CTAD">Class template argument deduction</h3>
+<h3 id="CTAD">Вывод аргументов шаблонного класса</h3>
 
-<p>Use class template argument deduction only with templates that have
-  explicitly opted into supporting it.</p>
+<p>Используйте вывод аргументов только для тех шаблонных классов, что
+ явно поддерживают это.</p>
 
 <p class="definition"></p>
-<p><a href="https://en.cppreference.com/w/cpp/language/class_template_argument_deduction">Class
-    template argument deduction</a> (often abbreviated "CTAD") occurs when
-  a variable is declared with a type that names a template, and the template
-  argument list is not provided (not even empty angle brackets):
-  </p><pre class="neutralcode">std::array a = {1, 2, 3};  // `a` is a std::array&lt;int, 3&gt;</pre>
-    <p>
-        The compiler deduces the arguments from the initializer using the
-        template's "deduction guides", which can be explicit or implicit.
-    </p>
-<p>Explicit deduction guides look like function declarations with trailing
-  return types, except that there's no leading <code>auto</code>, and the
-  function name is the name of the template. For example, the above example
-  relies on this deduction guide for <code>std::array</code>:
-  </p><pre class="neutralcode">namespace std {
+<p><a href="https://en.cppreference.com/w/cpp/language/class_template_argument_deduction">Вывод
+ аргументов шаблонного класса</a> (CTAD) проявляется, когда переменная
+ декларируется с типом шаблона, но без указания аргументов (даже без угловых скобок):</p>
+<pre class="neutralcode">std::array a = {1, 2, 3};  // Тип `a`: std::array&lt;int, 3&gt;</pre>
+<p> Компилятор выводит аргументы из выражения инициализации, используя "гайд"
+ для шаблонов, который может быть явный и неявный.</p>
+<p>Явный гайд походит на декларацию функции с возвращаемым типом в конце, только без
+ <code>auto</code> вначале, и имя функции есть имя шаблона. Например, ранее
+ приведённый пример опирается на следующий гайд для <code>std::array</code>:
+  </p>
+<pre class="neutralcode">namespace std {
 template &lt;class T, class... U&gt;
 array(T, U...) -&gt; std::array&lt;T, 1 + sizeof...(U)&gt;;
 }</pre>
-    <p>
-        Constructors in a primary template (as opposed to a template specialization)
-        also implicitly define deduction guides.
-    </p>
+<p>Конструкторы в основном определении шаблона (т.е. не в специализации) также
+ неявно определяют "гайд".</p>
 
-<p>When you declare a variable that relies on CTAD, the compiler selects
-  a deduction guide using the rules of constructor overload resolution,
-  and that guide's return type becomes the type of the variable.</p>
+<p>Когда объявляется переменная, использующая CTAD, компилятор выбирает
+ "гайд" на основе правил выбора (разрешения) перегруженного конструктора,
+  и возвращаемый гайдом тип становится типом переменной.</p>
 
 <p class="pros"></p>
-<p>CTAD can sometimes allow you to omit boilerplate from your code.</p>
+<p>CTAD иногда может уменьшить количество формального кода.</p>
 
 <p class="cons"></p>
-<p>The implicit deduction guides that are generated from constructors
-  may have undesirable behavior, or be outright incorrect. This is
-  particularly problematic for constructors written before CTAD was
-  introduced in C++17, because the authors of those constructors had no
-  way of knowing about (much less fixing) any problems that their
-  constructors would cause for CTAD. Furthermore, adding explicit deduction
-  guides to fix those problems might break any existing code that relies on
-  the implicit deduction guides.</p>
+<p>Неявные "гайды", получаемые из конструкторов, могут реализовывать
+ нежелательное или даже неправильное поведение. Эта проблема может
+ часто проявляться для конструкторов, написанных до появления CTAD в
+ C++17, т.к. авторы кода просто не знали о тех проблемах, которые вызовет CTAD.  
+ И далее, добавление явных "гайдов" для исправления проблемы может поломать
+ любой существующий код, который использует неявные гайды.</p>
 
-<p>CTAD also suffers from many of the same drawbacks as <code>auto</code>,
-  because they are both mechanisms for deducing all or part of a variable's
-  type from its initializer. CTAD does give the reader more information
-  than <code>auto</code>, but it also doesn't give the reader an obvious
-  cue that information has been omitted.</p>
+<p>У CTAD есть много недостатков, аналогичных недостаткам <code>auto</code>,
+ т.к. оба механизма выводят (полный или частичный) тип переменной на основе
+ инициализации. CTAD выдаёт больше  информации, чем <code>auto</code>, однако
+ всё равно не содержит явного указания, если информация была пропущена.</p>
 
 <p class="decision"></p>
-<p>Do not use CTAD with a given template unless the template's maintainers
-  have opted into supporting use of CTAD by providing at least one explicit
-  deduction guide (all templates in the <code>std</code> namespace are
-  also presumed to have opted in). This should be enforced with a compiler
-  warning if available.</p>
+<p>Не используйте CTAD на шаблонных классах, пока не будет поддержки механизма
+ и обеспечен хотя бы один явный "гайд" (предполагается, что в пространстве
+ имён <code>std</code> всё поддерживается). Желательно, чтобы недопустимое 
+ использование CTAD приводило к предупреждениями компилятора.</p>
 
-<p>Uses of CTAD must also follow the general rules on
-  <a href="#Type_deduction">Type deduction</a>.</p>
+<p>В любом случае, использование CTAD должно следовать общим правилам при
+ <a href="#Type_deduction">выводе типов</a>.</p>
 
 <h3 id="Lambda_expressions">Lambda expressions</h3>
 
