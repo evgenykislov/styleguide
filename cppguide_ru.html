@@ -1705,8 +1705,8 @@ class NotCopyableOrMovable {
 <h2 id="Google-Specific_Magic">Специфика Google</h2>
 
 <p>Есть различные трюки и средства, которые используются чтобы сделать
- код на C++ более надёжным. И они могут отличаться от того,
- что используют другие.</p>
+ код на C++ более надёжным. И да, они могут отличаться от того,
+ что используют в других компаниях.</p>
 
 <h3 id="Ownership_and_Smart_Pointers">Владение и умные указатели</h3>
 
@@ -1817,28 +1817,19 @@ void FooConsumer(std::unique_ptr&lt;Foo&gt; ptr);
 
 <h3 id="cpplint">cpplint</h3>
 
-<p>Use <code>cpplint.py</code> to detect style errors.</p>
+<p>Для проверки кода на ошибки стиля используйте <code>cpplint.py</code>.</p>
 
-<p><code>cpplint.py</code>
-is a tool that reads a source file and identifies many
-style errors. It is not perfect, and has both false
-positives and false negatives, but it is still a valuable
-tool. False positives can be ignored by putting <code>//
-NOLINT</code> at the end of the line or
-<code>// NOLINTNEXTLINE</code> in the previous line.</p>
+<p><code>cpplint.py</code> - утилита, которая читает файл с кодом и
+ определяет многие ошибки в стиле. Конечно, она не идеальна, иногда
+ выдаёт ложно-положительные и ложно-отрицательные ошибки, однако
+ это всё равно полезная утилита. Ложно-положительные ошибки можно
+ исключить, если вставлять <code>// NOLINT</code> в конце строчки кода
+ или <code>// NOLINTNEXTLINE</code> на предыдущей строке.</p>
 
-
-
-<div>
-<p>Some projects have instructions on
-how to run <code>cpplint.py</code> from their project
-tools. If the project you are contributing to does not,
-you can download
-<a href="https://raw.githubusercontent.com/google/styleguide/gh-pages/cpplint/cpplint.py">
-<code>cpplint.py</code></a> separately.</p>
-</div>
-
-
+<p>Иногда в проекте есть инструкция, откуда брать и как пользоваться <code>cpplint.py</code>.
+ Если в вашем проекте такой нет, то можно просто скачать
+ <a href="https://raw.githubusercontent.com/google/styleguide/gh-pages/cpplint/cpplint.py">
+<code>cpplint.py</code></a>.</p>
 
 <h2 id="Other_C++_Features">Ещё возможности C++</h2>
 
@@ -5229,7 +5220,7 @@ to avoid this.</p>
 more interesting. Have fun!</p>
 
 <h2 id="Translation">Перевод</h2>
-<p>Кислов Евгений, 2019<br />email: dev@evgenykislov.com<br />
+<p>Кислов Евгений, 2019-2021<br />email: dev@evgenykislov.com<br />
 <a href="https://evgenykislov.com">evgenykislov.com</a></p>
 <p>Актуальная версия перевода:<br />
 <a href="https://evgenykislov.com/wp-content/custom/cpp_codestyle/cppguide_ru.html">Руководство Google по стилю в C++</a><br /></p>
