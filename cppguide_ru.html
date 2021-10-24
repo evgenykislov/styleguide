@@ -3122,74 +3122,70 @@ std::sort(indices.begin(), indices.end(), [&amp;](int a, int b) {
   <a href="#Type_deduction">Вывод типов</a>.</li>
 </ul>
 
-<h3 id="Template_metaprogramming">Template metaprogramming</h3>
+<h3 id="Template_metaprogramming">Метапрограммирование на шаблонах</h3>
 
-<p>Avoid complicated template programming.</p>
+<p>Не используйте сложные/запутанные шаблоны в коде.</p>
 
 <p class="definition"></p>
-<p>Template metaprogramming refers to a family of techniques that
-exploit the fact that the C++ template instantiation mechanism is
-Turing complete and can be used to perform arbitrary compile-time
-computation in the type domain.</p>
+<p>Метапрограммирование на шаблонах это семейство техник, использующих
+ возможности по инстанцированию шаблона в C++, которое Тьюринг-полное,
+ для выполнения вычислений на этапе компиляции.</p>
 
 <p class="pros"></p>
-<p>Template metaprogramming allows extremely flexible interfaces that
-are type safe and high performance. Facilities like
-
-<a href="https://code.google.com/p/googletest/">Google Test</a>,
-<code>std::tuple</code>, <code>std::function</code>, and
-Boost.Spirit would be impossible without it.</p>
+<p>Метапрограммирование позволяет создавать очень гибкие интерфейсы,
+ у которых высокая производительность и отличная типобезопасность.
+ Например, <a href="https://code.google.com/p/googletest/">Google Test</a>,
+ <code>std::tuple</code>, <code>std::function</code> и Boost.Spirit
+ были бы невозможны без таких средств.</p>
 
 <p class="cons"></p>
-<p>The techniques used in template metaprogramming are often obscure
-to anyone but language experts. Code that uses templates in
-complicated ways is often unreadable, and is hard to debug or
-maintain.</p>
+<p>Техники метапрограммирования часто непонятны всем, кроме
+ экспертов языка. Код, использующий шаблоны запутанными/сложными
+ способами, часто нечитабелен, его сложно отлаживать и поддерживать.</p>
 
-<p>Template metaprogramming often leads to extremely poor compile
-time error messages: even if an interface is simple, the complicated
-implementation details become visible when the user does something
-wrong.</p>
+<p>Метапрограммирование часто приводит к появлению очень скудной и
+ непонятной информации об ошибках компиляции: даже если сам интерфейс простой,
+ то его сложная реализация всё равно проявляется, когда пользователь
+ делает что-то неправильно.</p>
 
-<p>Template metaprogramming interferes with large scale refactoring by
-making the job of refactoring tools harder. First, the template code
-is expanded in multiple contexts, and it's hard to verify that the
-transformation makes sense in all of them. Second, some refactoring
-tools work with an AST that only represents the structure of the code
-after template expansion. It can be difficult to automatically work
-back to the original source construct that needs to be
-rewritten.</p>
+<p>Метапрограммирование усложняет проведение рефакторинга, затрудняя
+ работу инструментов. Во-первых, код шаблона раскрывается в различных
+ контекстах и трудно проверить, что в каждом из них
+ код остаётся корректным. Во-вторых, ряд инструментов работает уже с AST
+ (прим.: абстрактное синтаксическое дерево), которое описывает
+ структуру кода только после раскрытия шаблонов. И в этом случае
+ может быть тяжело обнаруженные проблемы отобразить на исходные конструкции
+ в коде и определить, что требуется переписать.</p>
 
 <p class="decision"></p>
-<p>Template metaprogramming sometimes allows cleaner and easier-to-use
-interfaces than would be possible without it, but it's also often a
-temptation to be overly clever. It's best used in a small number of
-low level components where the extra maintenance burden is spread out
-over a large number of uses.</p>
+<p>Метапрограммирование в ряде случаев позволяет создать понятные и 
+ простые в использовании интерфейсы (которые были бы сложнее в ином случае),
+ однако есть соблазн всё сделать чересчур заумным. Поэтому его лучше
+ использовать в небольшом количестве низкоуровневых компонентов, чтобы
+ сложность поддержки компенсировалась полезностью и широтой применения.</p>
 
-<p>Think twice before using template metaprogramming or other
-complicated template techniques; think about whether the average
-member of your team will be able to understand your code well enough
-to maintain it after you switch to another project, or whether a
-non-C++ programmer or someone casually browsing the code base will be
-able to understand the error messages or trace the flow of a function
-they want to call.  If you're using recursive template instantiations
-or type lists or metafunctions or expression templates, or relying on
-SFINAE or on the <code>sizeof</code> trick for detecting function
-overload resolution, then there's a good chance you've gone too
-far.</p>
+<p>Дважды подумайте перед тем, как использовать метапрограммирование или другие
+ сложные техники на шаблонах: может ли средний программист в команде понять и
+ поддерживать такой код (особенно после переключения с другого проекта); сможет ли
+ не-C++ программист (или другой случайный читатель) понять сообщения об ошибках
+ или отладить выполнение функции, которую он вызывает. Если используются 
+ рекурсивное инстанцирование шаблонов, список типов, метафункции, шаблоны
+ выражений или используется SFINAE или трюк с <code>sizeof</code> для
+ разрешения перегрузки функции - скорее всего вы зашли слишком далеко.</p>
 
-<p>If you use template metaprogramming, you should expect to put
-considerable effort into minimizing and isolating the complexity. You
-should hide metaprogramming as an implementation detail whenever
-possible, so that user-facing headers are readable, and you should
-make sure that tricky code is especially well commented. You should
-carefully document how the code is used, and you should say something
-about what the "generated" code looks like. Pay extra attention to the
-error messages that the compiler emits when users make mistakes.  The
-error messages are part of your user interface, and your code should
-be tweaked as necessary so that the error messages are understandable
-and actionable from a user point of view.</p>
+<p>Если используется метапрограммирование, то готовьтесь приложить
+ усилия для минимизации сложности, а также её изоляции. По возможности
+ скрывайте код с метапрограммированием внутри реализации, чтобы
+ сделать пользовательские заголовочные файлы более читабельными. Код с 
+ метапрограммированием должен быть очень хорошо откомментирован: следует
+ подробно задокументировать, как использовать код и на что
+ будет похож "сгенерированный" результат. Обратите особое внимание на 
+ сообщения об ошибках, которые выдаёт компилятор, когда 
+ делается что-то ошибочное. Учтите, что сообщения об ошибках
+ являются частью вашего пользовательского интерфейса и
+ код следует доработать так, чтобы сообщения об ошибках
+ были понятными для пользователя и объясняли, что нужно делать 
+ для их исправления.</p>
 
 <h3 id="Boost">Boost</h3>
 
