@@ -2987,162 +2987,139 @@ array(T, U...) -&gt; std::array&lt;T, 1 + sizeof...(U)&gt;;
 <p>В любом случае, использование CTAD должно следовать общим правилам при
  <a href="#Type_deduction">выводе типов</a>.</p>
 
-<h3 id="Lambda_expressions">Lambda expressions</h3>
+<h3 id="Lambda_expressions">Лямбды</h3>
 
-<p>Use lambda expressions where appropriate. Prefer explicit captures
-when the lambda will escape the current scope.</p>
+<p>Используйте лямбды в подходящих случаях. Желательно использовать
+ явный захват переменных, если лямбда будет выполнена вне текущей области видимости.</p>
 
 <p class="definition"></p>
-<p> Lambda expressions are a concise way of creating anonymous
-function objects. They're often useful when passing
-functions as arguments. For example:</p>
+<p>Лямбды это лаконичный и удобный способ создания объектов - анонимных функций. 
+ Особенно они полезны, когда нужно передавать функцию как аргумент. Например:</p>
 
 <pre>std::sort(v.begin(), v.end(), [](int x, int y) {
   return Weight(x) &lt; Weight(y);
 });
 </pre>
 
-<p> They further allow capturing variables from the enclosing scope either
-explicitly by name, or implicitly using a default capture. Explicit captures
-require each variable to be listed, as
-either a value or reference capture:</p>
+<p>Лямбды также позволяют захватывать переменный из текущей области видимости
+ либо (явно) по имени, либо (неявно) через захват по-умолчанию. Явный захват  
+ предписывает перечислить все требуемые переменные: либо как значения, либо как ссылки:</p>
 
 <pre>int weight = 3;
 int sum = 0;
-// Captures `weight` by value and `sum` by reference.
+// Захват `weight` по значению и `sum` по ссылке.
 std::for_each(v.begin(), v.end(), [weight, &amp;sum](int x) {
   sum += weight * x;
 });
 </pre>
 
-
-<p>Default captures implicitly capture any variable referenced in the
-lambda body, including <code>this</code> if any members are used:</p>
+<p>Захват по-умолчанию применяется ко всем переменным, используемым
+ в теле лямбды, в том числе и к <code>this</code> (если используются члены класса):</p>
 
 <pre>const std::vector&lt;int&gt; lookup_table = ...;
 std::vector&lt;int&gt; indices = ...;
-// Captures `lookup_table` by reference, sorts `indices` by the value
-// of the associated element in `lookup_table`.
+// Захват `lookup_table` по ссылке, сортировка `indices` по значению
+// ассоциированных элементов из `lookup_table`.
 std::sort(indices.begin(), indices.end(), [&amp;](int a, int b) {
   return lookup_table[a] &lt; lookup_table[b];
 });
 </pre>
 
-<p>A variable capture can also have an explicit initializer, which can
-  be used for capturing move-only variables by value, or for other situations
-  not handled by ordinary reference or value captures:
-  </p><pre>std::unique_ptr&lt;Foo&gt; foo = ...;
+<p>Захват переменной может быть также с инициализатором, что можно
+ использовать для перемещения (move) переменных по значению или
+ для других случаев, не подпадающих под обычный захват по значению
+ или ссылке:</p>
+<pre>std::unique_ptr&lt;Foo&gt; foo = ...;
 [foo = std::move(foo)] () {
   ...
 }</pre>
-    <p>
-        Such captures (often called "init captures" or "generalized lambda captures")
-        need not actually "capture" anything from the enclosing scope, or even have
-        a name from the enclosing scope; this syntax is a fully general way to define
-        members of a lambda object:
-    </p>
+
+<p>Такой тип захвата (часто называемый init или generalized) нужен скорее не для
+ собственно "захвата" переменных (или даже имён) из текущей области видимости. Этот
+ синтаксис нужен для определения членов объекта лямбды:</p>
   <pre class="neutralcode">[foo = std::vector&lt;int&gt;({1, 2, 3})] () {
   ...
 }</pre>
-    <p>
-        The type of a capture with an initializer is deduced using the same rules
-        as <code>auto</code>.
-    </p>
+<p>И тип такой переменной с инициализатором выводится согласно правилам, 
+ аналогичным использованию <code>auto</code>.</p>
 
 <p class="pros"></p>
 <ul>
-  <li>Lambdas are much more concise than other ways of
-   defining function objects to be passed to STL
-   algorithms, which can be a readability
-   improvement.</li>
+  <li>Лямбды это очень удобный и лаконичный способ определения
+  объектов-функций (например, для передачи в алгоритмы STL),
+  что может улучшить читабельность.</li>
 
-  <li>Appropriate use of default captures can remove
-    redundancy and highlight important exceptions from
-    the default.</li>
+  <li>Правильное использование захвата по-умолчанию может устранить
+  избыточность и выявить важные исключения при захвате.</li>
 
-   <li>Lambdas, <code>std::function</code>, and
-   <code>std::bind</code> can be used in combination as a
-   general purpose callback mechanism; they make it easy
-   to write functions that take bound functions as
-   arguments.</li>
+   <li>Лямбды, <code>std::function</code> и <code>std::bind</code>
+   можно использовать совместно как механизм обратного вызова общего
+   назначения. Упрощается написание кода, принимающего/использующего функции
+   как аргументы.</li>
 </ul>
 
 <p class="cons"></p>
 <ul>
-  <li>Variable capture in lambdas can be a source of dangling-pointer
-  bugs, particularly if a lambda escapes the current scope.</li>
-
-  <li>Default captures by value can be misleading because they do not prevent
-  dangling-pointer bugs. Capturing a pointer by value doesn't cause a deep
-  copy, so it often has the same lifetime issues as capture by reference.
-  This is especially confusing when capturing 'this' by value, since the use
-  of 'this' is often implicit.</li>
-
-  <li>Captures actually declare new variables (whether or not the captures have
-    initializers), but they look nothing like any other variable declaration
-    syntax in C++. In particular, there's no place for the variable's type,
-    or even an <code>auto</code> placeholder (although init captures can
-    indicate it indirectly, e.g. with a cast). This can make it difficult to
-    even recognize them as declarations.</li>
-
-  <li>Init captures inherently rely on <a href="#Type_deduction">type
-      deduction</a>, and suffer from many of the same drawbacks as
-    <code>auto</code>, with the additional problem that the syntax doesn't
-    even cue the reader that deduction is taking place.</li>
-
-  <li>It's possible for use of lambdas to get out of
-  hand; very long nested anonymous functions can make
-  code harder to understand.</li>
-
+  <li>Захват переменных может быть источником ошибок с недействительными
+  указателями, особенно если лямбда выходит за текущую область видимости.</li>
+  <li>Захват по умолчанию может вводить в заблуждение, т.к. он не защищает
+  от ошибок недействительных указателей. Захват указателя на объект по значению не
+  приводит к созданию копии самого объекта. При этом часто возникают те же
+  особенности жизненного цикла, что и при захвате по ссылке. Учтите, что 
+  'this' также захватывается по значению и это может привести к проблемам, т.к.
+  он часто используется неявно.</li>
+  <li>Захват фактически объявляет новые переменные (вне зависимости от наличия
+  инициализатора), хотя это отличается от обычного синтаксиса C++. В частности,
+  нет указания типа переменной, даже в виде <code>auto</code> (хотя захват
+  с инициализацией может сделать это неявно через приведение типов), и это
+  отличается от типовой декларации.</li>
+  <li>Захват с инициализацией использует <a href="#Type_deduction">вывод типов</a>,
+  и подвержен тем же проблемам, что и <code>auto</code>, плюс сам синтаксис
+  не содержит указания, что происходит вывод типов.</li>
+  <li>В ряде случаев использование лямбд может сильно затруднить понимание кода
+  (очень длинные функции) или потребовать дополнительного контроля.</li>
 </ul>
 
 <p class="decision"></p>
 <ul>
-<li>Use lambda expressions where appropriate, with formatting as
-described <a href="#Formatting_Lambda_Expressions">below</a>.</li>
-<li>Prefer explicit captures if the lambda may escape the current scope.
-For example, instead of:
+<li>Используйте лямбды в подходящих случаях. Применяйте форматирование,
+ описанное <a href="#Formatting_Lambda_Expressions">ниже</a>.</li>
+<li>Рекомендуется явно указывать захват переменных, если лямбда может выйти
+ за текущую область видимости. Например, вместо:
 <pre class="badcode">{
   Foo foo;
   ...
   executor-&gt;Schedule([&amp;] { Frobnicate(foo); })
   ...
 }
-// BAD! The fact that the lambda makes use of a reference to `foo` and
-// possibly `this` (if `Frobnicate` is a member function) may not be
-// apparent on a cursory inspection. If the lambda is invoked after
-// the function returns, that would be bad, because both `foo`
-// and the enclosing object could have been destroyed.
+// ПЛОХО! При беглом просмотре можно упустить, что лямбда использует
+// ссылку на foo и this (если Frobnicate является членом класса).
+// Если лямбда вызывается после возврата из текущей функции, то
+// это приведёт к проблемам, т.к. foo и другие объекты могут быть
+// уже разрушены.  
 </pre>
-prefer to write:
+лучше написать:
 <pre>{
   Foo foo;
   ...
   executor-&gt;Schedule([&amp;foo] { Frobnicate(foo); })
   ...
 }
-// BETTER - The compile will fail if `Frobnicate` is a member
-// function, and it's clearer that `foo` is dangerously captured by
-// reference.
+// ЛУЧШЕ - Компилятор выдаст ошибку, если Frobnicate является методом класса.
+// Также явно указано, что foo захватывается по ссылке.
 </pre>
 </li>
-<li>Use default capture by reference ([&amp;]) only when the
-lifetime of the lambda is obviously shorter than any potential
-captures.
-</li>
-<li>Use default capture by value ([=]) only as a means of binding a
-few variables for a short lambda, where the set of captured
-variables is obvious at a glance. Prefer not to write long or
-complex lambdas with default capture by value.
-</li>
-<li>Use captures only to actually capture variables from the enclosing scope.
-  Do not use captures with initializers to introduce new names, or
-  to substantially change the meaning of an existing name. Instead,
-  declare a new variable in the conventional way and then capture it,
-  or avoid the lambda shorthand and define a function object explicitly.</li>
-<li>See the section on <a href="#Type_deduction">type deduction</a>
-  for guidance on specifying the parameter and return types.</li>
-
+<li>Используйте захват по-умолчанию по ссылке ([&amp;]), только если
+ жизненный цикл лямбды явно короче чем у любой переменной.</li>
+<li>Используйте захват по-умолчанию по значению ([=]), только как средство 
+ привязки нескольких переменных для короткой лямбды. Не рекомендуется писать
+ лямбды с объёмным и сложным кодом вместе с захватом по-умолчанию по значению.</li>
+<li>Используйте захват только существующих переменных из текущей области видимости.
+ Не используйте захват с инициализаторами, чтобы ввести новые имена или
+ подменить существующие. Вместо этого можно объявить обычную новую переменную и
+ передать её в лямбду, или вместо лямбды определить отдельную полноценную функцию.</li>
+<li>Вопросы по указанию параметров и возвращаемому типу рассмотрены в разделе
+  <a href="#Type_deduction">Вывод типов</a>.</li>
 </ul>
 
 <h3 id="Template_metaprogramming">Template metaprogramming</h3>
