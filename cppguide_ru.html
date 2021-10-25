@@ -3189,106 +3189,89 @@ std::sort(indices.begin(), indices.end(), [&amp;](int a, int b) {
 
 <h3 id="Boost">Boost</h3>
 
-<p>Use only approved libraries from the Boost library
-collection.</p>
+<p>Используйте только одобренные библиотеки из коллекции Boost.</p>
 
 <p class="definition"></p>
-<p> The
-<a href="https://www.boost.org/">
-Boost library collection</a> is a popular collection of
-peer-reviewed, free, open-source C++ libraries.</p>
+<p><a href="https://www.boost.org/">Boost</a> это популярная
+ коллекция проверенных, бесплатных и открытых библиотек C++.</p>
 
 <p class="pros"></p>
-<p>Boost code is generally very high-quality, is widely
-portable, and fills many important gaps in the C++
-standard library, such as type traits and better binders.</p>
+<p>В целом код Boost является высококачественным, портируемым
+ и во многом дополняется стандартную библиотеку C++, например, в таких
+ областях как свойства типов или улучшенные связыватели (binder).</p>
 
 <p class="cons"></p>
-<p>Some Boost libraries encourage coding practices which can
-hamper readability, such as metaprogramming and other
-advanced template techniques, and an excessively
-"functional" style of programming. </p>
+<p>Некоторые библиотеки Boost поощряют создание кода, который ухудшает
+ читабельность: используется метапрограммирование или другие продвинутые
+ техники на шаблонах, а также чрезмерно "функциональный" стиль.</p>
 
 <p class="decision"></p>
-
-
-
-<div>
-<p>In order to maintain a high level of readability for
-all contributors who might read and maintain code, we
-only allow an approved subset of Boost features.
-Currently, the following libraries are permitted:</p>
+<p>Чтобы читабельность кода оставалась высокой для всех, кто
+ осуществляет его поддержку, разрешены к использованию только некоторые
+ библиотеки из коллекции Boost. В настоящее время это:</p>
 
 <ul>
-  <li>
-  <a href="https://www.boost.org/libs/utility/call_traits.htm">
-  Call Traits</a> from <code>boost/call_traits.hpp</code></li>
-
+  <li><a href="https://www.boost.org/libs/utility/call_traits.htm">
+  Call Traits</a> из <code>boost/call_traits.hpp</code></li>
+  
   <li><a href="https://www.boost.org/libs/utility/compressed_pair.htm">
-  Compressed Pair</a> from  <code>boost/compressed_pair.hpp</code></li>
+  Compressed Pair</a> из <code>boost/compressed_pair.hpp</code></li>
 
   <li><a href="https://www.boost.org/libs/graph/">
-  The Boost Graph Library (BGL)</a> from <code>boost/graph</code>,
-  except serialization (<code>adj_list_serialize.hpp</code>) and
-   parallel/distributed algorithms and data structures
-   (<code>boost/graph/parallel/*</code> and
+  Boost Graph Library (BGL)</a> из <code>boost/graph</code>, за исключением
+  сериализации (<code>adj_list_serialize.hpp</code>) и параллельных/распределённых
+  алгоритмов и структур данных (<code>boost/graph/parallel/*</code> и
    <code>boost/graph/distributed/*</code>).</li>
 
   <li><a href="https://www.boost.org/libs/property_map/">
-  Property Map</a> from <code>boost/property_map</code>, except
-  parallel/distributed property maps (<code>boost/property_map/parallel/*</code>).</li>
+  Property Map</a> из <code>boost/property_map</code>, за исключением
+  параллельных/распределённых (<code>boost/property_map/parallel/*</code>).</li>
 
   <li><a href="https://www.boost.org/libs/iterator/">
-  Iterator</a> from <code>boost/iterator</code></li>
+  Iterator</a> из <code>boost/iterator</code></li>
 
-  <li>The part of <a href="https://www.boost.org/libs/polygon/">
-  Polygon</a> that deals with Voronoi diagram
-  construction and doesn't depend on the rest of
-  Polygon:
+  <li>Часть <a href="https://www.boost.org/libs/polygon/">
+  Polygon</a>, которая работает с построением диаграмм Вороного и
+  не зависит от остальной части Polygon:
   <code>boost/polygon/voronoi_builder.hpp</code>,
   <code>boost/polygon/voronoi_diagram.hpp</code>, and
   <code>boost/polygon/voronoi_geometry_type.hpp</code></li>
 
   <li><a href="https://www.boost.org/libs/bimap/">
-  Bimap</a> from <code>boost/bimap</code></li>
+  Bimap</a> из <code>boost/bimap</code></li>
 
   <li><a href="https://www.boost.org/libs/math/doc/html/dist.html">
-  Statistical Distributions and Functions</a> from
+  Statistical Distributions and Functions</a> из
   <code>boost/math/distributions</code></li>
 
   <li><a href="https://www.boost.org/libs/math/doc/html/special.html">
-  Special Functions</a> from <code>boost/math/special_functions</code></li>
+  Special Functions</a> из <code>boost/math/special_functions</code></li>
 
   <li><a href="https://www.boost.org/libs/math/doc/html/root_finding.html">
-  Root Finding Functions</a> from <code>boost/math/tools</code></li>
+  Root Finding Functions</a> из <code>boost/math/tools</code></li>
 
   <li><a href="https://www.boost.org/libs/multi_index/">
-  Multi-index</a> from <code>boost/multi_index</code></li>
+  Multi-index</a> из <code>boost/multi_index</code></li>
 
   <li><a href="https://www.boost.org/libs/heap/">
-  Heap</a> from <code>boost/heap</code></li>
+  Heap</a> из <code>boost/heap</code></li>
 
-  <li>The flat containers from
+  <li>flat-контейнеры библиотеки
   <a href="https://www.boost.org/libs/container/">Container</a>:
-  <code>boost/container/flat_map</code>, and
+  <code>boost/container/flat_map</code> и
   <code>boost/container/flat_set</code></li>
 
   <li><a href="https://www.boost.org/libs/intrusive/">Intrusive</a>
-  from <code>boost/intrusive</code>.</li>
+  из <code>boost/intrusive</code></li>
 
-  <li><a href="https://www.boost.org/libs/sort/">The
-  <code>boost/sort</code> library</a>.</li>
+  <li><a href="https://www.boost.org/libs/sort/">Библиотека <code>boost/sort</code></a></li>
 
   <li><a href="https://www.boost.org/libs/preprocessor/">Preprocessor</a>
-  from <code>boost/preprocessor</code>.</li>
+  из <code>boost/preprocessor</code></li>
 </ul>
 
-<p>We are actively considering adding other Boost
-features to the list, so this list may be expanded in
-the future.</p>
-</div>
-
-
+<p>В настоящее время прорабатывается вопрос о добавлении других
+ библиотек Boost в этот список, так что он может в будущем дополняться.</p>
 
 <h3 id="std_hash">std::hash</h3>
 
