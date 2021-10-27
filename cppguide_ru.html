@@ -3275,76 +3275,72 @@ std::sort(indices.begin(), indices.end(), [&amp;](int a, int b) {
 
 <h3 id="std_hash">std::hash</h3>
 
-<p>Do not define specializations of <code>std::hash</code>.</p>
+<p>Не определяйте специализации <code>std::hash</code>.</p>
 
 <p class="definition"></p>
-<p><code>std::hash&lt;T&gt;</code> is the function object that the
-C++11 hash containers use to hash keys of type <code>T</code>,
-unless the user explicitly specifies a different hash function. For
-example, <code>std::unordered_map&lt;int, std::string&gt;</code> is a hash
-map that uses <code>std::hash&lt;int&gt;</code> to hash its keys,
-whereas <code>std::unordered_map&lt;int, std::string, MyIntHash&gt;</code>
-uses <code>MyIntHash</code>.</p>
+<p><code>std::hash&lt;T&gt;</code> это объект-функция, который hash контейнеры C++11
+ используют для получения хэш-ключа от типа <code>T</code>, если
+ явно не указана другая хэш-функция. Например,
+ <code>std::unordered_map&lt;int, std::string&gt;</code> это
+ hash map, используюущая <code>std::hash&lt;int&gt;</code> для расчёта
+ хэша ключа, тогда как
+ <code>std::unordered_map&lt;int, std::string, MyIntHash&gt;</code>
+ использует для расчёта <code>MyIntHash</code>.</p>
 
-<p><code>std::hash</code> is defined for all integral, floating-point,
-pointer, and <code>enum</code> types, as well as some standard library
-types such as <code>string</code> and <code>unique_ptr</code>. Users
-can enable it to work for their own types by defining specializations
-of it for those types.</p>
+<p><code>std::hash</code> определена для всех целочисленных чисел и с
+ плавающей запятой, указателей, <code>enum</code>-ов, некоторых типов
+ стандартной библиотеки (например, <code>string</code> и <code>unique_ptr</code>).
+ Также допустимо определить специализацию для своих собственных типов.</p>
 
 <p class="pros"></p>
-<p><code>std::hash</code> is easy to use, and simplifies the code
-since you don't have to name it explicitly. Specializing
-<code>std::hash</code> is the standard way of specifying how to
-hash a type, so it's what outside resources will teach, and what
-new engineers will expect.</p>
+<p><code>std::hash</code> легко использовать, она упрощает код,
+ т.к. нет необходимости вводить свои именования. Специализация
+ <code>std::hash</code> это стандартный способ определения хэша,
+ удобный и понятный и новичкам и внешним командам.</p>
 
 <p class="cons"></p>
-<p><code>std::hash</code> is hard to specialize. It requires a lot
-of boilerplate code, and more importantly, it combines responsibility
-for identifying the hash inputs with responsibility for executing the
-hashing algorithm itself. The type author has to be responsible for
-the former, but the latter requires expertise that a type author
-usually doesn't have, and shouldn't need. The stakes here are high
-because low-quality hash functions can be security vulnerabilities,
-due to the emergence of
-<a href="https://emboss.github.io/blog/2012/12/14/breaking-murmur-hash-flooding-dos-reloaded/">
-hash flooding attacks</a>.</p>
+<p>Хорошую специализацию <code>std::hash</code> может быть сложно написать:
+ она может содержать большое количество формального и одинакового кода.
+ Также это может потребовать усилий и по идентификации входных данных и
+ по созданию самого алгоритма. Автор типа данных обычно ответственен за
+ первое, а со вторым чаще всего возникают проблемы, т.к. это требует
+ определённой экспертизы, которой у автора обычно нет (да она и не нужна).
+ При этом плохая реализация алгоритма может внести уязвимости в безопасность
+ кода, например от атак
+ <a href="https://emboss.github.io/blog/2012/12/14/breaking-murmur-hash-flooding-dos-reloaded/">
+hash flooding</a>.</p>
 
-<p>Even for experts, <code>std::hash</code> specializations are
-inordinately difficult to implement correctly for compound types,
-because the implementation cannot recursively call <code>std::hash</code>
-on data members. High-quality hash algorithms maintain large
-amounts of internal state, and reducing that state to the
-<code>size_t</code> bytes that <code>std::hash</code>
-returns is usually the slowest part of the computation, so it
-should not be done more than once.</p>
+<p>Даже для экспертов создание хорошей специализации <code>std::hash</code>
+ может представлять сложность, особенно для составных типов, т.к.
+ хорошая реализация не может просто рекурсивно вызывать <code>std::hash</code> на
+ всех членах данных. Высококачественные хэш-алгоритмы содержат большое
+ количество внутренних состояний, и упаковка их в размер <code>size_t</code>
+ (что функция <code>std::hash</code> и возвращает) обычно является
+ самой медленной частью в вычислениях, так что это должно выполняться
+ не более одного раза.</p>
 
-<p>Due to exactly that issue, <code>std::hash</code> does not work
-with <code>std::pair</code> or <code>std::tuple</code>, and the
-language does not allow us to extend it to support them.</p>
+<p>Именно из-за этого <code>std::hash</code> не работает с <code>std::pair</code>
+ и <code>std::tuple</code>, и в язык не добавлена их поддержка.</p>
 
 <p class="decision"></p>
-<p>You can use <code>std::hash</code> with the types that it supports
-"out of the box", but do not specialize it to support additional types.
-If you need a hash table with a key type that <code>std::hash</code>
-does not support, consider using legacy hash containers (e.g.
-<code>hash_map</code>) for now; they use a different default hasher,
-which is unaffected by this prohibition.</p>
+<p>Можно использовать <code>std::hash</code> с типами, которые поддерживаются 
+ "из коробки", но не добавляйте специализации для своих типов.
+ Если требуется хэш-таблица с ключом, который не поддерживается <code>std::hash</code>,
+ то возможно следует воспользоваться другими (ранними) хэш-контейнерами
+ (например, <code>hash_map</code>); в них используется другой
+ хэш-алгоритм, на который этот запрет не влияет.</p>
 
-<p>If you want to use the standard hash containers anyway, you will
-need to specify a custom hasher for the key type, e.g.</p>
+<p>Если всё равно требуется стандартный контейнер, то задаёте
+ собственную хэш-функцию для ключа, например:</p>
 <pre>std::unordered_map&lt;MyKeyType, Value, MyKeyTypeHasher&gt; my_map;
-</pre><p>
-Consult with the type's owners to see if there is an existing hasher
-that you can use; otherwise work with them to provide one,
- or roll your own.</p>
+</pre>
+<p>Прежде всего узнайте у автора типа данных о наличии готовой хэш-функции
+ (а вдруг?). В противном случае создавайте свою, в сотрудничестве с автором,
+ или без него.</p>
 
-<p>We are planning to provide a hash function that can work with any type,
-using a new customization mechanism that doesn't have the drawbacks of
-<code>std::hash</code>.</p>
-
-
+<p>Возможно, скоро появится хэш-функция, которая сможет работать с любым типом и
+ использовать новый механизм подстройки, при этом у неё не будет недостатков
+ <code>std::hash</code>.</p>
 
 <h3 id="Other_Features"><a name="C++11">Other C++ Features</a></h3>
 
