@@ -3342,39 +3342,29 @@ hash flooding</a>.</p>
  использовать новый механизм подстройки, при этом у неё не будет недостатков
  <code>std::hash</code>.</p>
 
-<h3 id="Other_Features"><a name="C++11">Other C++ Features</a></h3>
+<h3 id="Other_Features"><a name="C++11">Ещё возможности C++</a></h3>
 
-<p>As with <a href="#Boost">Boost</a>, some modern C++
-extensions encourage coding practices that hamper
-readability&#8212;for example by removing
-checked redundancy (such as type names) that may be
-helpful to readers, or by encouraging template
-metaprogramming. Other extensions duplicate functionality
-available through existing mechanisms, which may lead to confusion
-and conversion costs.</p>
+<p>Некоторые расширения современного C++, также как и <a href="#Boost">Boost</a>,
+ содержат код с плохой читабельностью, с удалённой добавочной информацией
+ о типах, с использованием метапрограммирования. Другие же расширения
+ дублируют существующий функционал, что может привести к путанице и
+ дополнительной конвертации кода.</p>
 
 <p class="decision"></p>
-<p>In addition to what's described in the rest of the style
-guide, the following C++ features may not be used:</p>
+<p>Настоятельно не рекомендуется использовать следующие
+ возможности C++:</p>
 
 <ul>
+  <li>Рациональные числа (относящиеся к времени компиляции)
+  (<code>&lt;ratio&gt;</code>), т.к. за интерфейсом может стоять
+  сложный шаблон.</li>
 
+  <li>Заголовочные файлы <code>&lt;cfenv&gt;</code> и 
+  <code>&lt;fenv.h&gt;</code>, т.к. многие компиляторы не поддерживают
+  корректную работу этого функционала.</li>
 
-  <li>Compile-time rational numbers
-  (<code>&lt;ratio&gt;</code>), because of concerns that
-  it's tied to a more template-heavy interface
-  style.</li>
-
-  <li>The <code>&lt;cfenv&gt;</code> and
-  <code>&lt;fenv.h&gt;</code> headers, because many
-  compilers do not support those features reliably.</li>
-
-  <li>The <code>&lt;filesystem&gt;</code> header, which
-
-  does not have sufficient support for testing, and suffers
-  from inherent security vulnerabilities.</li>
-
-
+  <li>Заголовочный файл <code>&lt;filesystem&gt;</code>, который недостаточно
+  протестирован, и подвержен уязвимостям в безопасности.</li>
 </ul>
 
 <h3 id="Nonstandard_Extensions">Nonstandard Extensions</h3>
