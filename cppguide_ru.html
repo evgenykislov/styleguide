@@ -3367,47 +3367,47 @@ hash flooding</a>.</p>
   протестирован, и подвержен уязвимостям в безопасности.</li>
 </ul>
 
-<h3 id="Nonstandard_Extensions">Nonstandard Extensions</h3>
+<h3 id="Nonstandard_Extensions">Нестандартные расширения</h3>
 
-<p>Nonstandard extensions to C++ may not be used unless otherwise specified.</p>
+<p>Нестандартные расширения C++ не рекомендуется использовать, пока явно
+ не указано обратное.</p>
 
 <p class="definition"></p>
-<p>Compilers support various extensions that are not part of standard C++. Such
-  extensions include GCC's <code>__attribute__</code>, intrinsic functions such
-  as <code>__builtin_prefetch</code>, designated initializers (e.g.
-  <code>Foo f = {.field = 3}</code>), inline assembly, <code>__COUNTER__</code>,
-  <code>__PRETTY_FUNCTION__</code>, compound statement expressions (e.g.
-  <code>foo = ({ int x; Bar(&amp;x); x })</code>, variable-length arrays and
-  <code>alloca()</code>, and the "<a href="https://en.wikipedia.org/wiki/Elvis_operator">Elvis Operator</a>"
+<p>Компиляторы поддерживают различные расширения, не являющиеся частью
+ стандартного C++. Например, <code>__attribute__</code>,
+  внутренние (intrinsic) функции (<code>__builtin_prefetch</code>), 
+  назначенные инициализаторы (<code>Foo f = {.field = 3}</code>),
+  ассемблерные вставки, <code>__COUNTER__</code>, <code>__PRETTY_FUNCTION__</code>,
+  составные выражения (<code>foo = ({ int x; Bar(&amp;x); x })</code>,
+  массивы переменной длины, <code>alloca()</code> и
+  "<a href="https://en.wikipedia.org/wiki/Elvis_operator">оператор Элвис</a>"
   <code>a?:b</code>.</p>
 
 <p class="pros"></p>
   <ul>
-    <li>Nonstandard extensions may provide useful features that do not exist
-      in standard C++. For example, some people think that designated
-      initializers are more readable than standard C++ features like
-      constructors.</li>
-    <li>Important performance guidance to the compiler can only be specified
-      using extensions.</li>
+    <li>Нестандартные расширения могут предоставить полезные возможности,
+    которых нет в стандартном C++. Например, многим назначенные
+    инициализаторы нравятся больше, чем типовые конструкции C++
+    (конструкторы).</li>
+    <li>Сделать указания компилятору по оптимизации производительности кода
+    можно только используя расширения.</li>
   </ul>
 
 <p class="cons"></p>
   <ul>
-    <li>Nonstandard extensions do not work in all compilers. Use of nonstandard
-      extensions reduces portability of code.</li>
-    <li>Even if they are supported in all targeted compilers, the extensions
-      are often not well-specified, and there may be subtle behavior differences
-      between compilers.</li>
-    <li>Nonstandard extensions add to the language features that a reader must
-      know to understand the code.</li>
+    <li>Нестандартные расширения работают не на всех компиляторах, поэтому
+    их использование ухудшает переносимость кода.</li>
+    <li>Даже если расширения поддерживаются всему требуемыми компиляторами,
+    их спецификация может быть не полной и возможны различия в поведении у
+    разных компиляторов.</li>
+    <li>Для понимания кода нужно знать нестандартные расширения в дополнение
+    к языку программирования.</li>
   </ul>
 
 <p class="decision"></p>
-<p>Do not use nonstandard extensions. You may use portability wrappers that
-  are implemented using nonstandard extensions, so long as those wrappers
-
-  are provided by a designated project-wide
-  portability header.</p>
+<p>Не используйте нестандартные расширения. Можно использовать портируемые
+ обёртки кода, которые реализованы с использованием нестандартных расширений и
+ и (желательно) содержатся в одном заголовочном файле (portability header).</p>
 
 <h3 id="Aliases">Aliases</h3>
 
