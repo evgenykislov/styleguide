@@ -5044,88 +5044,81 @@ std::vector&lt;char *&gt; x;
  Помните, что <em>согласованность</em> включает также
  и текущий стиль кода.</p>
 
-<h3 id="Windows_Code">Windows Code</h3>
+<h3 id="Windows_Code">Программирование под Windows</h3>
 
-<p> Windows
-programmers have developed their own set of coding
-conventions, mainly derived from the conventions in Windows
-headers and other Microsoft code. We want to make it easy
-for anyone to understand your code, so we have a single set
-of guidelines for everyone writing C++ on any platform.</p>
+<p>Программисты под Windows могут использовать особенный
+ набор соглашений о кодировании, основанный на стиле
+ заголовочных файлов в Windows и другом коде от Microsoft.
+ Так как хочется сделать, чтобы код был понятным для всех,
+ то рекомендуется использовать единое руководство по стилю
+ в C++, одинаковое для всех платформ.</p>
 
-<p>It is worth reiterating a few of the guidelines that
-you might forget if you are used to the prevalent Windows
-style:</p>
+<p>Повторим несколько рекомендаций, которые отличают данное 
+ руководство от стиля Windows:</p>
 
 <ul>
-  <li>Do not use Hungarian notation (for example, naming
-  an integer <code>iNum</code>). Use the Google naming
-  conventions, including the <code>.cc</code> extension
-  for source files.</li>
+  <li>Не используйте венгерскую нотацию (например, именование
+  целочисленной переменной как <code>iNum</code>). Вместо этого
+  используйте соглашения об именовании от Google, включая
+  расширение <code>.cc</code> для файлов с исходным кодом.</li>
 
-  <li>Windows defines many of its own synonyms for
-  primitive types, such as <code>DWORD</code>,
-  <code>HANDLE</code>, etc. It is perfectly acceptable,
-  and encouraged, that you use these types when calling
-  Windows API functions. Even so, keep as close as you
-  can to the underlying C++ types. For example, use
-  <code>const TCHAR *</code> instead of
-  <code>LPCTSTR</code>.</li>
+  <li>Windows определяет собственные синонимы для базовых типов,
+  такие как <code>DWORD</code>, <code>HANDLE</code> и др.
+  Понятно, что при вызове Windows API рекомендуется использовать
+  именно их. И всё равно, старайтесь определять типы, максимально
+  похожие на C++. Например, используйте <code>const TCHAR *</code>
+  вместо <code>LPCTSTR</code>.</li>
 
-  <li>When compiling with Microsoft Visual C++, set the
-  compiler to warning level 3 or higher, and treat all
-  warnings as errors.</li>
+  <li>При компиляции кода с помощью Microsoft Visual C++ установите
+  уровень предупреждений 3 или выше. И разрешите трактовать
+  все предупреждения как ошибки.</li>
 
-  <li>Do not use <code>#pragma once</code>; instead use
-  the standard Google include guards. The path in the
-  include guards should be relative to the top of your
-  project tree.</li>
+  <li>Не используйте <code>#pragma once</code>. Вместо этого
+  используйте стандартную защиту от повторного включения, описанную в
+  руководстве от Google. Компоненты пути в имени для макроопределения
+  защиты должны быть относительными к корню проекта.</li>
 
-  <li>In fact, do not use any nonstandard extensions,
-  like <code>#pragma</code> and <code>__declspec</code>,
-  unless you absolutely must. Using
-  <code>__declspec(dllimport)</code> and
-  <code>__declspec(dllexport)</code> is allowed; however,
-  you must use them through macros such as
-  <code>DLLIMPORT</code> and <code>DLLEXPORT</code>, so
-  that someone can easily disable the extensions if they
-  share the code.</li>
+  <li>Вообще, не используйте нестандартные расширения, такие как
+  <code>#pragma</code> и <code>__declspec</code> (исключение для
+  случаев крайней необходимости). Использование <code>__declspec(dllimport)</code>
+  и <code>__declspec(dllexport)</code> допустимо, однако следует
+  оформить их как макросы <code>DLLIMPORT</code> и <code>DLLEXPORT</code>:
+  в этом случае их можно легко заблокировать, если код будет распространяться.</li>
 </ul>
 
-<p>However, there are just a few rules that we
-occasionally need to break on Windows:</p>
+<p>С другой стороны, есть правила, которые можно нарушать при программировании
+ под Windows:</p>
 
 <ul>
-  <li>Normally we <a href="#Multiple_Inheritance">strongly discourage
-  the use of multiple implementation inheritance</a>;
-  however, it is required when using COM and some ATL/WTL
-  classes. You may use multiple implementation
-  inheritance to implement COM or ATL/WTL classes and
-  interfaces.</li>
+  <li>Обычно рекомендуется не использовать
+  <a href="#Multiple_Inheritance">множественное наследование реализации</a>;
+  однако это требуется при использовании COM и некоторых
+  классов ATL/WTL. В этом случае (при реализации COM или ATL/WTL) 
+  нарушение правила допустимо.</li>
 
-  <li>Although you should not use exceptions in your own
-  code, they are used extensively in the ATL and some
-  STLs, including the one that comes with Visual C++.
-  When using the ATL, you should define
-  <code>_ATL_NO_EXCEPTIONS</code> to disable exceptions.
-  You should investigate whether you can also disable
-  exceptions in your STL, but if not, it is OK to turn on
-  exceptions in the compiler. (Note that this is only to
-  get the STL to compile. You should still not write
-  exception handling code yourself.)</li>
+  <li>Хотя использование исключений в собственном коде не рекомендуется,
+  они интенсивно используются в ATL и некоторых STL (в том числе
+  и в варианте библиотеки от Visual C++).
+  Когда используете ATL, следует определить
+  <code>_ATL_NO_EXCEPTIONS</code>, чтобы запретить исключения.
+  Желательно разобраться, можно ли запретить исключения и в STL,
+  однако, если это не реализуемо, то допустимо разрешить
+  исключения в компиляторе. (Учтите, что это разрешено
+  только для компиляции STL. Пользовательский код всё равно
+  не должен содержать обработчики исключений).</li>
 
-  <li>The usual way of working with precompiled headers
-  is to include a header file at the top of each source
-  file, typically with a name like <code>StdAfx.h</code>
-  or <code>precompile.h</code>. To make your code easier
-  to share with other projects, avoid including this file
-  explicitly (except in <code>precompile.cc</code>), and
-  use the <code>/FI</code> compiler option to include the
-  file automatically.</li>
+  <li>Типичный способ работы с прекомпилированными
+  заголовочными файлами - включить такой файл первым в
+  каждый файл исходников, обычно с именем <code>StdAfx.h</code>
+  или <code>precompile.h</code>. Чтобы не создавать проблем
+  при распространении кода, лучше избегать явного включения
+  такого файла (за исключением <code>precompile.cc</code>).
+  Используйте опцию компилятора <code>/FI</code> для
+  автоматического включения такого файла.</li>
 
-  <li>Resource headers, which are usually named
-  <code>resource.h</code> and contain only macros, do not
-  need to conform to these style guidelines.</li>
+  <li>Заголовочный файлы ресурсов (обычно <code>resource.h</code>),
+  содержащий только макросы, может не следовать рекомендациям
+  этого руководства.</li>
 </ul>
 
 <h2 id="Parting_Words">Заключение</h2>
