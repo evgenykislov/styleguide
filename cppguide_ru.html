@@ -3409,88 +3409,96 @@ hash flooding</a>.</p>
  обёртки кода, которые реализованы с использованием нестандартных расширений и
  и (желательно) содержатся в одном заголовочном файле (portability header).</p>
 
-<h3 id="Aliases">Aliases</h3>
+<h3 id="Aliases">Псевдонимы/Alias</h3>
 
-<p>Public aliases are for the benefit of an API's user, and should be clearly documented.</p>
+<p>Публичные псевдонимы предназначены для использования с API и должны
+ быть хорошо документированы.</p>
 
 <p class="definition"></p>
-<p>There are several ways to create names that are aliases of other entities:</p>
+<p>Есть несколько способов для создания имён, являющихся псевдонимами
+ для других сущностей:</p>
 <pre>typedef Foo Bar;
 using Bar = Foo;
 using other_namespace::Foo;
 </pre>
 
-  <p>In new code, <code>using</code> is preferable to <code>typedef</code>,
-  because it provides a more consistent syntax with the rest of C++ and works
-  with templates.</p>
+  <p>При написании нового кода рекомендуется использовать <code>using</code>,
+  а не <code>typedef</code>. Это обеспечивает более согласованный синтаксис 
+  с остальным C++ кодом и поддерживает работу с шаблонами.</p>
 
-  <p>Like other declarations, aliases declared in a header file are part of that
-  header's public API unless they're in a function definition, in the private portion of a class,
-  or in an explicitly-marked internal namespace. Aliases in such areas or in .cc files are
-  implementation details (because client code can't refer to them), and are not restricted by this
-  rule.</p>
+  <p>Аналогично другим декларациям, псевдонимы, введённые в заголовочном файле,
+  обычно являются частью публичного API этого файла. Исключения касаются случаев,
+  когда псевдонимы объявлены внутри определения функции, private секции класса 
+  или явно отмеченном внутреннем пространстве имён. Такие псевдонимы, а также
+  введённые в .cc файлах являются "деталями реализации" (т.к. клиентский код
+  к ним не обращается) и не подпадают под действие этих правил.</p>
 
 <p class="pros"></p>
   <ul>
-    <li>Aliases can improve readability by simplifying a long or complicated name.</li>
-    <li>Aliases can reduce duplication by naming in one place a type used repeatedly in an API,
-      which <em>might</em> make it easier to change the type later.
-    </li>
+    <li>Псевдонимы могут улучшить читабельность кода, сокращая длинные и сложные имена.</li>
+    <li>Псевдонимы могут уменьшить дублирование: например, сделав именование типа,
+    часто использующегося в API, в дальнейшем это <em>может</em> облегчить
+    изменение этого типа на другой.</li>
   </ul>
 
 <p class="cons"></p>
   <ul>
-    <li>When placed in a header where client code can refer to them, aliases increase the
-      number of entities in that header's API, increasing its complexity.</li>
-    <li>Clients can easily rely on unintended details of public aliases, making
-      changes difficult.</li>
-    <li>It can be tempting to create a public alias that is only intended for use
-      in the implementation, without considering its impact on the API, or on maintainability.</li>
-    <li>Aliases can create risk of name collisions</li>
-    <li>Aliases can reduce readability by giving a familiar construct an unfamiliar name</li>
-    <li>Type aliases can create an unclear API contract:
-      it is unclear whether the alias is guaranteed to be identical to the type it aliases,
-      to have the same API, or only to be usable in specified narrow ways</li>
+    <li>Псевдонимы, размещённые в заголовочном файле (где клиентский код может обращаться к ним),
+    увеличивают количество сущностей в этом файле API и его сложность.</li>
+    <li>Клиентский код может полагаться на особенности публичных псевдонимов,
+    и это усложняет внесение изменений.</li>
+    <li>Есть соблазн создавать публичные псевдонимы, которые будут использоваться
+    только во внутренней реализации. Такой подход может влиять на сам API и усложнит его поддержку.</li>
+    <li>Псевдонимы увеличивают риск создания дубликата для другого имени.</li>
+    <li>Псевдонимы могут ухудшить читабельность кода, если хорошо известным
+    сущностям будут давать незнакомые имена.</li>
+    <li>Псевдонимы типов могут создать "ненадёжное" соглашение по API: то ли псевдоним
+    всегда будет идентичным указанному типу (API не изменится, тип можно использовать
+    любым способом); то ли тип у псевдонима может поменяться (тогда рекомендуется 
+    использовать только небольшую часть возможностей).</li>
   </ul>
 
 <p class="decision"></p>
-<p>Don't put an alias in your public API just to save typing in the implementation;
-  do so only if you intend it to be used by your clients.</p>
-<p>When defining a public alias, document the intent of
-the new name, including whether it is guaranteed to always be the same as the type
-it's currently aliased to, or whether a more limited compatibility is
-intended. This lets the user know whether they can treat the types as
-substitutable or whether more specific rules must be followed, and can help the
-implementation retain some degree of freedom to change the alias.</p>
-<p>Don't put namespace aliases in your public API. (See also <a href="#Namespaces">Namespaces</a>).
+<p>Не вводите псевдонимы в публичный API только для облегчения
+ написания кода в реализации; псевдоним должен прежде всего быть полезен для
+ клиентского кода.</p>
+<p>Определяя публичный псевдоним, обязательно опишите назначение нового имени,
+ будет ли псевдоним всегда соответствовать текущему типу или будет
+ более ограниченная совместимость. С одной стороны, это 
+ позволит узнать, является ли псевдоним заменителем типа или необходимо следовать более
+ специфическим правилам. С другой стороны, это может дать определённую
+ свободу при изменении псевдонима в дальнейшем.</p>
+<p>Не объявляйте публичные псевдонимы на пространства имён в своём API. 
+ (См. также <a href="#Namespaces">Пространство имён</a>).
 </p>
 
-<p>For example, these aliases document how they are intended to be used in client code:</p>
+<p>Например, следующие псевдонимы описывают способ их использования в клиентском коде:</p>
 <pre>namespace mynamespace {
-// Used to store field measurements. DataPoint may change from Bar* to some internal type.
-// Client code should treat it as an opaque pointer.
+// Используется для хранения измерений. DataPoint может меняться с Bar* на другой
+// внутренний тип, его следует трактовать как абстрактный указатель.
 using DataPoint = foo::Bar*;
 
-// A set of measurements. Just an alias for user convenience.
+// Набор измерений. Добавлен для удобства пользователя.
 using TimeSeries = std::unordered_set&lt;DataPoint, std::hash&lt;DataPoint&gt;, DataPointComparator&gt;;
 }  // namespace mynamespace
 </pre>
 
-<p>These aliases don't document intended use, and half of them aren't meant for client use:</p>
+<p>Приведённые ниже псевдонимы не документируют способы использования и часть из них
+вообще не предназначения для использования в клиентском коде:</p>
 
 <pre class="badcode">namespace mynamespace {
-// Bad: none of these say how they should be used.
+// Плохо: непонятно, как это использовать.
 using DataPoint = foo::Bar*;
-using std::unordered_set;  // Bad: just for local convenience
-using std::hash;           // Bad: just for local convenience
+using std::unordered_set;  // Плохо: это для внутреннего удобства
+using std::hash;           // Плохо: это для внутреннего удобства
 typedef unordered_set&lt;DataPoint, hash&lt;DataPoint&gt;, DataPointComparator&gt; TimeSeries;
 }  // namespace mynamespace
 </pre>
 
-<p>However, local convenience aliases are fine in function definitions, private sections of
-  classes, explicitly marked internal namespaces, and in .cc files:</p>
+<p>Однако, локальные псевдонимы очень удобны внутри определения функций, private секций
+ классов, внутренних пространств имён и в .cc файлах:</p>
 
-<pre>// In a .cc file
+<pre>// В .cc файле
 using foo::Bar;
 </pre>
 
