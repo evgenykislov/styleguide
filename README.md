@@ -17,10 +17,24 @@ of C++ Google Style Guide into Russian. So ...
  Если вы редактируете код от Google, то здесь можно прочитать
  о тех принципах по которым он оформляется.
 
-Здесь собраны руководства по следующим языкам программирования: [C++ Ru][cpp_ru]/[C++ Eng][cpp_eng],
- [Objective-C][objc], [Java][java], [Python][py], [R][r],
-[Shell][sh], [HTML/CSS][htmlcss], [JavaScript][js], [AngularJS][angular],
-[Common Lisp][cl], and [Vimscript][vim]. Также здесь есть [cpplint][cpplint] -
+
+*   [AngularJS Style Guide][angular]
+*   [Common Lisp Style Guide][cl]
+*   [Руководство по стилю C++ (рус)][cpp_ru], [C++ Style Guide (eng)][cpp_eng]
+*   [C# Style Guide][csharp]
+*   [Go Style Guide][go]
+*   [HTML/CSS Style Guide][htmlcss]
+*   [JavaScript Style Guide][js]
+*   [Java Style Guide][java]
+*   [Objective-C Style Guide][objc]
+*   [Python Style Guide][py]
+*   [R Style Guide][r]
+*   [Shell Style Guide][sh]
+*   [Swift Style Guide][swift]
+*   [TypeScript Style Guide][ts]
+*   [Vim script Style Guide][vim]
+
+Также здесь есть [cpplint][cpplint] -
  инструмент, помогающий соответствовать стилю, и [google-c-style.el][emacs] - 
  файл с настройками для Emacs.
 
@@ -33,8 +47,12 @@ of C++ Google Style Guide into Russian. So ...
  которая позволяет вам распространять эти документы.
  Подробнее можно прочитать на [https://creativecommons.org/licenses/by/3.0/][ccl].
 
-Также есть ещё два руководства, которые размещаются отдельно, вне проекта. Это
-[Go Code Review Comments][go] и [Effective Dart][dart].
+Также есть ещё руководство, которое размещается отдельно, вне проекта. Это
+[Effective Dart][dart].
+
+## Внешнее участие
+
+Руководства по стилю (за небольшими исключениями) скопированы с внутренних документов Google с целью помочь разработчикам работать над проектами Google или проектами с открытым исходным кодом. Как результат, изменения в руководствах по стилю  делаются сначала во внутренних документах, потом изменения копируются во внешний документ. Поэтому **Внешнее участие не допускается**. Pull request-ы будут закрываться без объяснения причин. Очевидные ошибки или технические неточности теоретически могут быть приняты, однако в любом случае документы изменяются с учётом внутреннего применения в Google.
 
 # Google Style Guides
 
