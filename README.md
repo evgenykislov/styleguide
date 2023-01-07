@@ -71,7 +71,7 @@ that apply to that project.
 
 *   [AngularJS Style Guide][angular]
 *   [Common Lisp Style Guide][cl]
-*   [C++ Style Guide][cpp]
+*   [C++ Style Guide][cpp_eng]
 *   [C# Style Guide][csharp]
 *   [Go Style Guide][go]
 *   [HTML/CSS Style Guide][htmlcss]
