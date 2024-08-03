@@ -1887,8 +1887,8 @@ void FooConsumer(std::unique_ptr&lt;Foo&gt; ptr);
 
 <p class="decision"></p>
 <p>Вы можете использовать rvalue-ссылки чтобы объявить конструктор перемещения и перемещающий оператор присваивания
- (как описано в <a href="#Copyable_Movable_Types">Копируемые и перемещаемые типы</a>). См. также 
- <a href="primer#copying_moving">C++ Primer</a> для более подробной информации о семантике перемещения и, также, <code>std::move</code>.</p>
+ (как описано в <a href="#Copyable_Movable_Types">Копируемые и перемещаемые типы</a>). Также можно
+ почитать "C++ Primer" для более подробной информации о семантике перемещения и <code>std::move</code>.</p>
 
 <p>Вы можете использовать rvalue-ссылки чтобы объявить пары перегружаемых функций, одна с
  <code>Foo&amp;&amp;</code>, другая с <code>const Foo&amp;</code>.
@@ -2753,7 +2753,7 @@ auto d{42};   // d типа int, а не std::initializer_list&lt;int&gt;
     Возвращаемый тип <a href="#Lambda_expressions">лямбды</a> может быть выведен
     аналогичным способом (хотя это делается при отсутствии возвращаемого типа, а
     не в случае использования <code>auto</code>). Синтаксис указания 
-    <a href="trailing_return">возвращаемого типа в конце</a> для функций
+    <a href="#trailing_return">возвращаемого типа в конце</a> для функций
     также использует <code>auto</code>, но это не вывод типа, скорее альтернативный 
     синтаксис для явно указанного возвращаемого типа.</dd>
   <dt><a href="https://isocpp.org/wiki/faq/cpp14-language#generic-lambdas">общие (generic) лямбды</a></dt>
