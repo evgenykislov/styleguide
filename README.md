@@ -77,6 +77,8 @@ that apply to that project.
 *   [HTML/CSS Style Guide][htmlcss]
 *   [JavaScript Style Guide][js]
 *   [Java Style Guide][java]
+*   [JSON Style Guide][json]
+*   [Markdown Style Guide][markdown]
 *   [Objective-C Style Guide][objc]
 *   [Python Style Guide][py]
 *   [R Style Guide][r]
@@ -100,7 +102,9 @@ encourages you to share these documents. See
 [https://creativecommons.org/licenses/by/3.0/][ccl] for more details.
 
 The following Google style guide lives outside of this project:
-[Effective Dart][dart].
+
+*  [Effective Dart][dart]
+*  [Kotlin Style Guide][kotlin]
 
 ## Contributing
 
@@ -109,10 +113,12 @@ guides to assist developers working on Google owned and originated open source
 projects. Changes to the style guides are made to the internal style guides
 first and eventually copied into the versions found here. **External
 contributions are not accepted.** Pull requests are regularly closed without
-comment. Issues that raise questions, justify changes on technical merits, or
-point out obvious mistakes may get some engagement and could in theory lead to
-changes, but we are primarily optimizing for Google's internal needs.
+comment.
 
+People can file [issues using the GitHub tracker][gh-tracker]. Issues that raise
+questions, justify changes on technical merits, or point out obvious mistakes
+may get some engagement and could in theory lead to changes, but we are
+primarily optimizing for Google's internal needs.
 
 <a rel="license" href="https://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/3.0/88x31.png" /></a>
 
@@ -121,13 +127,17 @@ changes, but we are primarily optimizing for Google's internal needs.
 [csharp]: https://google.github.io/styleguide/csharp-style.html
 [swift]: https://google.github.io/swift/
 [objc]: objcguide.md
+[gh-tracker]: https://github.com/google/styleguide/issues
 [go]: go/
 [java]: https://htmlpreview.github.io/?https://github.com/evgenykislov/styleguide/blob/ru_cpp/javaguide.html
+[json]: https://google.github.io/styleguide/jsoncstyleguide.xml
+[kotlin]: https://developer.android.com/kotlin/style-guide
 [py]: https://htmlpreview.github.io/?https://github.com/evgenykislov/styleguide/blob/ru_cpp/pyguide.html
 [r]: https://htmlpreview.github.io/?https://github.com/evgenykislov/styleguide/blob/ru_cpp/Rguide.html
 [sh]: https://google.github.io/styleguide/shellguide.html
 [htmlcss]: https://htmlpreview.github.io/?https://github.com/evgenykislov/styleguide/blob/ru_cpp/htmlcssguide.html
 [js]: https://htmlpreview.github.io/?https://github.com/evgenykislov/styleguide/blob/ru_cpp/jsguide.html
+[markdown]: https://google.github.io/styleguide/docguide/style.html
 [ts]: https://google.github.io/styleguide/tsguide.html
 [angular]: https://htmlpreview.github.io/?https://github.com/evgenykislov/styleguide/blob/ru_cpp/angularjs-google-style.html
 [cl]: https://htmlpreview.github.io/?https://github.com/evgenykislov/styleguide/blob/ru_cpp/lispguide.xml
